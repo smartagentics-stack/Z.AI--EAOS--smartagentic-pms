@@ -1,0 +1,7 @@
+{
+  "name": "@smartagentics/dev-config", "version": "0.1.0", "private": true,
+  "files": ["eslint-preset.js","prettier-config.js","tsconfig.base.json","vitest-config.ts","commitlint-config.js"],
+  "exports": { "./eslint": "./eslint-preset.js", "./prettier": "./prettier-config.js", "./tsconfig": "./tsconfig.base.json", "./vitest": "./vitest-config.ts", "./commitlint": "./commitlint-config.js" },
+  "dependencies": { "@typescript-eslint/eslint-plugin": "^8.0.0", "@typescript-eslint/parser": "^8.0.0", "eslint": "^9.0.0", "eslint-config-prettier": "^9.1.0", "eslint-plugin-import": "^2.29.0", "eslint-plugin-unused-imports": "^4.0.0" },
+  "devDependencies": { "typescript": "^5.5.0", "vitest": "^2.0.0" }
+}

@@ -1,0 +1,3 @@
+export type MetricType = 'counter' | 'gauge' | 'histogram' | 'timer';
+export interface MetricsRecorder { incrementCounter(name: string, value?: number, labels?: Record<string, string>): void; setGauge(name: string, value: number, labels?: Record<string, string>): void; observeHistogram(name: string, value: number, labels?: Record<string, string>): void; startTimer(name: string, labels?: Record<string, string>): () => void }
+export const STANDARD_METRICS = { RESERVATIONS_CREATED: 'reservations_created_total', CHECK_INS_COMPLETED: 'check_ins_completed_total', AI_REQUESTS_TOTAL: 'ai_requests_total', AI_COST_USD: 'ai_cost_usd_total', SYNC_PENDING_CHANGES: 'sync_pending_changes_gauge' } as const;

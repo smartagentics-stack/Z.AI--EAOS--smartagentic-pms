@@ -1,0 +1,4 @@
+{ "name": "@smartagentics/worker", "version": "0.1.0", "private": true, "type": "module",
+  "scripts": { "dev": "bun --watch src/index.ts", "build": "tsc --noEmit", "start": "bun src/index.ts", "lint": "eslint .", "typecheck": "tsc --noEmit", "test": "vitest run" },
+  "dependencies": { "@smartagentics/sdk": "workspace:*", "@smartagentics/shared": "workspace:*", "@restatedev/restate-sdk": "^1.15.0" },
+  "devDependencies": { "@smartagentics/dev-config": "workspace:*", "@types/node": "^20.0.0", "typescript": "^5.5.0", "vitest": "^2.0.0" } }

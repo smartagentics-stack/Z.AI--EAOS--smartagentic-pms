@@ -1,0 +1,4 @@
+{ "name": "@smartagentics/db", "version": "0.1.0", "private": true, "type": "module", "main": "./src/index.ts", "types": "./src/index.ts",
+  "scripts": { "build": "tsc --noEmit", "test": "vitest run", "lint": "eslint .", "typecheck": "tsc --noEmit", "db:generate": "prisma generate", "db:migrate": "prisma migrate dev", "db:push": "prisma db push", "db:reset": "prisma migrate reset" },
+  "dependencies": { "@prisma/client": "^5.18.0" },
+  "devDependencies": { "@smartagentics/dev-config": "workspace:*", "prisma": "^5.18.0", "typescript": "^5.5.0", "vitest": "^2.0.0", "tsx": "^4.16.0" } }

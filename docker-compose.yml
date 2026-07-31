@@ -1,0 +1,9 @@
+version: '3.8'
+services:
+  restate:
+    image: restatedev/restate:latest
+    ports: ['8080:8080', '9070:9070', '5122:5122']
+    volumes: [restate-data:/restate-data]
+    environment: [RESTATE_DATA_DIR=/restate-data]
+volumes:
+  restate-data:

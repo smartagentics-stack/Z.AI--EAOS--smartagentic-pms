@@ -1,0 +1,32 @@
+{
+  "name": "smartagentics",
+  "private": true,
+  "version": "0.1.0-alpha.0",
+  "description": "SmartAgentics AI Enterprise Platform — Hotel PMS (Phase 1)",
+  "workspaces": ["apps/*", "packages/*", "spikes/*"],
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "test": "turbo run test",
+    "test:fitness": "vitest run --config tests/fitness/vitest.config.ts",
+    "lint": "turbo run lint",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,yml,yaml}\"",
+    "typecheck": "turbo run typecheck",
+    "db:generate": "turbo run db:generate",
+    "bootstrap": "pnpm install && pnpm db:generate && pnpm test && pnpm test:fitness",
+    "clean": "turbo run clean && rm -rf node_modules",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "@smartagentics/dev-config": "workspace:*",
+    "husky": "^9.1.0",
+    "lint-staged": "^15.2.0",
+    "prettier": "^3.3.0",
+    "tsx": "^4.16.0",
+    "turbo": "^2.0.0",
+    "typescript": "^5.5.0",
+    "vitest": "^2.0.0"
+  },
+  "packageManager": "pnpm@9.0.0",
+  "engines": { "node": ">=20.0.0", "pnpm": ">=9.0.0" }
+}
