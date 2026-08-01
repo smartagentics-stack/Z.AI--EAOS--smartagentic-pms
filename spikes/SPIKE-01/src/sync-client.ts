@@ -40,6 +40,8 @@ export interface ClientConnStats {
   recordsAcked: number;
   replaysTriggered: number;
   unexpectedTransitions: string[];
+  drainEventCount: number;
+  backpressureEvents: number;
 }
 
 export function createSyncClient(
@@ -83,7 +85,7 @@ export function createSyncClient(
     transitions.push({ from: oldState, to: newState, timestamp: Date.now() });
   }
 
-  function handleData(data: string): void {
+  async function handleData(data: string): Promise<void> {
     const lines = data.split('\n');
     for (const line of lines) {
       if (!line.trim()) continue;
@@ -95,7 +97,8 @@ export function createSyncClient(
             transition('READY_RECEIVED');
             // Begin replay
             transition('REPLAY_IN_PROGRESS');
-            replayQueuedRecords();
+            // H-009: replayQueuedRecords is now async (backpressure-aware)
+            await replayQueuedRecords();
             replaysTriggered++;
             transition('REPLAY_COMPLETE');
             // Request peer's records
@@ -125,12 +128,36 @@ export function createSyncClient(
     }
   }
 
-  function replayQueuedRecords(): number {
+  // H-009: Backpressure-aware replay.
+  // Checks socket.write() return value. If false (kernel buffer full),
+  // waits for 'drain' event before continuing. Prevents record loss.
+  let drainEventCount = 0;
+  let backpressureEvents = 0;
+
+  async function replayQueuedRecords(): Promise<number> {
     if (!socket || !clientId) return 0;
     const queuedRecords = db.prepare('SELECT * FROM sync_records WHERE clientId = ? ORDER BY sequenceNumber ASC').all(clientId) as SyncRecord[];
     for (const record of queuedRecords) {
-      socket.write(JSON.stringify({ type: 'record', record }) + '\n');
+      const data = JSON.stringify({ type: 'record', record }) + '\n';
+      const canWrite = socket.write(data);
       recordsReplayed++;
+      if (!canWrite) {
+        // H-009: Kernel buffer full — wait for drain before continuing
+        backpressureEvents++;
+        await new Promise<void>((resolve) => {
+          const onDrain = () => {
+            drainEventCount++;
+            socket!.off('drain', onDrain);
+            resolve();
+          };
+          socket!.once('drain', onDrain);
+          // Safety timeout: if drain doesn't fire in 5s, continue anyway
+          setTimeout(() => {
+            socket!.off('drain', onDrain);
+            resolve();
+          }, 5000);
+        });
+      }
     }
     return queuedRecords.length;
   }
@@ -192,7 +219,7 @@ export function createSyncClient(
     getState() { return state; },
 
     getStats() {
-      return { state, transitions, recordsReplayed, recordsAcked, replaysTriggered, unexpectedTransitions };
+      return { state, transitions, recordsReplayed, recordsAcked, replaysTriggered, unexpectedTransitions, drainEventCount, backpressureEvents };
     },
 
     async writeRecord(record: SyncRecord): Promise<{ latencyMs: number; acked: boolean }> {

@@ -41,7 +41,6 @@ export function createSyncServer(
     }
 
     function transition(newState: ServerConnState): void {
-      const oldState = state;
       state = newState;
       onStateChange?.(newState);
       if (newState === 'SYNCHRONIZED') {
