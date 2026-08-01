@@ -18,6 +18,14 @@ export function createSyncServer(db: Database.Database, port: number, onRecordRe
         if (!line.trim()) continue;
         try {
           const msg = JSON.parse(line);
+
+          // HANDSHAKE: Client says HELLO, we respond READY.
+          // Client will not send records until it receives READY.
+          if (msg.type === 'hello') {
+            socket.write(JSON.stringify({ type: 'ready' }) + '\n');
+            continue;
+          }
+
           if (msg.type === 'record') {
             const record = msg.record as SyncRecord;
             insertRecord(db, record);

@@ -12,10 +12,12 @@ export interface SyncClient {
 export function createSyncClient(db: Database.Database, peerPort: number, peerHost: string = '127.0.0.1', clientId?: string): SyncClient {
   let socket: net.Socket | null = null;
   let connected = false;
+  let handshakeComplete = false;
   const pendingAcks = new Map<string, (latencyMs: number) => void>();
   const writeTimestamps = new Map<string, number>();
   let reconnectTimer: NodeJS.Timeout | null = null;
   let peerLastSequence = 0;
+  let replayCount = 0;
 
   function handleData(data: string): void {
     const lines = data.split('\n');
@@ -23,6 +25,13 @@ export function createSyncClient(db: Database.Database, peerPort: number, peerHo
       if (!line.trim()) continue;
       try {
         const msg = JSON.parse(line);
+        if (msg.type === 'ready') {
+          handshakeComplete = true;
+          const replayed = replayQueuedRecords();
+          socket?.write(JSON.stringify({ type: 'sync_request', sinceSequence: peerLastSequence }) + '\n');
+          if (clientId) console.log(`[${clientId}] READY received, replayed ${replayed} records`);
+          continue;
+        }
         if (msg.type === 'ack') {
           const writeTime = writeTimestamps.get(msg.idempotencyKey);
           if (writeTime) {
@@ -38,36 +47,29 @@ export function createSyncClient(db: Database.Database, peerPort: number, peerHo
     }
   }
 
-  // FIX: Replay queued records on reconnect (bidirectional sync)
-  // Instead of pushing records directly (which may fail if peer isn't ready),
-  // send a sync_request with our last known peer sequence. The peer's server
-  // will respond with all records WE haven't seen yet.
-  // Additionally, we need to push OUR records that the peer hasn't seen.
-  // The server already handles 'record' messages, so we push our records
-  // that have clientId matching our own (outbound only).
-  function replayQueuedRecords(): void {
-    if (!socket || !connected || !clientId) return;
-    // Send ONLY our own outbound records that peer may not have
+  function replayQueuedRecords(): number {
+    if (!socket || !connected || !handshakeComplete || !clientId) return 0;
     const queuedRecords = db.prepare('SELECT * FROM sync_records WHERE clientId = ? ORDER BY sequenceNumber ASC').all(clientId) as SyncRecord[];
     for (const record of queuedRecords) {
       socket.write(JSON.stringify({ type: 'record', record }) + '\n');
     }
+    replayCount++;
+    return queuedRecords.length;
   }
 
   function connectInternal(): Promise<void> {
     return new Promise((resolve) => {
       socket = new net.Socket();
       let buffer = '';
+      handshakeComplete = false;
       socket.connect(peerPort, peerHost, () => {
         connected = true;
-        // FIX: On reconnect, replay queued records AND request peer's records
-        replayQueuedRecords();
-        socket!.write(JSON.stringify({ type: 'sync_request', sinceSequence: peerLastSequence }) + '\n');
+        socket!.write(JSON.stringify({ type: 'hello' }) + '\n');
         resolve();
       });
       socket.on('data', (data) => { buffer += data.toString(); const lines = buffer.split('\n'); buffer = lines.pop() || ''; handleData(lines.join('\n')); });
-      socket.on('error', () => { connected = false; scheduleReconnect(); });
-      socket.on('close', () => { connected = false; scheduleReconnect(); });
+      socket.on('error', () => { connected = false; handshakeComplete = false; scheduleReconnect(); });
+      socket.on('close', () => { connected = false; handshakeComplete = false; scheduleReconnect(); });
     });
   }
 
@@ -78,11 +80,11 @@ export function createSyncClient(db: Database.Database, peerPort: number, peerHo
 
   return {
     async connect() { await connectInternal(); },
-    disconnect() { if (reconnectTimer) { clearTimeout(reconnectTimer); reconnectTimer = null; } socket?.destroy(); connected = false; },
+    disconnect() { if (reconnectTimer) { clearTimeout(reconnectTimer); reconnectTimer = null; } socket?.destroy(); connected = false; handshakeComplete = false; },
     isConnected() { return connected; },
     async writeRecord(record: SyncRecord): Promise<{ latencyMs: number; acked: boolean }> {
       insertRecord(db, record);
-      if (!connected || !socket) { return { latencyMs: 0, acked: false }; }
+      if (!connected || !socket || !handshakeComplete) { return { latencyMs: 0, acked: false }; }
       return new Promise((resolve) => {
         writeTimestamps.set(record.idempotencyKey, Date.now());
         const timeout = setTimeout(() => { pendingAcks.delete(record.idempotencyKey); writeTimestamps.delete(record.idempotencyKey); resolve({ latencyMs: 5000, acked: false }); }, 5000);
