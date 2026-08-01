@@ -26,7 +26,7 @@ function createClient(clientId: 'A' | 'B', dbPath: string, serverPort: number, p
   const db = setupDatabase(dbPath);
   let sequence = 0;
   const server = createSyncServer(db, serverPort, () => {});
-  const client = createSyncClient(db, peerPort);
+  const client = createSyncClient(db, peerPort, '127.0.0.1', clientId);
   return { clientId, db, server, client,
     async write() {
       const record: SyncRecord = { id: randomUUID(), idempotencyKey: `${clientId}-${++sequence}`, payload: { name: `r-${sequence}`, value: Math.floor(Math.random()*1000), timestamp: Date.now() }, clientId, sequenceNumber: sequence, createdAt: Date.now(), updatedAt: Date.now() };

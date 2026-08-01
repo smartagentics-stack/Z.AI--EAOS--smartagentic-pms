@@ -1,0 +1,37 @@
+{
+  "duration_seconds": 300,
+  "records": {
+    "clientA": {
+      "written": 49,
+      "inDb": 98,
+      "duplicates": 0
+    },
+    "clientB": {
+      "written": 49,
+      "inDb": 94,
+      "duplicates": 0
+    }
+  },
+  "sync": {
+    "totalUnique": 98,
+    "onlyInA": 4,
+    "onlyInB": 0,
+    "dataLoss": 4
+  },
+  "latency": {
+    "p50_ms": 0,
+    "p95_ms": 1,
+    "p99_ms": 1,
+    "samples": 94
+  },
+  "acks": {
+    "received": 94,
+    "missed": 4
+  },
+  "networkInterruptions": 14,
+  "errors": [],
+  "memory": {
+    "initialRssMB": 68.72265625,
+    "finalRssMB": 71.56640625
+  }
+}

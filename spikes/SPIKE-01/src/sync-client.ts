@@ -9,7 +9,7 @@ export interface SyncClient {
   isConnected(): boolean;
 }
 
-export function createSyncClient(db: Database.Database, peerPort: number, peerHost: string = '127.0.0.1'): SyncClient {
+export function createSyncClient(db: Database.Database, peerPort: number, peerHost: string = '127.0.0.1', clientId?: string): SyncClient {
   let socket: net.Socket | null = null;
   let connected = false;
   const pendingAcks = new Map<string, (latencyMs: number) => void>();
@@ -39,9 +39,16 @@ export function createSyncClient(db: Database.Database, peerPort: number, peerHo
   }
 
   // FIX: Replay queued records on reconnect (bidirectional sync)
+  // Instead of pushing records directly (which may fail if peer isn't ready),
+  // send a sync_request with our last known peer sequence. The peer's server
+  // will respond with all records WE haven't seen yet.
+  // Additionally, we need to push OUR records that the peer hasn't seen.
+  // The server already handles 'record' messages, so we push our records
+  // that have clientId matching our own (outbound only).
   function replayQueuedRecords(): void {
-    if (!socket || !connected) return;
-    const queuedRecords = db.prepare('SELECT * FROM sync_records WHERE sequenceNumber > ? ORDER BY sequenceNumber ASC').all(peerLastSequence) as SyncRecord[];
+    if (!socket || !connected || !clientId) return;
+    // Send ONLY our own outbound records that peer may not have
+    const queuedRecords = db.prepare('SELECT * FROM sync_records WHERE clientId = ? ORDER BY sequenceNumber ASC').all(clientId) as SyncRecord[];
     for (const record of queuedRecords) {
       socket.write(JSON.stringify({ type: 'record', record }) + '\n');
     }
