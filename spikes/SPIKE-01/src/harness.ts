@@ -120,7 +120,7 @@ async function main() {
   clientA.captureStats(); clientB.captureStats();
   clientA.client.disconnect(); clientB.client.disconnect();
   clientA.server.close(); clientB.server.close();
-  await new Promise(r => setTimeout(r, 3000)); // Wait for final sync
+  await new Promise(r => setTimeout(r, 5000)); // Wait for final sync
 
   console.log('\n\n=== FINAL VERIFICATION ===\n');
   const recordsA = clientA.db.prepare('SELECT * FROM sync_records').all() as SyncRecord[];

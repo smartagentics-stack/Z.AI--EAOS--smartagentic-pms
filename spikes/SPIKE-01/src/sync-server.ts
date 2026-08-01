@@ -1,13 +1,3 @@
-/**
- * SPIKE-01 Sync Server — with connection state machine (Run 4)
- *
- * State machine for INCOMING connections (peer connecting to us):
- * DISCONNECTED → CONNECTED → HELLO_RECEIVED → READY_SENT → SYNCHRONIZED
- *
- * We do NOT send records to the peer until we receive their HELLO
- * and respond READY. We do NOT accept records until READY is sent.
- */
-
 import * as net from 'node:net';
 import type Database from 'better-sqlite3';
 
@@ -19,13 +9,6 @@ export interface SyncRecord {
 
 export type ServerConnState = 'DISCONNECTED' | 'CONNECTED' | 'HELLO_RECEIVED' | 'READY_SENT' | 'SYNCHRONIZED';
 
-export interface ServerConnStats {
-  state: ServerConnState;
-  transitions: { from: string; to: string; timestamp: number }[];
-  recordsReceived: number;
-  recordsSent: number;
-}
-
 export function createSyncServer(
   db: Database.Database,
   port: number,
@@ -34,16 +17,11 @@ export function createSyncServer(
 ): net.Server {
   const server = net.createServer((socket) => {
     let buffer = '';
-
-    // State machine for this connection
     let state: ServerConnState = 'CONNECTED';
-    const transitions: { from: string; to: string; timestamp: number }[] = [];
-    let recordsReceived = 0;
-    let recordsSent = 0;
-
-    // H-008: Pending incoming queue — buffer records received before SYNCHRONIZED
     const pendingQueue: SyncRecord[] = [];
     let queueFlushCount = 0;
+    let recordsReceived = 0;
+    let maxQueueDepth = 0;
 
     function processRecord(record: SyncRecord): void {
       insertRecord(db, record);
@@ -54,6 +32,7 @@ export function createSyncServer(
 
     function flushPendingQueue(): void {
       if (pendingQueue.length === 0) return;
+      console.log(`  [SERVER port=${port}] Flushing ${pendingQueue.length} pending records`);
       for (const record of pendingQueue) {
         processRecord(record);
       }
@@ -64,10 +43,7 @@ export function createSyncServer(
     function transition(newState: ServerConnState): void {
       const oldState = state;
       state = newState;
-      transitions.push({ from: oldState, to: newState, timestamp: Date.now() });
       onStateChange?.(newState);
-
-      // H-008: When we reach SYNCHRONIZED, flush any buffered records
       if (newState === 'SYNCHRONIZED') {
         flushPendingQueue();
       }
@@ -87,23 +63,22 @@ export function createSyncServer(
             transition('HELLO_RECEIVED');
             socket.write(JSON.stringify({ type: 'ready' }) + '\n');
             transition('READY_SENT');
-            transition('SYNCHRONIZED'); // flushPendingQueue() called here via transition()
+            transition('SYNCHRONIZED');
             continue;
           }
 
           if (msg.type === 'record') {
             const record = msg.record as SyncRecord;
             if (state === 'SYNCHRONIZED') {
-              // Normal path — process immediately
               processRecord(record);
             } else {
-              // H-008: Buffer record — will be flushed when SYNCHRONIZED is reached
               pendingQueue.push(record);
+              if (pendingQueue.length > maxQueueDepth) maxQueueDepth = pendingQueue.length;
+              console.log(`  [SERVER port=${port}] Buffered record (queue=${pendingQueue.length}, state=${state})`);
             }
             continue;
           }
 
-          // Only process sync_request if SYNCHRONIZED
           if (state !== 'SYNCHRONIZED') continue;
 
           if (msg.type === 'sync_request') {
@@ -111,7 +86,6 @@ export function createSyncServer(
             const records = db.prepare('SELECT * FROM sync_records WHERE sequenceNumber > ? ORDER BY sequenceNumber ASC LIMIT 1000').all(sinceSeq) as SyncRecord[];
             for (const record of records) {
               socket.write(JSON.stringify({ type: 'record', record }) + '\n');
-              recordsSent++;
             }
             socket.write(JSON.stringify({ type: 'sync_complete' }) + '\n');
           }
@@ -119,12 +93,8 @@ export function createSyncServer(
       }
     });
 
-    socket.on('error', () => {
-      transition('DISCONNECTED');
-    });
-    socket.on('close', () => {
-      transition('DISCONNECTED');
-    });
+    socket.on('error', () => { state = 'DISCONNECTED'; });
+    socket.on('close', () => { state = 'DISCONNECTED'; });
   });
 
   server.listen(port, '127.0.0.1');
