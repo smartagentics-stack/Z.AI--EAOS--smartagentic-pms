@@ -41,11 +41,36 @@ export function createSyncServer(
     let recordsReceived = 0;
     let recordsSent = 0;
 
+    // H-008: Pending incoming queue — buffer records received before SYNCHRONIZED
+    const pendingQueue: SyncRecord[] = [];
+    let queueFlushCount = 0;
+
+    function processRecord(record: SyncRecord): void {
+      insertRecord(db, record);
+      recordsReceived++;
+      onRecordReceived(record);
+      socket.write(JSON.stringify({ type: 'ack', idempotencyKey: record.idempotencyKey }) + '\n');
+    }
+
+    function flushPendingQueue(): void {
+      if (pendingQueue.length === 0) return;
+      for (const record of pendingQueue) {
+        processRecord(record);
+      }
+      pendingQueue.length = 0;
+      queueFlushCount++;
+    }
+
     function transition(newState: ServerConnState): void {
       const oldState = state;
       state = newState;
       transitions.push({ from: oldState, to: newState, timestamp: Date.now() });
       onStateChange?.(newState);
+
+      // H-008: When we reach SYNCHRONIZED, flush any buffered records
+      if (newState === 'SYNCHRONIZED') {
+        flushPendingQueue();
+      }
     }
 
     socket.on('data', (data) => {
@@ -59,27 +84,29 @@ export function createSyncServer(
           const msg = JSON.parse(line);
 
           if (msg.type === 'hello') {
-            // Peer wants to start sync. We must respond READY.
-            // But we only move to SYNCHRONIZED after we ALSO confirm
-            // we've sent our READY.
             transition('HELLO_RECEIVED');
             socket.write(JSON.stringify({ type: 'ready' }) + '\n');
             transition('READY_SENT');
-            // Move to SYNCHRONIZED — we're now ready to accept records
-            transition('SYNCHRONIZED');
+            transition('SYNCHRONIZED'); // flushPendingQueue() called here via transition()
             continue;
           }
 
-          // Only process records if we're in SYNCHRONIZED state
-          if (state !== 'SYNCHRONIZED') continue;
-
           if (msg.type === 'record') {
             const record = msg.record as SyncRecord;
-            insertRecord(db, record);
-            recordsReceived++;
-            onRecordReceived(record);
-            socket.write(JSON.stringify({ type: 'ack', idempotencyKey: record.idempotencyKey }) + '\n');
-          } else if (msg.type === 'sync_request') {
+            if (state === 'SYNCHRONIZED') {
+              // Normal path — process immediately
+              processRecord(record);
+            } else {
+              // H-008: Buffer record — will be flushed when SYNCHRONIZED is reached
+              pendingQueue.push(record);
+            }
+            continue;
+          }
+
+          // Only process sync_request if SYNCHRONIZED
+          if (state !== 'SYNCHRONIZED') continue;
+
+          if (msg.type === 'sync_request') {
             const sinceSeq = msg.sinceSequence || 0;
             const records = db.prepare('SELECT * FROM sync_records WHERE sequenceNumber > ? ORDER BY sequenceNumber ASC LIMIT 1000').all(sinceSeq) as SyncRecord[];
             for (const record of records) {
