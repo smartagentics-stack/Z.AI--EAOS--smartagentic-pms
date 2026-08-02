@@ -41,8 +41,8 @@ export function createSyncClient(
   const unexpectedTransitions: string[] = [];
   let drainEventCount = 0;
   let backpressureEvents = 0;
-  let connectionId = '';
-  let replaySessionId = '';
+  let connectionId = "";
+  let replaySessionId = "";
 
   let state: string = 'DISCONNECTED';
   const transitions: { from: string; to: string; timestamp: number }[] = [];

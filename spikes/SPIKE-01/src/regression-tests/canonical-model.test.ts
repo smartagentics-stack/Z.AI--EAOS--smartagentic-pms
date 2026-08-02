@@ -7,12 +7,10 @@
  * If this test fails, the canonical model has been broken.
  * This must never happen — one record model, everywhere.
  */
-
 import { describe, it, expect } from 'vitest';
 import Database from 'better-sqlite3';
 import { randomUUID } from 'node:crypto';
 import {
-  SyncRecordSchema,
   type SyncRecord,
   validateRecord,
   serializeForSQLite,

@@ -16,7 +16,6 @@
 
 import Database from 'better-sqlite3';
 import { randomUUID } from 'node:crypto';
-import * as net from 'node:net';
 import { writeFileSync } from 'node:fs';
 
 // ─── Setup ───────────────────────────────────────────────────────────────────

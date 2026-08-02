@@ -85,7 +85,7 @@ export class ReplicationTracer {
     } else if (stage === 'sequenceInReplay') {
       trace.sequenceInReplay = value as number;
     } else {
-      (trace as Record<string, unknown>)[stage] = Date.now();
+      (trace as unknown as Record<string, unknown>)[stage] = Date.now();
     }
   }
 
@@ -148,7 +148,7 @@ export class ReplicationTracer {
 
     return {
       totalTraces: this.traces.size,
-      missingRecords: missingTraces,
+      missingRecords: missingRecords,
       missingTraces: missingTraces,
       connectionEvents: this.connectionEvents,
       sqliteVerifications: this.sqliteVerifications,
@@ -160,7 +160,7 @@ export class ReplicationTracer {
 export interface ReplicationTraceReport {
   totalTraces: number;
   missingRecords: string[];
-  missingTraces: string[];
+  missingTraces: { idempotencyKey: string; lastStage: string; trace: ReplayTrace | null }[];
   connectionEvents: ConnectionEvent[];
   sqliteVerifications: SQLiteVerification[];
   missingRecordDetails: { idempotencyKey: string; lastStage: string; trace: ReplayTrace | null }[];

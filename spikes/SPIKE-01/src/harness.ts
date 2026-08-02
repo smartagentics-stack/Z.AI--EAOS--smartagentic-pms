@@ -98,8 +98,8 @@ async function main() {
 
   const recordsA = clientA.db.prepare('SELECT * FROM sync_records').all();
   const recordsB = clientB.db.prepare('SELECT * FROM sync_records').all();
-  const keysA = new Set(recordsA.map((r: { idempotencyKey: string }) => r.idempotencyKey));
-  const keysB = new Set(recordsB.map((r: { idempotencyKey: string }) => r.idempotencyKey));
+  const keysA = new Set(recordsA.map((r: any) => r.idempotencyKey));
+  const keysB = new Set(recordsB.map((r: any) => r.idempotencyKey));
   const onlyInA = [...keysA].filter(k => !keysB.has(k));
   const onlyInB = [...keysB].filter(k => !keysA.has(k));
   const dupA = recordsA.length - keysA.size;
