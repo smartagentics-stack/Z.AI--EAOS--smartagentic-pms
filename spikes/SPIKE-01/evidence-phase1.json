@@ -1,0 +1,77 @@
+{
+  "stages": [
+    {
+      "stage": "1. Original (before SQLite)",
+      "object": {
+        "id": "7dc1ac71-fc71-4745-9388-71cccc09cff2",
+        "idempotencyKey": "A-1",
+        "payload": {
+          "name": "record-1",
+          "value": 42,
+          "timestamp": 1785650789927
+        },
+        "clientId": "A",
+        "sequenceNumber": 1,
+        "createdAt": 1785650789927,
+        "updatedAt": 1785650789927
+      }
+    },
+    {
+      "stage": "2. SQLite row (after insert)",
+      "object": {
+        "id": "7dc1ac71-fc71-4745-9388-71cccc09cff2",
+        "idempotencyKey": "A-1",
+        "name": "record-1",
+        "value": 42,
+        "timestamp": 1785650789927,
+        "clientId": "A",
+        "sequenceNumber": 1,
+        "createdAt": 1785650789927,
+        "updatedAt": 1785650789927
+      }
+    },
+    {
+      "stage": "3. Replay SELECT result",
+      "object": {
+        "id": "7dc1ac71-fc71-4745-9388-71cccc09cff2",
+        "idempotencyKey": "A-1",
+        "name": "record-1",
+        "value": 42,
+        "timestamp": 1785650789927,
+        "clientId": "A",
+        "sequenceNumber": 1,
+        "createdAt": 1785650789927,
+        "updatedAt": 1785650789927
+      }
+    },
+    {
+      "stage": "4. Pre-serialize object",
+      "object": {
+        "id": "7dc1ac71-fc71-4745-9388-71cccc09cff2",
+        "idempotencyKey": "A-1",
+        "name": "record-1",
+        "value": 42,
+        "timestamp": 1785650789927,
+        "clientId": "A",
+        "sequenceNumber": 1,
+        "createdAt": 1785650789927,
+        "updatedAt": 1785650789927
+      }
+    },
+    {
+      "stage": "6. Server received (parsed)",
+      "object": {
+        "id": "7dc1ac71-fc71-4745-9388-71cccc09cff2",
+        "idempotencyKey": "A-1",
+        "name": "record-1",
+        "value": 42,
+        "timestamp": 1785650789927,
+        "clientId": "A",
+        "sequenceNumber": 1,
+        "createdAt": 1785650789927,
+        "updatedAt": 1785650789927
+      }
+    }
+  ],
+  "transformationPoint": "SQLite SELECT * returns flat columns (name, value, timestamp) instead of nested payload object"
+}

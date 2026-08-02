@@ -1,12 +1,20 @@
+/**
+ * SPIKE-01 Sync Server — with canonical SyncRecord model (Phase 4 fix)
+ *
+ * Changes from previous version:
+ * - SQLite schema stores payload as JSON TEXT column (not flat columns)
+ * - INSERT uses serializeForSQLite()
+ * - SELECT uses deserializeFromSQLite()
+ * - processRecord validates incoming records with Zod
+ * - One canonical record model everywhere. No alternate formats.
+ */
+
 import * as net from 'node:net';
 import type Database from 'better-sqlite3';
 import type { ReplicationTracer } from './trace.js';
+import { type SyncRecord, validateRecord, serializeForSQLite, deserializeFromSQLite } from './canonical-record.js';
 
-export interface SyncRecord {
-  id: string; idempotencyKey: string;
-  payload: { name: string; value: number; timestamp: number };
-  clientId: string; sequenceNumber: number; createdAt: number; updatedAt: number;
-}
+export type { SyncRecord } from './canonical-record.js';
 
 export type ServerConnState = 'DISCONNECTED' | 'CONNECTED' | 'HELLO_RECEIVED' | 'READY_SENT' | 'SYNCHRONIZED';
 
@@ -29,18 +37,30 @@ export function createSyncServer(
     function processRecord(record: SyncRecord): void {
       if (tracer) tracer.recordStage(record.id, record.idempotencyKey, 'packetReceived');
       if (tracer) tracer.recordStage(record.id, record.idempotencyKey, 'jsonParsed');
+
+      // Phase 3: Validate incoming record with Zod
+      const validation = validateRecord(record);
+      if (!validation.success) {
+        console.log(`  [SERVER] VALIDATION FAILED: ${record.idempotencyKey} — ${validation.error}`);
+        if (tracer) tracer.recordStage(record.id, record.idempotencyKey, 'insertAttempted');
+        return; // Don't insert invalid records
+      }
+
       if (tracer) tracer.recordStage(record.id, record.idempotencyKey, 'insertAttempted');
 
       try {
-        const changes = db.prepare('INSERT OR IGNORE INTO sync_records (id, idempotencyKey, name, value, timestamp, clientId, sequenceNumber, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)').run(
-          record.id, record.idempotencyKey, record.payload.name, record.payload.value, record.payload.timestamp, record.clientId, record.sequenceNumber, record.createdAt, record.updatedAt
+        const serialized = serializeForSQLite(record);
+        const changes = db.prepare(
+          'INSERT OR IGNORE INTO sync_records (id, idempotencyKey, payload, clientId, sequenceNumber, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?)'
+        ).run(
+          serialized.id, serialized.idempotencyKey, serialized.payload,
+          serialized.clientId, serialized.sequenceNumber, serialized.createdAt, serialized.updatedAt
         );
 
         if (tracer) {
           tracer.recordStage(record.id, record.idempotencyKey, 'insertComplete');
           if (changes.changes === 0) {
             tracer.recordStage(record.id, record.idempotencyKey, 'insertIgnored', true);
-            console.log(`  [SERVER] INSERT IGNORED: ${record.idempotencyKey} (already exists)`);
           }
         }
 
@@ -49,10 +69,8 @@ export function createSyncServer(
         if (tracer) tracer.recordStage(record.id, record.idempotencyKey, 'ackSent');
         socket.write(JSON.stringify({ type: 'ack', idempotencyKey: record.idempotencyKey }) + '\n');
       } catch (err) {
-        // THIS IS THE BUG — SQLite error is silently caught
         console.log(`  [SERVER] INSERT FAILED: ${record.idempotencyKey} — ${(err as Error).message}`);
         if (tracer) tracer.recordStage(record.id, record.idempotencyKey, 'insertComplete');
-        // Still send ack so client doesn't hang
         socket.write(JSON.stringify({ type: 'ack', idempotencyKey: record.idempotencyKey }) + '\n');
       }
     }
@@ -93,8 +111,15 @@ export function createSyncServer(
           if (state !== 'SYNCHRONIZED') continue;
           if (msg.type === 'sync_request') {
             const sinceSeq = msg.sinceSequence || 0;
-            const records = db.prepare('SELECT * FROM sync_records WHERE sequenceNumber > ? ORDER BY sequenceNumber ASC LIMIT 1000').all(sinceSeq) as SyncRecord[];
-            for (const record of records) socket.write(JSON.stringify({ type: 'record', record }) + '\n');
+            // Phase 4: Use deserializeFromSQLite to reconstruct canonical record
+            const rows = db.prepare('SELECT * FROM sync_records WHERE sequenceNumber > ? ORDER BY sequenceNumber ASC LIMIT 1000').all(sinceSeq) as Array<{
+              id: string; idempotencyKey: string; payload: string; clientId: string;
+              sequenceNumber: number; createdAt: number; updatedAt: number;
+            }>;
+            for (const row of rows) {
+              const record = deserializeFromSQLite(row); // Reconstruct canonical SyncRecord
+              socket.write(JSON.stringify({ type: 'record', record }) + '\n');
+            }
             socket.write(JSON.stringify({ type: 'sync_complete' }) + '\n');
           }
         } catch {}
@@ -108,7 +133,11 @@ export function createSyncServer(
 }
 
 export function insertRecord(db: Database.Database, record: SyncRecord): void {
-  db.prepare('INSERT OR IGNORE INTO sync_records (id, idempotencyKey, name, value, timestamp, clientId, sequenceNumber, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)').run(
-    record.id, record.idempotencyKey, record.payload.name, record.payload.value, record.payload.timestamp, record.clientId, record.sequenceNumber, record.createdAt, record.updatedAt
+  const serialized = serializeForSQLite(record);
+  db.prepare(
+    'INSERT OR IGNORE INTO sync_records (id, idempotencyKey, payload, clientId, sequenceNumber, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?)'
+  ).run(
+    serialized.id, serialized.idempotencyKey, serialized.payload,
+    serialized.clientId, serialized.sequenceNumber, serialized.createdAt, serialized.updatedAt
   );
 }

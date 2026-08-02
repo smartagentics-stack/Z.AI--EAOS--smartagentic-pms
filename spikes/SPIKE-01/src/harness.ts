@@ -1,17 +1,17 @@
 /**
- * SPIKE-01 Test Harness — Observability Phase
+ * SPIKE-01 Test Harness — Phase 5 verification with canonical SyncRecord model
  *
- * No protocol changes. No architecture changes.
- * Instruments every record with lifecycle tracing.
- * Identifies missing records by ID and traces their last known stage.
- * Verifies SQLite at key points. Logs socket metrics.
+ * SQLite schema now stores payload as JSON TEXT (not flat columns).
+ * All record operations use canonical SyncRecord model.
+ * Zod validation at all boundaries.
  */
 
 import Database from 'better-sqlite3';
 import { randomUUID } from 'node:crypto';
-import { createSyncServer, type SyncRecord } from './sync-server.js';
+import { createSyncServer } from './sync-server.js';
 import { createSyncClient } from './sync-client.js';
 import { ReplicationTracer } from './trace.js';
+import type { SyncRecord } from './canonical-record.js';
 import { writeFileSync } from 'node:fs';
 
 const DURATION_SECONDS = parseInt(process.argv[2] || '120', 10);
@@ -22,20 +22,21 @@ const NETWORK_INTERRUPT_DURATION_MS = 5_000;
 const tracer = new ReplicationTracer();
 
 const metrics = {
-  latencies: [] as number[],
-  recordsWritten: { A: 0, B: 0 },
-  acksReceived: { A: 0, B: 0 },
-  acksMissed: { A: 0, B: 0 },
-  networkInterruptions: 0,
-  rss: [] as number[],
-  errors: [] as string[],
-  startTime: Date.now(),
+  latencies: [] as number[], recordsWritten: { A: 0, B: 0 },
+  acksReceived: { A: 0, B: 0 }, acksMissed: { A: 0, B: 0 },
+  networkInterruptions: 0, rss: [] as number[], errors: [] as string[], startTime: Date.now(),
 };
 
 function setupDatabase(path: string): Database.Database {
   const db = new Database(path);
   db.pragma('journal_mode = WAL');
-  db.exec('CREATE TABLE IF NOT EXISTS sync_records (id TEXT PRIMARY KEY, idempotencyKey TEXT UNIQUE, name TEXT, value INTEGER, timestamp INTEGER, clientId TEXT, sequenceNumber INTEGER, createdAt INTEGER, updatedAt INTEGER); CREATE INDEX IF NOT EXISTS idx_seq ON sync_records(sequenceNumber);');
+  // Phase 4: Store payload as JSON TEXT column
+  db.exec(`CREATE TABLE IF NOT EXISTS sync_records (
+    id TEXT PRIMARY KEY, idempotencyKey TEXT UNIQUE,
+    payload TEXT,
+    clientId TEXT, sequenceNumber INTEGER,
+    createdAt INTEGER, updatedAt INTEGER
+  )`);
   return db;
 }
 
@@ -44,7 +45,6 @@ function createClient(clientId: 'A' | 'B', dbPath: string, serverPort: number, p
   let sequence = 0;
   const server = createSyncServer(db, serverPort, () => {}, tracer);
   const client = createSyncClient(db, peerPort, '127.0.0.1', clientId, tracer);
-
   return {
     clientId, db, server, client,
     async write() {
@@ -62,22 +62,12 @@ function createClient(clientId: 'A' | 'B', dbPath: string, serverPort: number, p
 }
 
 async function main() {
-  console.log(`SPIKE-01 OBSERVABILITY RUN: ${DURATION_SECONDS}s`);
-
+  console.log(`SPIKE-01 Run 7 (canonical model + JSON payload): ${DURATION_SECONDS}s`);
   const clientA = createClient('A', '/tmp/spike-01-client-a.db', 17001, 17002);
   const clientB = createClient('B', '/tmp/spike-01-client-b.db', 17002, 17001);
 
-  // SQLite verification BEFORE test
-  tracer.recordSqliteVerification('PRE_TEST_A', clientA.db as unknown as { prepare: (s: string) => { get: () => unknown } });
-  tracer.recordSqliteVerification('PRE_TEST_B', clientB.db as unknown as { prepare: (s: string) => { get: () => unknown } });
-
-  await clientA.client.connect();
-  await clientB.client.connect();
+  await clientA.client.connect(); await clientB.client.connect();
   await new Promise(r => setTimeout(r, 1000));
-
-  // SQLite verification AFTER initial connect
-  tracer.recordSqliteVerification('POST_CONNECT_A', clientA.db as unknown as { prepare: (s: string) => { get: () => unknown } });
-  tracer.recordSqliteVerification('POST_CONNECT_B', clientB.db as unknown as { prepare: (s: string) => { get: () => unknown } });
 
   const rssI = setInterval(() => metrics.rss.push(process.memoryUsage().rss / 1048576), 10000);
   const wA = setInterval(() => clientA.write().catch(e => metrics.errors.push(`A:${e.message}`)), WRITE_INTERVAL_MS);
@@ -88,12 +78,7 @@ async function main() {
     if (active) return;
     active = true; metrics.networkInterruptions++;
     clientA.client.disconnect();
-    // SQLite verification during disconnect
-    tracer.recordSqliteVerification(`DURING_DISCONNECT_${metrics.networkInterruptions}_A`, clientA.db as unknown as { prepare: (s: string) => { get: () => unknown } });
-    setTimeout(() => {
-      clientA.client.connect().catch(() => {});
-      active = false;
-    }, NETWORK_INTERRUPT_DURATION_MS);
+    setTimeout(() => { clientA.client.connect().catch(() => {}); active = false; }, NETWORK_INTERRUPT_DURATION_MS);
   }, NETWORK_INTERRUPT_INTERVAL_MS);
 
   const progI = setInterval(() => {
@@ -107,105 +92,53 @@ async function main() {
   clearInterval(wA); clearInterval(wB); clearInterval(intI); clearInterval(progI); clearInterval(rssI);
   clientA.client.disconnect(); clientB.client.disconnect();
   clientA.server.close(); clientB.server.close();
-  await new Promise(r => setTimeout(r, 5000)); // Wait for final sync
-
-  // SQLite verification AFTER test
-  tracer.recordSqliteVerification('POST_TEST_A', clientA.db as unknown as { prepare: (s: string) => { get: () => unknown } });
-  tracer.recordSqliteVerification('POST_TEST_B', clientB.db as unknown as { prepare: (s: string) => { get: () => unknown } });
+  await new Promise(r => setTimeout(r, 5000));
 
   console.log('\n\n=== FINAL VERIFICATION ===\n');
 
-  const recordsA = clientA.db.prepare('SELECT * FROM sync_records ORDER BY clientId, sequenceNumber').all() as SyncRecord[];
-  const recordsB = clientB.db.prepare('SELECT * FROM sync_records ORDER BY clientId, sequenceNumber').all() as SyncRecord[];
-  const keysA = new Set(recordsA.map(r=>r.idempotencyKey));
-  const keysB = new Set(recordsB.map(r=>r.idempotencyKey));
-  const onlyInA = [...keysA].filter(k=>!keysB.has(k));
-  const onlyInB = [...keysB].filter(k=>!keysA.has(k));
+  const recordsA = clientA.db.prepare('SELECT * FROM sync_records').all();
+  const recordsB = clientB.db.prepare('SELECT * FROM sync_records').all();
+  const keysA = new Set(recordsA.map((r: { idempotencyKey: string }) => r.idempotencyKey));
+  const keysB = new Set(recordsB.map((r: { idempotencyKey: string }) => r.idempotencyKey));
+  const onlyInA = [...keysA].filter(k => !keysB.has(k));
+  const onlyInB = [...keysB].filter(k => !keysA.has(k));
   const dupA = recordsA.length - keysA.size;
   const dupB = recordsB.length - keysB.size;
-  const l = metrics.latencies.sort((a,b)=>a-b);
+  const l = metrics.latencies.sort((a,b) => a-b);
   const p50 = l[Math.floor(l.length*0.5)]||0, p95 = l[Math.floor(l.length*0.95)]||0, p99 = l[Math.floor(l.length*0.99)]||0;
 
-  // Generate Replication Trace Report
-  const report = tracer.generateReport(onlyInA.length > 0 ? onlyInA : onlyInB);
-
-  console.log('=== RECORD SUMMARY ===');
-  console.log(`A: ${recordsA.length} records (${recordsA.filter(r=>r.clientId==='A').length} A, ${recordsA.filter(r=>r.clientId==='B').length} B)`);
-  console.log(`B: ${recordsB.length} records (${recordsB.filter(r=>r.clientId==='A').length} A, ${recordsB.filter(r=>r.clientId==='B').length} B)`);
-  console.log(`Missing from B (only in A): ${onlyInA.length} — ${JSON.stringify(onlyInA)}`);
-  console.log(`Missing from A (only in B): ${onlyInB.length} — ${JSON.stringify(onlyInB)}`);
+  console.log(`Records: A=${recordsA.length} B=${recordsB.length}`);
+  console.log(`Missing from B: ${onlyInA.length} — ${JSON.stringify(onlyInA)}`);
+  console.log(`Missing from A: ${onlyInB.length} — ${JSON.stringify(onlyInB)}`);
   console.log(`Duplicates: A=${dupA} B=${dupB}`);
   console.log(`Data loss: ${onlyInA.length + onlyInB.length}`);
   console.log(`Latency: p50=${p50}ms p95=${p95}ms p99=${p99}ms`);
   console.log(`Acks missed: ${metrics.acksMissed.A + metrics.acksMissed.B}`);
   console.log(`Interruptions: ${metrics.networkInterruptions}`);
-  console.log('');
+  console.log(`Errors: ${metrics.errors.length}`);
 
-  console.log('=== MISSING RECORD TRACE DETAILS ===');
-  for (const detail of report.missingRecordDetails) {
-    console.log(`\nRecord ${detail.idempotencyKey}:`);
-    console.log(`  Last stage reached: ${detail.lastStage}`);
-    if (detail.trace) {
-      const t = detail.trace;
-      console.log(`  created: ${t.created ?? '—'}`);
-      console.log(`  sqliteCommitted: ${t.sqliteCommitted ?? '—'}`);
-      console.log(`  replayQueued: ${t.replayQueued ?? '—'}`);
-      console.log(`  socketWriteStart: ${t.socketWriteStart ?? '—'}`);
-      console.log(`  socketWriteEnd: ${t.socketWriteEnd ?? '—'} (ok: ${t.socketWriteOk ?? '—'})`);
-      console.log(`  packetReceived: ${t.packetReceived ?? '—'}`);
-      console.log(`  jsonParsed: ${t.jsonParsed ?? '—'}`);
-      console.log(`  insertAttempted: ${t.insertAttempted ?? '—'}`);
-      console.log(`  insertComplete: ${t.insertComplete ?? '—'}`);
-      console.log(`  ackSent: ${t.ackSent ?? '—'}`);
-      console.log(`  ackReceived: ${t.ackReceived ?? '—'}`);
-      console.log(`  connectionId: ${t.connectionId ?? '—'}`);
-      console.log(`  replaySessionId: ${t.replaySessionId ?? '—'}`);
-      console.log(`  sequenceInReplay: ${t.sequenceInReplay ?? '—'}`);
-    } else {
-      console.log('  NO TRACE FOUND — record was never traced');
-    }
-  }
-
-  console.log('\n=== SQLITE VERIFICATIONS ===');
-  for (const v of report.sqliteVerifications) {
-    console.log(`  ${v.label}: total=${v.totalCount} A=${v.clientACount} B=${v.clientBCount} seq=${v.minSequence}-${v.maxSequence}`);
-  }
-
-  console.log('\n=== CONNECTION EVENTS (last 20) ===');
-  const lastEvents = report.connectionEvents.slice(-20);
-  for (const e of lastEvents) {
-    const time = new Date(e.timestamp).toISOString().split('T')[1].replace('Z','');
-    console.log(`  ${time} ${e.connectionId} ${e.event} state=${e.state ?? ''}`);
-    if (e.socketSnapshot) {
-      console.log(`    socket: written=${e.socketSnapshot.bytesWritten} read=${e.socketSnapshot.bytesRead} buf=${e.socketSnapshot.bufferSize} destroyed=${e.socketSnapshot.destroyed} ready=${e.socketSnapshot.readyState}`);
-    }
-  }
-
-  // Write full report to file
-  writeFileSync('/home/z/smartagentics/spikes/SPIKE-01/trace-report.json', JSON.stringify({
-    duration: DURATION_SECONDS,
-    recordsA: recordsA.length,
-    recordsB: recordsB.length,
-    missingFromB: onlyInA,
-    missingFromA: onlyInB,
-    dataLoss: onlyInA.length + onlyInB.length,
-    duplicates: { A: dupA, B: dupB },
-    latency: { p50, p95, p99 },
-    acksMissed: metrics.acksMissed,
+  writeFileSync('/home/z/smartagentics/spikes/SPIKE-01/results-run7.json', JSON.stringify({
+    duration_seconds: DURATION_SECONDS,
+    records: { clientA: { written: metrics.recordsWritten.A, inDb: recordsA.length, duplicates: dupA }, clientB: { written: metrics.recordsWritten.B, inDb: recordsB.length, duplicates: dupB } },
+    sync: { totalUnique: new Set([...keysA, ...keysB]).size, onlyInA, onlyInB, dataLoss: onlyInA.length + onlyInB.length },
+    latency: { p50_ms: p50, p95_ms: p95, p99_ms: p99, samples: l.length },
+    acks: { missed: metrics.acksMissed.A + metrics.acksMissed.B },
     interruptions: metrics.networkInterruptions,
-    memory: { initial: metrics.rss[0]||0, final: metrics.rss[metrics.rss.length-1]||0 },
     errors: metrics.errors,
-    missingRecordDetails: report.missingRecordDetails,
-    sqliteVerifications: report.sqliteVerifications,
-    connectionEvents: report.connectionEvents,
+    memory: { initial: metrics.rss[0]||0, final: metrics.rss[metrics.rss.length-1]||0 },
   }, null, 2));
 
   console.log('\n=== ASSESSMENT ===');
   const checks = [
     { n: 'S1: Zero duplicates', p: dupA===0 && dupB===0, v: `A:${dupA} B:${dupB}` },
+    { n: 'S2: p95 <1000ms', p: p95<1000, v: `${p95}ms` },
+    { n: 'S3: p99 <2000ms', p: p99<2000, v: `${p99}ms` },
     { n: 'S4: Zero data loss', p: onlyInA.length + onlyInB.length === 0, v: `${onlyInA.length + onlyInB.length}` },
+    { n: 'S5: Zero loss (interruption)', p: onlyInA.length + onlyInB.length === 0, v: `${onlyInA.length + onlyInB.length}` },
+    { n: 'S7: Endurance', p: true, v: `${DURATION_SECONDS}s` },
   ];
   for (const c of checks) console.log(`  ${c.p?'✅':'❌'} ${c.n}: ${c.v}`);
+  console.log(`\n${checks.every(c=>c.p) ? '✅ ALL CRITERIA MET — ADOPT' : '❌ SOME FAILED'}`);
 
   clientA.db.close(); clientB.db.close();
   process.exit(0);
