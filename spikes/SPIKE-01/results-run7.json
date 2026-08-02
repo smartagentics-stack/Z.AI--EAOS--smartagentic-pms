@@ -1,36 +1,36 @@
 {
-  "duration_seconds": 300,
+  "duration_seconds": 3600,
   "records": {
     "clientA": {
-      "written": 49,
-      "inDb": 98,
+      "written": 599,
+      "inDb": 1198,
       "duplicates": 0
     },
     "clientB": {
-      "written": 49,
-      "inDb": 98,
+      "written": 599,
+      "inDb": 1198,
       "duplicates": 0
     }
   },
   "sync": {
-    "totalUnique": 98,
+    "totalUnique": 1198,
     "onlyInA": [],
     "onlyInB": [],
     "dataLoss": 0
   },
   "latency": {
-    "p50_ms": 1,
+    "p50_ms": 0,
     "p95_ms": 1,
     "p99_ms": 1,
-    "samples": 94
+    "samples": 1139
   },
   "acks": {
-    "missed": 4
+    "missed": 59
   },
-  "interruptions": 14,
+  "interruptions": 179,
   "errors": [],
   "memory": {
-    "initial": 74.609375,
-    "final": 75.9296875
+    "initial": 86.50390625,
+    "final": 104.9296875
   }
 }

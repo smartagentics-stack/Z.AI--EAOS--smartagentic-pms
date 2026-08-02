@@ -1,0 +1,17 @@
+{
+  "duration_seconds": 3600,
+  "records": {
+    "clientA": { "written": 599, "inDb": 1198, "duplicates": 0 },
+    "clientB": { "written": 599, "inDb": 1198, "duplicates": 0 }
+  },
+  "sync": {
+    "totalUnique": 1198,
+    "onlyInA": [],
+    "onlyInB": [],
+    "dataLoss": 0
+  },
+  "latency": { "p50_ms": 0, "p95_ms": 1, "p99_ms": 1, "samples": 1139 },
+  "acks": { "missed": 59 },
+  "interruptions": 179,
+  "errors": []
+}
