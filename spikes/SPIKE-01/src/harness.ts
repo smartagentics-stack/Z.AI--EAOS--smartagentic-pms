@@ -203,7 +203,7 @@ async function main() {
   console.log('\n=== ASSESSMENT ===');
   const checks = [
     { n: 'S1: Zero duplicates', p: dupA===0 && dupB===0, v: `A:${dupA} B:${dupB}` },
-    { n: 'S4: Zero data loss', p: onlyA.length + onlyB.length === 0, v: `${onlyA.length + onlyB.length}` },
+    { n: 'S4: Zero data loss', p: onlyInA.length + onlyInB.length === 0, v: `${onlyInA.length + onlyInB.length}` },
   ];
   for (const c of checks) console.log(`  ${c.p?'✅':'❌'} ${c.n}: ${c.v}`);
 

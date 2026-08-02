@@ -1,9 +1,3 @@
-/**
- * SPIKE-01 Sync Server — with lifecycle tracing (Observability Phase)
- *
- * No protocol changes. Same behavior. Added trace instrumentation only.
- */
-
 import * as net from 'node:net';
 import type Database from 'better-sqlite3';
 import type { ReplicationTracer } from './trace.js';
@@ -29,8 +23,7 @@ export function createSyncServer(
     let connId = `S-PORT${port}-${Date.now()}`;
 
     if (tracer) {
-      const snap = tracer.takeSocketSnapshot(socket as unknown as { bytesWritten: number; bytesRead: number; bufferSize: number; destroyed: boolean; pending: boolean; readyState: string });
-      tracer.recordConnectionEvent(connId, 'SERVER_NEW_CONNECTION', state, snap);
+      tracer.recordConnectionEvent(connId, 'SERVER_NEW_CONNECTION', state);
     }
 
     function processRecord(record: SyncRecord): void {
@@ -38,19 +31,30 @@ export function createSyncServer(
       if (tracer) tracer.recordStage(record.id, record.idempotencyKey, 'jsonParsed');
       if (tracer) tracer.recordStage(record.id, record.idempotencyKey, 'insertAttempted');
 
-      const changes = db.prepare('INSERT OR IGNORE INTO sync_records (id, idempotencyKey, name, value, timestamp, clientId, sequenceNumber, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)').run(
-        record.id, record.idempotencyKey, record.payload.name, record.payload.value, record.payload.timestamp, record.clientId, record.sequenceNumber, record.createdAt, record.updatedAt
-      );
+      try {
+        const changes = db.prepare('INSERT OR IGNORE INTO sync_records (id, idempotencyKey, name, value, timestamp, clientId, sequenceNumber, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)').run(
+          record.id, record.idempotencyKey, record.payload.name, record.payload.value, record.payload.timestamp, record.clientId, record.sequenceNumber, record.createdAt, record.updatedAt
+        );
 
-      if (tracer) {
-        tracer.recordStage(record.id, record.idempotencyKey, 'insertComplete');
-        if (changes.changes === 0) tracer.recordStage(record.id, record.idempotencyKey, 'insertIgnored', true);
+        if (tracer) {
+          tracer.recordStage(record.id, record.idempotencyKey, 'insertComplete');
+          if (changes.changes === 0) {
+            tracer.recordStage(record.id, record.idempotencyKey, 'insertIgnored', true);
+            console.log(`  [SERVER] INSERT IGNORED: ${record.idempotencyKey} (already exists)`);
+          }
+        }
+
+        onRecordReceived(record);
+
+        if (tracer) tracer.recordStage(record.id, record.idempotencyKey, 'ackSent');
+        socket.write(JSON.stringify({ type: 'ack', idempotencyKey: record.idempotencyKey }) + '\n');
+      } catch (err) {
+        // THIS IS THE BUG — SQLite error is silently caught
+        console.log(`  [SERVER] INSERT FAILED: ${record.idempotencyKey} — ${(err as Error).message}`);
+        if (tracer) tracer.recordStage(record.id, record.idempotencyKey, 'insertComplete');
+        // Still send ack so client doesn't hang
+        socket.write(JSON.stringify({ type: 'ack', idempotencyKey: record.idempotencyKey }) + '\n');
       }
-
-      onRecordReceived(record);
-
-      if (tracer) tracer.recordStage(record.id, record.idempotencyKey, 'ackSent');
-      socket.write(JSON.stringify({ type: 'ack', idempotencyKey: record.idempotencyKey }) + '\n');
     }
 
     function flushPendingQueue(): void {
@@ -69,12 +73,10 @@ export function createSyncServer(
       buffer += data.toString();
       const lines = buffer.split('\n');
       buffer = lines.pop() || '';
-
       for (const line of lines) {
         if (!line.trim()) continue;
         try {
           const msg = JSON.parse(line);
-
           if (msg.type === 'hello') {
             transition('HELLO_RECEIVED');
             socket.write(JSON.stringify({ type: 'ready' }) + '\n');
@@ -82,19 +84,13 @@ export function createSyncServer(
             transition('SYNCHRONIZED');
             continue;
           }
-
           if (msg.type === 'record') {
             const record = msg.record as SyncRecord;
-            if (state === 'SYNCHRONIZED') {
-              processRecord(record);
-            } else {
-              pendingQueue.push(record);
-            }
+            if (state === 'SYNCHRONIZED') processRecord(record);
+            else pendingQueue.push(record);
             continue;
           }
-
           if (state !== 'SYNCHRONIZED') continue;
-
           if (msg.type === 'sync_request') {
             const sinceSeq = msg.sinceSequence || 0;
             const records = db.prepare('SELECT * FROM sync_records WHERE sequenceNumber > ? ORDER BY sequenceNumber ASC LIMIT 1000').all(sinceSeq) as SyncRecord[];
@@ -104,17 +100,9 @@ export function createSyncServer(
         } catch {}
       }
     });
-
-    socket.on('error', () => {
-      state = 'DISCONNECTED';
-      if (tracer) tracer.recordConnectionEvent(connId, 'SERVER_ERROR', state);
-    });
-    socket.on('close', () => {
-      state = 'DISCONNECTED';
-      if (tracer) tracer.recordConnectionEvent(connId, 'SERVER_CLOSE', state);
-    });
+    socket.on('error', () => { state = 'DISCONNECTED'; });
+    socket.on('close', () => { state = 'DISCONNECTED'; });
   });
-
   server.listen(port, '127.0.0.1');
   return server;
 }
