@@ -1,37 +1,36 @@
 {
-  "duration_seconds": 120,
+  "duration_seconds": 60,
   "records": {
     "clientA": {
-      "written": 19,
-      "inDb": 38,
+      "written": 9,
+      "inDb": 18,
       "duplicates": 0
     },
     "clientB": {
-      "written": 19,
-      "inDb": 37,
+      "written": 9,
+      "inDb": 18,
       "duplicates": 0
     }
   },
   "sync": {
-    "totalUnique": 38,
-    "onlyInA": 1,
-    "onlyInB": 0,
-    "dataLoss": 1
+    "totalUnique": 18,
+    "onlyInA": [],
+    "onlyInB": [],
+    "dataLoss": 0
   },
   "latency": {
-    "p50_ms": 0,
+    "p50_ms": 1,
     "p95_ms": 1,
     "p99_ms": 1,
-    "samples": 37
+    "samples": 18
   },
   "acks": {
-    "received": 37,
-    "missed": 1
+    "missed": 0
   },
-  "networkInterruptions": 5,
+  "interruptions": 2,
   "errors": [],
   "memory": {
-    "initialRssMB": 83.76171875,
-    "finalRssMB": 85.25
+    "initial": 85.5,
+    "final": 86.12109375
   }
 }

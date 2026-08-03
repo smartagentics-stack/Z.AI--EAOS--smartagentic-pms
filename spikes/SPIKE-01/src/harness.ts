@@ -117,7 +117,7 @@ async function main() {
   console.log(`Interruptions: ${metrics.networkInterruptions}`);
   console.log(`Errors: ${metrics.errors.length}`);
 
-  writeFileSync('/home/z/smartagentics/spikes/SPIKE-01/results-run7.json', JSON.stringify({
+  writeFileSync(`${import.meta.dirname}/../results.json`, JSON.stringify({
     duration_seconds: DURATION_SECONDS,
     records: { clientA: { written: metrics.recordsWritten.A, inDb: recordsA.length, duplicates: dupA }, clientB: { written: metrics.recordsWritten.B, inDb: recordsB.length, duplicates: dupB } },
     sync: { totalUnique: new Set([...keysA, ...keysB]).size, onlyInA, onlyInB, dataLoss: onlyInA.length + onlyInB.length },
