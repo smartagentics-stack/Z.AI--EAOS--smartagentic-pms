@@ -15,7 +15,6 @@
 
 import { resolve } from 'node:path';
 import { runAllVerifiers, ALL_VERIFIERS } from './index.js';
-import { generateReports } from './reports/report-generator.js';
 import type { Verifier, VerificationContext } from './types/index.js';
 
 const repoRoot = resolve(process.cwd());
@@ -25,13 +24,14 @@ const ctx: VerificationContext = {
 };
 
 const VERIFIER_MAP: Record<string, Verifier> = {
-  governance: ALL_VERIFIERS.find(v => v.name === 'governance-compliance')!,
-  adr: ALL_VERIFIERS.find(v => v.name === 'adr-compliance')!,
-  evidence: ALL_VERIFIERS.find(v => v.name === 'evidence-completeness')!,
-  architecture: ALL_VERIFIERS.find(v => v.name === 'architecture-drift')!,
-  serialization: ALL_VERIFIERS.find(v => v.name === 'serialization-consistency')!,
-  forbidden: ALL_VERIFIERS.find(v => v.name === 'forbidden-code')!,
-  dependencies: ALL_VERIFIERS.find(v => v.name === 'dependency-audit')!,
+  governance: ALL_VERIFIERS.find((v) => v.name === 'governance-compliance')!,
+  adr: ALL_VERIFIERS.find((v) => v.name === 'adr-compliance')!,
+  evidence: ALL_VERIFIERS.find((v) => v.name === 'evidence-completeness')!,
+  architecture: ALL_VERIFIERS.find((v) => v.name === 'architecture-drift')!,
+  serialization: ALL_VERIFIERS.find((v) => v.name === 'serialization-consistency')!,
+  forbidden: ALL_VERIFIERS.find((v) => v.name === 'forbidden-code')!,
+  dependencies: ALL_VERIFIERS.find((v) => v.name === 'dependency-audit')!,
+  traceability: ALL_VERIFIERS.find((v) => v.name === 'traceability-compliance')!,
 };
 
 async function main() {
@@ -69,9 +69,9 @@ async function main() {
     printResult(result);
   }
 
-  const passCount = results.filter(r => r.status === 'PASS').length;
-  const failCount = results.filter(r => r.status === 'FAIL').length;
-  const warnCount = results.filter(r => r.status === 'WARN').length;
+  const passCount = results.filter((r) => r.status === 'PASS').length;
+  const failCount = results.filter((r) => r.status === 'FAIL').length;
+  const warnCount = results.filter((r) => r.status === 'WARN').length;
 
   console.log('');
   console.log('═══════════════════════════════════════════════════════');
@@ -89,8 +89,20 @@ async function main() {
   }
 }
 
-function printResult(result: { name: string; status: string; message: string; evidence?: string[] }) {
-  const icon = result.status === 'PASS' ? '✅' : result.status === 'FAIL' ? '❌' : result.status === 'WARN' ? '⚠️' : '⏭️';
+function printResult(result: {
+  name: string;
+  status: string;
+  message: string;
+  evidence?: string[];
+}) {
+  const icon =
+    result.status === 'PASS'
+      ? '✅'
+      : result.status === 'FAIL'
+        ? '❌'
+        : result.status === 'WARN'
+          ? '⚠️'
+          : '⏭️';
   console.log(`${icon} ${result.name}: ${result.message}`);
   if (result.evidence) {
     for (const e of result.evidence) {
@@ -99,7 +111,7 @@ function printResult(result: { name: string; status: string; message: string; ev
   }
 }
 
-main().catch(err => {
+main().catch((err) => {
   console.error('FATAL:', err);
   process.exit(1);
 });

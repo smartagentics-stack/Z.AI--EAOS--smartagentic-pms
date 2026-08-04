@@ -5,7 +5,7 @@
  */
 
 import { resolve } from 'node:path';
-import type { Verifier, VerificationResult, VerificationContext, ReportSummary } from './types/index.js';
+import type { Verifier, VerificationResult, VerificationContext } from './types/index.js';
 import { adrVerifier } from './verifiers/adr-verifier.js';
 import { governanceVerifier } from './verifiers/governance-verifier.js';
 import { evidenceVerifier } from './verifiers/evidence-verifier.js';
@@ -13,11 +13,20 @@ import { architectureDriftVerifier } from './verifiers/architecture-drift-verifi
 import { serializationVerifier } from './verifiers/serialization-verifier.js';
 import { forbiddenCodeVerifier } from './verifiers/forbidden-code-verifier.js';
 import { dependencyVerifier } from './verifiers/dependency-verifier.js';
+import { traceabilityVerifier } from './verifiers/traceability-verifier.js';
 import { generateReports } from './reports/report-generator.js';
 
-export { adrVerifier, governanceVerifier, evidenceVerifier, architectureDriftVerifier, serializationVerifier, forbiddenCodeVerifier, dependencyVerifier };
+export {
+  adrVerifier,
+  governanceVerifier,
+  evidenceVerifier,
+  architectureDriftVerifier,
+  serializationVerifier,
+  forbiddenCodeVerifier,
+  dependencyVerifier,
+  traceabilityVerifier,
+};
 export { generateReports };
-
 
 export const ALL_VERIFIERS: Verifier[] = [
   governanceVerifier,
@@ -27,6 +36,7 @@ export const ALL_VERIFIERS: Verifier[] = [
   serializationVerifier,
   forbiddenCodeVerifier,
   dependencyVerifier,
+  traceabilityVerifier,
 ];
 
 export async function runAllVerifiers(repoRoot: string): Promise<VerificationResult[]> {
