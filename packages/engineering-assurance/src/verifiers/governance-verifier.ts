@@ -35,6 +35,8 @@ const REQUIRED_DOCS = [
   'docs/governance/24-Engineering-Assurance-Framework-v2.md',
   'docs/governance/25-Rule-36-Governance-Automation.md',
   'docs/governance/26-Rule-38-Executable-Evidence.md',
+  'docs/governance/27-Rules-39-43-Traceability-Executable-Recommendations-Prompt-Discipline-Classification.md',
+  'docs/governance/28-Rules-44-48-Code-First-Working-Code-Verifiable-Samples-Executable-Proof-Diff-Evidence.md',
 ];
 
 // Rule 43: every rule document must declare its Enforcement Type.
@@ -45,9 +47,9 @@ const ENFORCEMENT_TYPE_PATTERN =
 
 // Files that match this pattern are subject to Rule 43 classification check.
 // Includes docs 18 (Rules 1-18), 21 (Rule 18), 22 (Rules 19-21), 23 (Rules 24-30),
-// 24 (Rules 31-35), 25 (Rule 36), 26 (Rule 38), 27 (Rules 39-43).
+// 24 (Rules 31-35), 25 (Rule 36), 26 (Rule 38), 27 (Rules 39-43), 28 (Rules 44-48).
 const RULE_DOC_PATTERN =
-  /^docs\/governance\/(\d+-Rule|27-Rules|21-Independent|22-Independent|23-Engineering|24-Engineering|25-Rule|26-Rule|18-Senior)/;
+  /^docs\/governance\/(\d+-Rule|27-Rules|28-Rules|21-Independent|22-Independent|23-Engineering|24-Engineering|25-Rule|26-Rule|18-Senior)/;
 
 interface RuleDocCheck {
   readonly doc: string;

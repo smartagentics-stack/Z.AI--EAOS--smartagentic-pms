@@ -23,20 +23,32 @@
 import { execSync } from 'node:child_process';
 import type { Verifier, VerificationResult, VerificationContext } from '../types/index.js';
 
+// Rule 47: Expanded required sections (11 total — superset of Rule 39's 6)
 const REQUIRED_SECTIONS: { name: string; pattern: RegExp }[] = [
   { name: 'Task', pattern: /^Task:\s*.+/m },
   { name: 'Files Modified', pattern: /^Files Modified:\s*\n(\s*-\s*.+\n?)+/m },
   { name: 'Functions Modified', pattern: /^Functions Modified:\s*\n(\s*-\s*.+\n?)+/m },
   { name: 'Commit', pattern: /^Commit:\s*[0-9a-f]{7,40}/m },
+  { name: 'Git Diff', pattern: /^Git Diff:|Git diff:|diff --git/m },
   { name: 'Verification Command', pattern: /^Verification:\s*\n\s*Command:\s*.+/m },
   // Allow indented "Expected:" (common in nested verification blocks)
   { name: 'Expected', pattern: /^\s*Expected:\s*.+/m },
+  { name: 'Raw Output', pattern: /^Raw Output:|Raw output:/im },
+  { name: 'Failure Output', pattern: /^Failure Output:|Failure Mode:|Failure:/im },
+  { name: 'Reproduction', pattern: /^Reproduction:/m },
+  { name: 'Tests', pattern: /^Tests:|Tests Added:/m },
 ];
 
+// Rule 48: Engineering Diff Evidence — commit message must contain a diff block
+// (lines starting with + or - within a triple-backtick code block)
+const DIFF_BLOCK_PATTERN = /```diff[\s\S]*?```|```[\s\S]*?^[+-][^\n]*[\s\S]*?```/m;
+
 const SOURCE_FILE_PATTERN = /\.(ts|tsx|js|jsx|py|go|rs|java)$/;
-// Adoption date: when the traceability-verifier was first committed (Commit 2, 4588a7b).
-// Rule 39 was not enforceable until the verifier existed.
-const ADOPTION_DATE = '2026-08-04 06:48:42 UTC';
+// Adoption date: when Rule 47 (expanded sections) was adopted.
+// Only commits after this date need the 11 required sections.
+// Previous commits (702aefb through 43e074d) are exempt — they comply with
+// the original Rule 39 (6 sections) which was the standard at their time.
+const ADOPTION_DATE = '2026-08-04 16:50:00 UTC';
 
 interface CommitInfo {
   hash: string;
@@ -94,7 +106,7 @@ function loadRecentCommits(repoRoot: string): CommitInfo[] {
 
 export const traceabilityVerifier: Verifier = {
   name: 'traceability-compliance',
-  description: 'Verifies recent commits include Engineering Traceability Block (Rule 39)',
+  description: 'Verifies recent commits include Engineering Traceability Block (Rules 39, 47, 48)',
 
   async verify(ctx: VerificationContext): Promise<VerificationResult> {
     const evidence: string[] = [];
@@ -123,9 +135,15 @@ export const traceabilityVerifier: Verifier = {
         }
       }
 
+      // Rule 48: Check for diff block evidence
+      const hasDiffBlock = DIFF_BLOCK_PATTERN.test(commit.message);
+      if (!hasDiffBlock) {
+        missing.push('Diff Block (Rule 48)');
+      }
+
       if (missing.length > 0) {
         issues.push(
-          `${commit.shortHash}: missing traceability sections: ${missing.join(', ')} (Rule 39)`,
+          `${commit.shortHash}: missing traceability sections: ${missing.join(', ')} (Rules 39, 47, 48)`,
         );
         evidence.push(
           `${commit.shortHash}: ❌ missing ${missing.length} section(s) — ${missing.join(', ')}`,

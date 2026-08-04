@@ -32,6 +32,8 @@ const RULE_DOCS_WITH_CLASSIFICATION = [
   '24-Engineering-Assurance-Framework-v2.md',
   '25-Rule-36-Governance-Automation.md',
   '26-Rule-38-Executable-Evidence.md',
+  '27-Rules-39-43-Traceability-Executable-Recommendations-Prompt-Discipline-Classification.md',
+  '28-Rules-44-48-Code-First-Working-Code-Verifiable-Samples-Executable-Proof-Diff-Evidence.md',
 ];
 
 const REQUIRED_DOCS = [
@@ -46,6 +48,8 @@ const REQUIRED_DOCS = [
   '24-Engineering-Assurance-Framework-v2.md',
   '25-Rule-36-Governance-Automation.md',
   '26-Rule-38-Executable-Evidence.md',
+  '27-Rules-39-43-Traceability-Executable-Recommendations-Prompt-Discipline-Classification.md',
+  '28-Rules-44-48-Code-First-Working-Code-Verifiable-Samples-Executable-Proof-Diff-Evidence.md',
 ];
 
 describe('governanceVerifier — Rule 43 enforcement', () => {
@@ -93,7 +97,7 @@ describe('governanceVerifier — Rule 43 enforcement', () => {
     });
 
     expect(result.status).toBe('PASS');
-    expect(result.message).toMatch(/All 11 governance documents present/);
+    expect(result.message).toMatch(/All 13 governance documents present/);
     expect(result.message).toMatch(/Rule 43 compliant/);
     expect(result.evidence).toContain('✅ docs/governance/RULES.md');
   });

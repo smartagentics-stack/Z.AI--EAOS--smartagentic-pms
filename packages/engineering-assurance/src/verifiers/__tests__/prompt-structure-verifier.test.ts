@@ -3,7 +3,7 @@
  *
  * Tests:
  *  1. FAILS when prompt file is missing required sections (falsification)
- *  2. PASSES when prompt file has all 10 sections
+ *  2. PASSES when prompt file has all 15 sections
  *  3. PASSES when no implementation prompts exist (Rule 42 not applicable)
  *  4. Ignores non-prompt markdown files
  *
@@ -18,17 +18,22 @@ import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { execSync } from 'node:child_process';
 
-const ALL_10_SECTIONS = [
-  '## Problem',
-  '## Root Cause',
-  '## Evidence',
+const ALL_15_SECTIONS = [
+  '## Problem Definition',
+  '## Root Cause Analysis',
   '## Constraints',
-  '## Architecture',
-  '## Implementation',
-  '## Verification',
-  '## Regression',
-  '## Falsification',
+  '## Architecture Impact',
+  '## Files to Modify',
+  '## Functions to Modify',
+  '## Production Code',
+  '## Unit Tests',
+  '## Integration Tests',
+  '## Verification Commands',
   '## Expected Output',
+  '## Failure Output',
+  '## Rollback Procedure',
+  '## Engineering Traceability Block',
+  '## Evidence Required Before Completion',
 ]
   .map((s) => `${s}\n\nContent.\n`)
   .join('\n');
@@ -65,18 +70,22 @@ describe('promptStructureVerifier — Rule 42 enforcement', () => {
     expect(result.status).toBe('FAIL');
     expect(result.message).toMatch(/prompt\(s\) fail Rule 42 structure check/);
     expect(JSON.stringify(result.details)).toMatch(/missing sections/);
-    // Confirm the 8 missing sections are correctly identified
-    expect(JSON.stringify(result.details)).toMatch(/Root Cause/);
-    expect(JSON.stringify(result.details)).toMatch(/Evidence/);
+    // Confirm the 13 missing sections are correctly identified (prompt only has Problem + Implementation)
+    expect(JSON.stringify(result.details)).toMatch(/Root Cause Analysis/);
     expect(JSON.stringify(result.details)).toMatch(/Constraints/);
-    expect(JSON.stringify(result.details)).toMatch(/Architecture/);
-    expect(JSON.stringify(result.details)).toMatch(/Verification/);
-    expect(JSON.stringify(result.details)).toMatch(/Regression/);
-    expect(JSON.stringify(result.details)).toMatch(/Falsification/);
+    expect(JSON.stringify(result.details)).toMatch(/Architecture Impact/);
+    expect(JSON.stringify(result.details)).toMatch(/Files to Modify/);
+    expect(JSON.stringify(result.details)).toMatch(/Functions to Modify/);
+    expect(JSON.stringify(result.details)).toMatch(/Unit Tests/);
+    expect(JSON.stringify(result.details)).toMatch(/Verification Commands/);
     expect(JSON.stringify(result.details)).toMatch(/Expected Output/);
+    expect(JSON.stringify(result.details)).toMatch(/Failure Output/);
+    expect(JSON.stringify(result.details)).toMatch(/Rollback Procedure/);
+    expect(JSON.stringify(result.details)).toMatch(/Engineering Traceability Block/);
+    expect(JSON.stringify(result.details)).toMatch(/Evidence Required Before Completion/);
   });
 
-  it('PASSES when prompt file has all 10 sections', async () => {
+  it('PASSES when prompt file has all 15 sections', async () => {
     // Reset repo to remove the bad prompt
     rmSync(tmpRepo, { recursive: true, force: true });
     mkdirSync(join(tmpRepo, 'docs', 'prompts'), { recursive: true });
@@ -86,7 +95,7 @@ describe('promptStructureVerifier — Rule 42 enforcement', () => {
 
     writeFileSync(
       join(tmpRepo, 'docs', 'prompts', 'GOOD.PROMPT.md'),
-      `# Good Prompt\n\n${ALL_10_SECTIONS}\n`,
+      `# Good Prompt\n\n${ALL_15_SECTIONS}\n`,
     );
     execSync('git add .', { cwd: tmpRepo, stdio: 'pipe' });
     execSync('git commit -m "add good prompt"', { cwd: tmpRepo, stdio: 'pipe' });
@@ -97,7 +106,7 @@ describe('promptStructureVerifier — Rule 42 enforcement', () => {
     });
 
     expect(result.status).toBe('PASS');
-    expect(result.message).toMatch(/all contain 10 mandatory sections/);
+    expect(result.message).toMatch(/all contain 15 mandatory sections/);
   });
 
   it('PASSES when no implementation prompts exist (Rule 42 not applicable)', async () => {
@@ -171,7 +180,7 @@ describe('promptStructureVerifier — Rule 42 enforcement', () => {
       evidenceDir: join(tmpRepo, 'evidence'),
     });
 
-    // Should FAIL because the file is detected as a prompt but only has 1 of 10 sections
+    // Should FAIL because the file is detected as a prompt but only has 1 of 15 sections
     expect(result.status).toBe('FAIL');
     expect(JSON.stringify(result.details)).toMatch(/directive\.md/);
     expect(JSON.stringify(result.details)).toMatch(/missing sections/);

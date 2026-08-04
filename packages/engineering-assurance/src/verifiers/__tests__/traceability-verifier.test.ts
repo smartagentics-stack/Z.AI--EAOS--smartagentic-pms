@@ -26,9 +26,19 @@ Files Modified:
 Functions Modified:
 - bar() — new export
 Commit: 0000000
+Git Diff: see diff block below
 Verification:
   Command: pnpm test
 Expected: PASS
+Raw Output: 1 test passed
+Failure Output: TypeError: bar is not a function
+Reproduction: git clone <repo> && pnpm test
+Tests: traceability-verifier.test.ts
+
+\`\`\`diff
+-export const old = 1;
++export const bar = 2;
+\`\`\`
 `;
 
 const INCOMPLETE_COMMIT_MESSAGE = `Add foo

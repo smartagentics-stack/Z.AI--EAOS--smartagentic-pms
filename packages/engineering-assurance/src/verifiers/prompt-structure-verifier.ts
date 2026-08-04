@@ -2,7 +2,7 @@
  * Verifier: Prompt Structure (Rule 42)
  *
  * Validates that implementation prompts stored as .md files in the
- * repository contain the 10 mandatory sections defined by Rule 42:
+ * repository contain the 15 mandatory sections defined by Rule 42:
  *   Problem, Root Cause, Evidence, Constraints, Architecture,
  *   Implementation, Verification, Regression, Falsification, Expected Output
  *
@@ -15,7 +15,7 @@
  * Verification Method: pnpm verify:prompt
  * Responsible Verifier: this file
  * Regression Test: __tests__/prompt-structure-verifier.test.ts
- * Falsification Criteria: a prompt file missing any of the 10 mandatory
+ * Falsification Criteria: a prompt file missing any of the 15 mandatory
  *   sections causes this verifier to return FAIL.
  */
 
@@ -28,23 +28,48 @@ interface SectionSpec {
   readonly patterns: RegExp[];
 }
 
-// All 10 mandatory sections per Rule 42
+// All 15 mandatory sections per strengthened Rule 42
+// Sections MUST appear in this order (Rule 44 — Code First, Explanation Second)
 const REQUIRED_SECTIONS: SectionSpec[] = [
-  { name: 'Problem', patterns: [/^##\s*Problem\b/im] },
+  { name: 'Problem Definition', patterns: [/^##\s*Problem Definition\b/im, /^##\s*Problem\b/im] },
   {
-    name: 'Root Cause',
-    patterns: [/^##\s*Root Cause\b/im, /^##\s*Root Cause or Unknown\b/im],
+    name: 'Root Cause Analysis',
+    patterns: [
+      /^##\s*Root Cause Analysis\b/im,
+      /^##\s*Root Cause\b/im,
+      /^##\s*Root Cause or Unknown\b/im,
+    ],
   },
-  { name: 'Evidence', patterns: [/^##\s*Evidence\b/im] },
   { name: 'Constraints', patterns: [/^##\s*Constraints\b/im] },
-  { name: 'Architecture', patterns: [/^##\s*Architecture\b/im] },
-  { name: 'Implementation', patterns: [/^##\s*Implementation\b/im] },
-  { name: 'Verification', patterns: [/^##\s*Verification\b/im] },
-  { name: 'Regression', patterns: [/^##\s*Regression\b/im] },
-  { name: 'Falsification', patterns: [/^##\s*Falsification\b/im] },
   {
-    name: 'Expected Output',
-    patterns: [/^##\s*Expected Output\b/im, /^##\s*Expected\b/im],
+    name: 'Architecture Impact',
+    patterns: [/^##\s*Architecture Impact\b/im, /^##\s*Architecture\b/im],
+  },
+  { name: 'Files to Modify', patterns: [/^##\s*Files to Modify\b/im, /^##\s*Files Modified\b/im] },
+  {
+    name: 'Functions to Modify',
+    patterns: [/^##\s*Functions to Modify\b/im, /^##\s*Functions Modified\b/im],
+  },
+  {
+    name: 'Production Code',
+    patterns: [/^##\s*Production Code\b/im, /^##\s*Implementation\b/im, /^##\s*Code\b/im],
+  },
+  { name: 'Unit Tests', patterns: [/^##\s*Unit Tests\b/im, /^##\s*Tests\b/im] },
+  { name: 'Integration Tests', patterns: [/^##\s*Integration Tests\b/im] },
+  {
+    name: 'Verification Commands',
+    patterns: [/^##\s*Verification Commands\b/im, /^##\s*Verification\b/im],
+  },
+  { name: 'Expected Output', patterns: [/^##\s*Expected Output\b/im, /^##\s*Expected\b/im] },
+  { name: 'Failure Output', patterns: [/^##\s*Failure Output\b/im, /^##\s*Failure\b/im] },
+  { name: 'Rollback Procedure', patterns: [/^##\s*Rollback Procedure\b/im, /^##\s*Rollback\b/im] },
+  {
+    name: 'Engineering Traceability Block',
+    patterns: [/^##\s*Engineering Traceability Block\b/im, /^##\s*Engineering Traceability\b/im],
+  },
+  {
+    name: 'Evidence Required Before Completion',
+    patterns: [/^##\s*Evidence Required Before Completion\b/im, /^##\s*Evidence Required\b/im],
   },
 ];
 
@@ -93,7 +118,7 @@ function scanDirectory(dir: string, repoRoot: string): { file: string; content: 
 
 export const promptStructureVerifier: Verifier = {
   name: 'prompt-structure',
-  description: 'Validates implementation prompts contain 10 mandatory sections (Rule 42)',
+  description: 'Validates implementation prompts contain 15 mandatory sections (Rule 42)',
 
   async verify(ctx: VerificationContext): Promise<VerificationResult> {
     const evidence: string[] = [];
@@ -152,7 +177,7 @@ export const promptStructureVerifier: Verifier = {
     return {
       name: this.name,
       status: 'PASS',
-      message: `${prompts.length} prompt(s) verified — all contain 10 mandatory sections`,
+      message: `${prompts.length} prompt(s) verified — all contain 15 mandatory sections`,
       evidence,
     };
   },

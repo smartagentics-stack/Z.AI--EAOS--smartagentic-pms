@@ -74,6 +74,18 @@ const FORBIDDEN_RULES: ForbiddenRule[] = [
       'packages/engineering-assurance/src/reports/',
     ],
   },
+  {
+    id: 'pseudocode',
+    pattern:
+      /\/\*\s*implement\s*\*\/|\/\/\s*TODO:\s*implement|\.\.\.\s*$|placeholder\s+implementation/i,
+    message:
+      'Pseudocode/placeholder implementation forbidden (Rule 45) — must be real production code',
+    severity: 'FAIL',
+    exemptGlobs: [
+      'packages/engineering-assurance/src/verifiers/__tests__/',
+      'packages/engineering-assurance/src/verifiers/forbidden-code-verifier.ts',
+    ],
+  },
 ];
 
 // Rule 40: bare implementation claims without nearby evidence block.
@@ -81,6 +93,15 @@ const FORBIDDEN_RULES: ForbiddenRule[] = [
 const BARE_CLAIM_PATTERN = /\b(Done|Completed|Implemented|Fixed|Resolved|Finished)\./;
 const EVIDENCE_BLOCK_PATTERN =
   /(Files Modified|Verification:|Expected:|Commit:|Git diff|Engineering Traceability)/;
+
+// Files exempt from Rule 40 bare-claim scanning (they legitimately contain these words
+// in test names, pattern descriptions, and JSDoc comments)
+const BARE_CLAIM_EXEMPT_GLOBS = [
+  'packages/engineering-assurance/src/verifiers/forbidden-code-verifier.ts',
+  'packages/engineering-assurance/src/verifiers/__tests__/forbidden-code-verifier.test.ts',
+  'packages/engineering-assurance/src/verifiers/__tests__/prompt-structure-verifier.test.ts',
+  'packages/engineering-assurance/src/verifiers/__tests__/traceability-verifier.test.ts',
+];
 
 const SCAN_DIRS = ['packages', 'apps'];
 const SCAN_EXTENSIONS = ['.ts', '.tsx', '.js', '.jsx'];
@@ -166,15 +187,19 @@ export const forbiddenCodeVerifier: Verifier = {
         }
 
         // Rule 40: bare claim without nearby evidence block (within 5 lines)
-        for (let i = 0; i < lines.length; i++) {
-          if (BARE_CLAIM_PATTERN.test(lines[i])) {
-            const context = lines
-              .slice(Math.max(0, i - 2), Math.min(lines.length, i + 8))
-              .join('\n');
-            if (!EVIDENCE_BLOCK_PATTERN.test(context)) {
-              warnings.push(
-                `${file}:${i + 1} — Rule 40: bare implementation claim without evidence block`,
-              );
+        // Per senior engineering review: bare claims SHALL produce FAIL (not WARN)
+        // Skip exempt files (verifier source/tests that legitimately reference these words)
+        if (!isExempt(file, BARE_CLAIM_EXEMPT_GLOBS)) {
+          for (let i = 0; i < lines.length; i++) {
+            if (BARE_CLAIM_PATTERN.test(lines[i])) {
+              const context = lines
+                .slice(Math.max(0, i - 2), Math.min(lines.length, i + 8))
+                .join('\n');
+              if (!EVIDENCE_BLOCK_PATTERN.test(context)) {
+                violations.push(
+                  `${file}:${i + 1} — Rule 40: bare implementation claim without evidence block`,
+                );
+              }
             }
           }
         }
@@ -182,12 +207,13 @@ export const forbiddenCodeVerifier: Verifier = {
     }
 
     // Phase 2: git commit message scan (Rule 40)
+    // Per senior engineering review: bare claims SHALL produce FAIL (not WARN)
     const commits = scanGitCommits(ctx.repoRoot);
     let commitsScanned = 0;
     for (const { commit, message } of commits) {
       commitsScanned++;
       if (BARE_CLAIM_PATTERN.test(message) && !EVIDENCE_BLOCK_PATTERN.test(message)) {
-        warnings.push(
+        violations.push(
           `commit ${commit}: Rule 40 — bare implementation claim without evidence block`,
         );
       }

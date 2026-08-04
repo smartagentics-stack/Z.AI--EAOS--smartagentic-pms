@@ -35,51 +35,56 @@ Every rule in this registry is classified as one of:
 
 ## Summary Table (43 Rules)
 
-| #   | Title                                     | Category      | Type     | Status   |
-| --- | ----------------------------------------- | ------------- | -------- | -------- |
-| 1   | Evidence Before Conclusion                | Evidence      | Reviewer | Active   |
-| 2   | Single Variable Engineering               | Process       | Process  | Active   |
-| 3   | Mandatory Root Cause Analysis             | Evidence      | Reviewer | Active   |
-| 4   | Observability First                       | Evidence      | Machine  | Active   |
-| 5   | Canonical Domain Model                    | Architecture  | Machine  | Active   |
-| 6   | Mandatory Schema Validation               | Code Quality  | Machine  | Active   |
-| 7   | Production Quality Code Only              | Code Quality  | Reviewer | Active   |
-| 8   | Real Working Code Samples                 | Code Quality  | Reviewer | Active   |
-| 9   | Deep Technical Research                   | Process       | Process  | Active   |
-| 10  | Every Recommendation Must Include Proof   | Evidence      | Reviewer | Active   |
-| 11  | Mandatory Code Evidence                   | Evidence      | Machine  | Active   |
-| 12  | Engineering Verification Report           | Evidence      | Reviewer | Active   |
-| 13  | No Unsupported Claims                     | Evidence      | Machine  | Active   |
-| 14  | Mandatory Falsification                   | Evidence      | Reviewer | Active   |
-| 15  | Independent Reproduction                  | Evidence      | Machine  | Active   |
-| 16  | Separation of Duties                      | Process       | Process  | Active   |
-| 17  | Independent Audit Before Phase Transition | Process       | Process  | Active   |
-| 18  | Engineering Acceptance Review (EAR)       | Process       | Process  | Active   |
-| 19  | Git Evidence Required                     | Evidence      | Machine  | Active   |
-| 20  | CI/CD Evidence Required                   | Evidence      | Machine  | Active   |
-| 21  | Mandatory Real Code Evidence              | Evidence      | Reviewer | Active   |
-| 22  | Completion Criteria                       | Process       | Process  | Active   |
-| 23  | Evidence Hierarchy                        | Evidence      | Reviewer | Active   |
-| 24  | Evidence Quality Matrix                   | Evidence      | Reviewer | Active   |
-| 25  | Negative Evidence                         | Evidence      | Reviewer | Active   |
-| 26  | Rollback Evidence                         | Evidence      | Reviewer | Active   |
-| 27  | Performance Regression Gate               | Performance   | Machine  | Active   |
-| 28  | Security Verification Gate                | Security      | Machine  | Active   |
-| 29  | Architecture Drift Detection              | Architecture  | Machine  | Active   |
-| 30  | AI Confidence Declaration                 | Documentation | Reviewer | Active   |
-| 31  | Change Risk Classification                | Process       | Process  | Active   |
-| 32  | Dependency Impact Analysis                | Process       | Process  | Active   |
-| 33  | Release Readiness Checklist               | Process       | Process  | Active   |
-| 34  | AI Decision Log                           | Documentation | Reviewer | Active   |
-| 35  | Production Readiness Gate                 | Process       | Process  | Active   |
-| 36  | Governance Automation                     | Governance    | Machine  | Active   |
-| 37  | Evidence Traceability Matrix              | Evidence      | Reviewer | Active   |
-| 38  | Executable Evidence                       | Governance    | Machine  | Active   |
-| 39  | Engineering Traceability Block            | Process       | Machine  | Proposed |
-| 40  | No Unsupported Engineering Claims         | Evidence      | Machine  | Proposed |
-| 41  | Every Recommendation Must Be Executable   | Code Quality  | Reviewer | Proposed |
-| 42  | Engineer Before You Prompt                | Process       | Hybrid   | Proposed |
-| 43  | Every Rule Must Be Classified             | Governance    | Machine  | Proposed |
+| #   | Title                                     | Category      | Type     | Status |
+| --- | ----------------------------------------- | ------------- | -------- | ------ |
+| 1   | Evidence Before Conclusion                | Evidence      | Reviewer | Active |
+| 2   | Single Variable Engineering               | Process       | Process  | Active |
+| 3   | Mandatory Root Cause Analysis             | Evidence      | Reviewer | Active |
+| 4   | Observability First                       | Evidence      | Machine  | Active |
+| 5   | Canonical Domain Model                    | Architecture  | Machine  | Active |
+| 6   | Mandatory Schema Validation               | Code Quality  | Machine  | Active |
+| 7   | Production Quality Code Only              | Code Quality  | Reviewer | Active |
+| 8   | Real Working Code Samples                 | Code Quality  | Reviewer | Active |
+| 9   | Deep Technical Research                   | Process       | Process  | Active |
+| 10  | Every Recommendation Must Include Proof   | Evidence      | Reviewer | Active |
+| 11  | Mandatory Code Evidence                   | Evidence      | Machine  | Active |
+| 12  | Engineering Verification Report           | Evidence      | Reviewer | Active |
+| 13  | No Unsupported Claims                     | Evidence      | Machine  | Active |
+| 14  | Mandatory Falsification                   | Evidence      | Reviewer | Active |
+| 15  | Independent Reproduction                  | Evidence      | Machine  | Active |
+| 16  | Separation of Duties                      | Process       | Process  | Active |
+| 17  | Independent Audit Before Phase Transition | Process       | Process  | Active |
+| 18  | Engineering Acceptance Review (EAR)       | Process       | Process  | Active |
+| 19  | Git Evidence Required                     | Evidence      | Machine  | Active |
+| 20  | CI/CD Evidence Required                   | Evidence      | Machine  | Active |
+| 21  | Mandatory Real Code Evidence              | Evidence      | Reviewer | Active |
+| 22  | Completion Criteria                       | Process       | Process  | Active |
+| 23  | Evidence Hierarchy                        | Evidence      | Reviewer | Active |
+| 24  | Evidence Quality Matrix                   | Evidence      | Reviewer | Active |
+| 25  | Negative Evidence                         | Evidence      | Reviewer | Active |
+| 26  | Rollback Evidence                         | Evidence      | Reviewer | Active |
+| 27  | Performance Regression Gate               | Performance   | Machine  | Active |
+| 28  | Security Verification Gate                | Security      | Machine  | Active |
+| 29  | Architecture Drift Detection              | Architecture  | Machine  | Active |
+| 30  | AI Confidence Declaration                 | Documentation | Reviewer | Active |
+| 31  | Change Risk Classification                | Process       | Process  | Active |
+| 32  | Dependency Impact Analysis                | Process       | Process  | Active |
+| 33  | Release Readiness Checklist               | Process       | Process  | Active |
+| 34  | AI Decision Log                           | Documentation | Reviewer | Active |
+| 35  | Production Readiness Gate                 | Process       | Process  | Active |
+| 36  | Governance Automation                     | Governance    | Machine  | Active |
+| 37  | Evidence Traceability Matrix              | Evidence      | Reviewer | Active |
+| 38  | Executable Evidence                       | Governance    | Machine  | Active |
+| 39  | Engineering Traceability Block            | Process       | Machine  | Active |
+| 40  | No Unsupported Engineering Claims         | Evidence      | Machine  | Active |
+| 41  | Every Recommendation Must Be Executable   | Code Quality  | Reviewer | Active |
+| 42  | Engineer Before You Prompt                | Process       | Hybrid   | Active |
+| 43  | Every Rule Must Be Classified             | Governance    | Machine  | Active |
+| 44  | Code First, Explanation Second            | Process       | Hybrid   | Active |
+| 45  | Every Prompt Must Contain Working Code    | Code Quality  | Hybrid   | Active |
+| 46  | Every Code Sample Must Be Verifiable      | Code Quality  | Reviewer | Active |
+| 47  | Every Claim Must Have Executable Proof    | Evidence      | Machine  | Active |
+| 48  | Engineering Diff Evidence                 | Evidence      | Machine  | Active |
 
 ---
 

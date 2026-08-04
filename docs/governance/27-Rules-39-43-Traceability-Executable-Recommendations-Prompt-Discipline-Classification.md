@@ -145,8 +145,11 @@ A bare claim is forgiven if any of these patterns appears within 5 lines (before
 
 ```bash
 pnpm verify:security
-# Expected: WARN if any bare claim without evidence is found
-# Failure (FAIL): only if eval() or unauthorized child_process is found (Rule 28)
+# Expected: FAIL if any bare claim without evidence block is found
+# Bare implementation claims without the required Engineering Traceability
+# Block SHALL produce FAIL. The verifier may optionally support WARN mode
+# during migration, but FAIL is the required enforcement level once the
+# migration period ends.
 ```
 
 ---
@@ -195,22 +198,31 @@ This rule is reviewer-enforced because it governs recommendation quality, not co
 **Verification Method:** `pnpm verify:prompt` (for `.md` files containing `ENGINEERING IMPLEMENTATION DIRECTIVE` or in `prompts/` directory)
 **Responsible Verifier:** `packages/engineering-assurance/src/verifiers/prompt-structure-verifier.ts`
 **Regression Test:** `packages/engineering-assurance/src/verifiers/__tests__/prompt-structure-verifier.test.ts`
-**Falsification Criteria:** A prompt file missing any of the 10 mandatory sections causes `pnpm verify:prompt` to exit with code 1.
+**Falsification Criteria:** A prompt file missing any of the 15 mandatory sections causes `pnpm verify:prompt` to exit with code 1.
 
 ### Rule Statement
 
-Every implementation prompt stored in the repository SHALL contain these 10 sections in any order:
+Every implementation prompt stored in the repository SHALL contain these 15 sections in the specified order:
 
-1. **Problem** — what is broken or missing
-2. **Root Cause** — identified cause, or "Unknown — evidence-gathering plan attached"
-3. **Evidence** — observed facts supporting the root cause
-4. **Constraints** — what cannot be changed (time, budget, dependencies, ADRs)
-5. **Architecture** — how the solution fits into the existing system
-6. **Implementation** — the actual code change
-7. **Verification** — how to prove the change works
-8. **Regression** — how to prove the change doesn't break existing behavior
-9. **Falsification** — how to prove the change is actually needed (delete it, expect failure)
-10. **Expected Output** — concrete: "PASS", "exit 0", "stdout contains X"
+1. **Problem Definition** — what is broken or missing
+2. **Root Cause Analysis** — identified cause, or "Unknown — evidence-gathering plan attached"
+3. **Constraints** — what cannot be changed (time, budget, dependencies, ADRs)
+4. **Architecture Impact** — how the solution fits into the existing system
+5. **Files to Modify** — exact file paths that will be changed
+6. **Functions to Modify** — exact function signatures that will be changed
+7. **Production Code** — the actual code change (real, compilable, runnable)
+8. **Unit Tests** — Vitest/Jest specs with at least one `it()` block
+9. **Integration Tests** — how the change integrates with existing systems
+10. **Verification Commands** — executable shell commands to prove the change works
+11. **Expected Output** — concrete: "PASS", "exit 0", "stdout contains X"
+12. **Failure Output** — what happens when verification fails
+13. **Rollback Procedure** — `git revert <hash>` or equivalent
+14. **Engineering Traceability Block** — commit hash, related ADR, related Rule
+15. **Evidence Required Before Completion** — what evidence must be produced before the task is considered complete
+
+### Ordering Constraint (Rule 44)
+
+Sections SHALL appear in the order listed above. Code (section 7) must appear before Explanation (if present). This forces implementation-first engineering.
 
 ### Detection Criteria
 
@@ -224,8 +236,9 @@ A file is considered an "implementation prompt" if ANY of:
 
 ```bash
 pnpm verify:prompt
-# Expected on clean repo: PASS — no implementation prompts, or all have 10 sections
-# Failure: FAIL — "<file>: missing sections: Root Cause, Evidence, ..."
+# Expected on clean repo: PASS — no implementation prompts, or all have 15 sections in order
+# Failure: FAIL — "<file>: missing sections: Root Cause Analysis, Evidence, ..."
+# Failure: FAIL — "<file>: section ordering violation (Code must appear before Explanation)"
 ```
 
 ---

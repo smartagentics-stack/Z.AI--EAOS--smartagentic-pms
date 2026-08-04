@@ -115,7 +115,7 @@ describe('forbiddenCodeVerifier — B3 closure + Rule 40 enforcement', () => {
     expect(result.status).not.toBe('FAIL');
   });
 
-  it('WARNs when commit message contains bare "Implemented." without evidence (Rule 40)', async () => {
+  it('FAILs when commit message contains bare "Implemented." without evidence (Rule 40)', async () => {
     rmSync(tmpRepo, { recursive: true, force: true });
     mkdirSync(tmpRepo, { recursive: true });
     mkdirSync(join(tmpRepo, 'packages', 'app', 'src'), { recursive: true });
@@ -129,8 +129,8 @@ describe('forbiddenCodeVerifier — B3 closure + Rule 40 enforcement', () => {
       evidenceDir: join(tmpRepo, 'evidence'),
     });
 
-    // Should WARN (not FAIL) because bare claim without evidence
-    expect(result.status).toBe('WARN');
+    // Should FAIL because bare claim without evidence (per senior engineering review)
+    expect(result.status).toBe('FAIL');
     expect(JSON.stringify(result.details)).toMatch(/Rule 40/);
     expect(JSON.stringify(result.details)).toMatch(/bare implementation claim/);
   });
