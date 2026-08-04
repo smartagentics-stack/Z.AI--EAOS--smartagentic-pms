@@ -29,12 +29,14 @@ const REQUIRED_SECTIONS: { name: string; pattern: RegExp }[] = [
   { name: 'Functions Modified', pattern: /^Functions Modified:\s*\n(\s*-\s*.+\n?)+/m },
   { name: 'Commit', pattern: /^Commit:\s*[0-9a-f]{7,40}/m },
   { name: 'Verification Command', pattern: /^Verification:\s*\n\s*Command:\s*.+/m },
-  { name: 'Expected', pattern: /^Expected:\s*.+/m },
+  // Allow indented "Expected:" (common in nested verification blocks)
+  { name: 'Expected', pattern: /^\s*Expected:\s*.+/m },
 ];
 
 const SOURCE_FILE_PATTERN = /\.(ts|tsx|js|jsx|py|go|rs|java)$/;
-// Full timestamp required — bare date "2026-08-04" behaves inconsistently across git versions
-const ADOPTION_DATE = '2026-08-04 00:00:00 UTC';
+// Adoption date: when the traceability-verifier was first committed (Commit 2, 4588a7b).
+// Rule 39 was not enforceable until the verifier existed.
+const ADOPTION_DATE = '2026-08-04 06:48:42 UTC';
 
 interface CommitInfo {
   hash: string;

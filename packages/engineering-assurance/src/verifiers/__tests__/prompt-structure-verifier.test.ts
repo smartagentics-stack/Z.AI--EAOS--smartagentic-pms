@@ -175,4 +175,31 @@ describe('promptStructureVerifier — Rule 42 enforcement', () => {
     expect(JSON.stringify(result.details)).toMatch(/directive\.md/);
     expect(JSON.stringify(result.details)).toMatch(/missing sections/);
   });
+
+  it('Ignores governance docs even if filename contains PROMPT', async () => {
+    // Reset repo
+    rmSync(tmpRepo, { recursive: true, force: true });
+    mkdirSync(tmpRepo, { recursive: true });
+    mkdirSync(join(tmpRepo, 'docs', 'governance'), { recursive: true });
+    execSync('git init -b main', { cwd: tmpRepo, stdio: 'pipe' });
+    execSync('git config user.email t@t.t', { cwd: tmpRepo, stdio: 'pipe' });
+    execSync('git config user.name t', { cwd: tmpRepo, stdio: 'pipe' });
+
+    // Create a governance doc with PROMPT in the filename (should be ignored)
+    writeFileSync(
+      join(tmpRepo, 'docs', 'governance', 'MASTER-EAR-PROMPT-DEFINITIVE.md'),
+      `# Master EAR Prompt\n\nThis is a governance document, not an implementation prompt.\n`,
+    );
+    execSync('git add .', { cwd: tmpRepo, stdio: 'pipe' });
+    execSync('git commit -m "add governance doc"', { cwd: tmpRepo, stdio: 'pipe' });
+
+    const result = await promptStructureVerifier.verify({
+      repoRoot: tmpRepo,
+      evidenceDir: join(tmpRepo, 'evidence'),
+    });
+
+    // Should PASS because governance docs are excluded from prompt detection
+    expect(result.status).toBe('PASS');
+    expect(result.message).toMatch(/No implementation prompts to validate/);
+  });
 });

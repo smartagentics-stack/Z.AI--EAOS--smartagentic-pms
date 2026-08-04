@@ -54,7 +54,14 @@ const PROMPT_INDICATORS = [/ENGINEERING IMPLEMENTATION DIRECTIVE/i];
 const SCAN_DIRS = ['prompts', 'docs/prompts', 'docs', 'spikes'];
 const EXCLUDE_DIRS = ['node_modules', 'dist', '.next', '.turbo', '.git'];
 
+// Governance docs are rule definitions, not implementation prompts.
+// Even if their filenames contain "PROMPT" (e.g., MASTER-EAR-PROMPT-DEFINITIVE.md),
+// they should not be subject to the 10-section implementation prompt check.
+const GOVERNANCE_DIR = 'docs/governance/';
+
 function isPromptFile(content: string, filename: string, relativePath: string): boolean {
+  // Exclude governance docs — they are rule definitions, not implementation prompts
+  if (relativePath.startsWith(GOVERNANCE_DIR)) return false;
   // Filename contains .PROMPT.md (case-insensitive)
   if (filename.toUpperCase().includes('.PROMPT.MD')) return true;
   // File is under prompts/ or docs/prompts/
