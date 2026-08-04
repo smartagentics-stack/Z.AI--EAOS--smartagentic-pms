@@ -5,6 +5,12 @@
 **Created:** 2026-08-02
 **Source:** Senior engineering review of SPIKE-01 verification audit
 
+Enforcement Type: Reviewer-Enforced
+Verification Method: Engineering Acceptance Review (EAR template check)
+Responsible Verifier: N/A (reviewer-enforced)
+Regression Test: N/A
+Falsification Criteria: A milestone accepted without an EAR report proves the rule was violated.
+
 ---
 
 ## Rules 19-21

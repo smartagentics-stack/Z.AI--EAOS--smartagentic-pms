@@ -4,7 +4,7 @@
 **Status:** BINDING — supplements Engineering Assurance Framework v2.0
 **Created:** 2026-08-04
 **Source:** Independent Engineering Acceptance Review (EAR-EAP-PHASE-A-001) — Principal Engineer directive
-**Enforcement Type:** Hybrid (Rules 39, 40, 43 are Machine-Enforceable; Rule 41 is Reviewer-Enforced; Rule 42 is Hybrid)
+**Enforcement Type:** Hybrid
 **Verification Method:** `pnpm verify:traceability`, `pnpm verify:security`, `pnpm verify:prompt`, `pnpm verify:governance`
 **Responsible Verifier:** `packages/engineering-assurance/src/verifiers/traceability-verifier.ts`, `forbidden-code-verifier.ts`, `prompt-structure-verifier.ts`, `governance-verifier.ts`
 **Regression Test:** `packages/engineering-assurance/src/verifiers/__tests__/traceability-verifier.test.ts`, `forbidden-code-verifier.test.ts`, `prompt-structure-verifier.test.ts`, `governance-verifier.test.ts`

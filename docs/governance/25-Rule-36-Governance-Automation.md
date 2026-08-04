@@ -4,6 +4,12 @@
 **Created:** 2026-08-02
 **Source:** Principal engineer final review
 
+Enforcement Type: Machine-Enforceable
+Verification Method: pnpm verify (all verifiers)
+Responsible Verifier: packages/engineering-assurance/src/verifiers/ (all)
+Regression Test: packages/engineering-assurance/src/verifiers/**tests**/
+Falsification Criteria: A governance rule that exists only as documentation and has no executable verifier proves Rule 36 is violated for that rule.
+
 ---
 
 > Every governance rule that can be automatically verified must eventually be enforced by tooling rather than manual review.

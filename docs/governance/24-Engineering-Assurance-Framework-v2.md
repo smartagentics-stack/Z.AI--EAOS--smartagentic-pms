@@ -5,6 +5,12 @@
 **Created:** 2026-08-02
 **Source:** Principal software engineer review of v1.0 framework
 
+Enforcement Type: Hybrid
+Verification Method: pnpm verify (multiple verifiers) + Engineering Acceptance Review
+Responsible Verifier: packages/engineering-assurance/src/verifiers/ (multiple)
+Regression Test: packages/engineering-assurance/src/verifiers/**tests**/
+Falsification Criteria: Individual rules have individual falsification criteria; see each rule's section.
+
 ---
 
 ## Engineering Charter
@@ -21,11 +27,11 @@ This single sentence is the guiding philosophy for the SmartAgentics AI PMS proj
 
 Every engineering task must include a risk assessment:
 
-| Risk | Meaning | Approval Required |
-|------|---------|------------------|
-| Low | Documentation, tests, comments | Self-approval |
-| Medium | Internal implementation | Peer review |
-| High | Database, synchronization, networking | Architecture review |
+| Risk     | Meaning                                                        | Approval Required    |
+| -------- | -------------------------------------------------------------- | -------------------- |
+| Low      | Documentation, tests, comments                                 | Self-approval        |
+| Medium   | Internal implementation                                        | Peer review          |
+| High     | Database, synchronization, networking                          | Architecture review  |
 | Critical | Authentication, payments, multi-tenancy, production migrations | EAR + human approval |
 
 Different risk levels require different approval workflows.
@@ -33,6 +39,7 @@ Different risk levels require different approval workflows.
 ### Rule 32 — Dependency Impact Analysis
 
 Every change must explicitly identify:
+
 - Packages affected
 - Modules affected
 - APIs affected
@@ -43,6 +50,7 @@ Every change must explicitly identify:
 ### Rule 33 — Release Readiness Checklist
 
 Before merging into main, require confirmation that:
+
 - Build passes
 - Tests pass
 - Fitness tests pass
@@ -57,6 +65,7 @@ Before merging into main, require confirmation that:
 ### Rule 34 — AI Decision Log
 
 Whenever the AI makes a non-trivial engineering decision, record:
+
 - Alternatives considered
 - Why alternatives were rejected
 - Selected solution
@@ -69,6 +78,7 @@ This creates a permanent engineering history.
 ### Rule 35 — Production Readiness Gate
 
 Before production deployment, require evidence for:
+
 - Backup strategy
 - Recovery strategy
 - Monitoring
@@ -138,59 +148,60 @@ This becomes the official record for every completed SPIKE or milestone.
 
 ## Complete Rule Index (35 Rules)
 
-| Rule | Title | Source |
-|------|-------|--------|
-| 1 | Evidence Before Conclusion | Master Prompt v1.0 |
-| 2 | Single Variable Engineering | Master Prompt v1.0 |
-| 3 | Mandatory Root Cause Analysis | Master Prompt v1.0 |
-| 4 | Observability First | Master Prompt v1.0 |
-| 5 | Canonical Domain Model | Master Prompt v1.0 |
-| 6 | Mandatory Schema Validation | Master Prompt v1.0 |
-| 7 | Production Quality Code Only | Master Prompt v1.0 |
-| 8 | Real Working Code Samples | Master Prompt v1.0 |
-| 9 | Deep Technical Research | Master Prompt v1.0 |
-| 10 | Every Recommendation Must Include Proof | Master Prompt v1.0 |
-| 11 | Mandatory Code Evidence | Master Prompt v1.0 |
-| 12 | Engineering Verification Report | Master Prompt v1.0 |
-| 13 | No Unsupported Claims | Master Prompt v1.0 |
-| 14 | Mandatory Falsification | Master Prompt v1.0 |
-| 15 | Independent Reproduction | Master Prompt v1.0 |
-| 16 | Separation of Duties | Master Prompt v1.0 |
-| 17 | Independent Audit Before Phase Transition | Master Prompt v1.0 |
-| 18 | Engineering Acceptance Review (EAR) | Master Prompt v1.0 + strengthened v2.0 |
-| 19 | Git Evidence Required | Master Prompt v1.0 |
-| 20 | CI/CD Evidence Required | Master Prompt v1.0 |
-| 21 | Real Runtime Evidence Required | Master Prompt v1.0 |
-| 22 | Completion Criteria | Master Prompt v1.0 |
-| 23 | Evidence Hierarchy (revised) | Master Prompt v1.0 + revised v1.0 addendum |
-| 24 | Evidence Quality Matrix | Addendum v1.0 |
-| 25 | Negative Evidence | Addendum v1.0 |
-| 26 | Rollback Evidence | Addendum v1.0 |
-| 27 | Performance Regression Gate | Addendum v1.0 |
-| 28 | Security Verification Gate | Addendum v1.0 |
-| 29 | Architecture Drift Detection | Addendum v1.0 |
-| 30 | AI Confidence Declaration (strengthened) | Addendum v1.0 + strengthened v2.0 |
-| 31 | Change Risk Classification | v2.0 |
-| 32 | Dependency Impact Analysis | v2.0 |
-| 33 | Release Readiness Checklist | v2.0 |
-| 34 | AI Decision Log | v2.0 |
-| 35 | Production Readiness Gate | v2.0 |
+| Rule | Title                                     | Source                                     |
+| ---- | ----------------------------------------- | ------------------------------------------ |
+| 1    | Evidence Before Conclusion                | Master Prompt v1.0                         |
+| 2    | Single Variable Engineering               | Master Prompt v1.0                         |
+| 3    | Mandatory Root Cause Analysis             | Master Prompt v1.0                         |
+| 4    | Observability First                       | Master Prompt v1.0                         |
+| 5    | Canonical Domain Model                    | Master Prompt v1.0                         |
+| 6    | Mandatory Schema Validation               | Master Prompt v1.0                         |
+| 7    | Production Quality Code Only              | Master Prompt v1.0                         |
+| 8    | Real Working Code Samples                 | Master Prompt v1.0                         |
+| 9    | Deep Technical Research                   | Master Prompt v1.0                         |
+| 10   | Every Recommendation Must Include Proof   | Master Prompt v1.0                         |
+| 11   | Mandatory Code Evidence                   | Master Prompt v1.0                         |
+| 12   | Engineering Verification Report           | Master Prompt v1.0                         |
+| 13   | No Unsupported Claims                     | Master Prompt v1.0                         |
+| 14   | Mandatory Falsification                   | Master Prompt v1.0                         |
+| 15   | Independent Reproduction                  | Master Prompt v1.0                         |
+| 16   | Separation of Duties                      | Master Prompt v1.0                         |
+| 17   | Independent Audit Before Phase Transition | Master Prompt v1.0                         |
+| 18   | Engineering Acceptance Review (EAR)       | Master Prompt v1.0 + strengthened v2.0     |
+| 19   | Git Evidence Required                     | Master Prompt v1.0                         |
+| 20   | CI/CD Evidence Required                   | Master Prompt v1.0                         |
+| 21   | Real Runtime Evidence Required            | Master Prompt v1.0                         |
+| 22   | Completion Criteria                       | Master Prompt v1.0                         |
+| 23   | Evidence Hierarchy (revised)              | Master Prompt v1.0 + revised v1.0 addendum |
+| 24   | Evidence Quality Matrix                   | Addendum v1.0                              |
+| 25   | Negative Evidence                         | Addendum v1.0                              |
+| 26   | Rollback Evidence                         | Addendum v1.0                              |
+| 27   | Performance Regression Gate               | Addendum v1.0                              |
+| 28   | Security Verification Gate                | Addendum v1.0                              |
+| 29   | Architecture Drift Detection              | Addendum v1.0                              |
+| 30   | AI Confidence Declaration (strengthened)  | Addendum v1.0 + strengthened v2.0          |
+| 31   | Change Risk Classification                | v2.0                                       |
+| 32   | Dependency Impact Analysis                | v2.0                                       |
+| 33   | Release Readiness Checklist               | v2.0                                       |
+| 34   | AI Decision Log                           | v2.0                                       |
+| 35   | Production Readiness Gate                 | v2.0                                       |
 
 ---
 
 ## Framework Status
 
-| Component | Status |
-|-----------|--------|
-| Engineering Governance Framework | **VERIFIED** (reviewed, version-controlled, agreed upon) |
-| SPIKE-01 | **PARTIALLY VERIFIED** (pending EAR: independent verification, CI, endurance re-run) |
-| SPIKE-07+ | **BLOCKED** until SPIKE-01 EAR conditions are satisfied |
+| Component                        | Status                                                                               |
+| -------------------------------- | ------------------------------------------------------------------------------------ |
+| Engineering Governance Framework | **VERIFIED** (reviewed, version-controlled, agreed upon)                             |
+| SPIKE-01                         | **PARTIALLY VERIFIED** (pending EAR: independent verification, CI, endurance re-run) |
+| SPIKE-07+                        | **BLOCKED** until SPIKE-01 EAR conditions are satisfied                              |
 
 ---
 
 ## Provenance
 
 Version 2.0 was created because:
+
 - Rule 31 (Change Risk Classification): Different changes need different approval levels
 - Rule 32 (Dependency Impact Analysis): Prevents cascading breakage from unanalyzed changes
 - Rule 33 (Release Readiness Checklist): Prevents incomplete merges

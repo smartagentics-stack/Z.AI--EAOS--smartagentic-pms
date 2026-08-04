@@ -5,6 +5,12 @@
 **Created:** 2026-08-02
 **Source:** Senior architect review of Master Engineering Assurance Prompt v1.0
 
+Enforcement Type: Hybrid
+Verification Method: pnpm verify (multiple verifiers) + Engineering Acceptance Review
+Responsible Verifier: packages/engineering-assurance/src/verifiers/ (multiple)
+Regression Test: packages/engineering-assurance/src/verifiers/**tests**/
+Falsification Criteria: Individual rules have individual falsification criteria; see each rule's section.
+
 ---
 
 ## Rules 24-30
@@ -13,20 +19,21 @@
 
 Not all evidence has the same reliability. Every evidence item must be classified:
 
-| Evidence | Reliability | Independent? |
-|----------|------------|-------------|
-| AI explanation | Low | No |
-| Source code | Medium | No |
-| Git diff | Medium | No |
-| Local test run | High | No |
-| CI run | Very High | Yes |
-| Independent reproduction | Highest | Yes |
+| Evidence                 | Reliability | Independent? |
+| ------------------------ | ----------- | ------------ |
+| AI explanation           | Low         | No           |
+| Source code              | Medium      | No           |
+| Git diff                 | Medium      | No           |
+| Local test run           | High        | No           |
+| CI run                   | Very High   | Yes          |
+| Independent reproduction | Highest     | Yes          |
 
 Weak evidence may never be presented as conclusive.
 
 ### Rule 25 — Negative Evidence
 
 Every engineering report must answer:
+
 - What failed?
 - What assumptions were wrong?
 - What hypotheses were rejected?
@@ -37,6 +44,7 @@ Failures must be recorded as carefully as successes.
 ### Rule 26 — Rollback Evidence
 
 Every architectural change must include:
+
 - How to revert it
 - How to verify rollback
 - Which data is affected
@@ -53,6 +61,7 @@ Every feature must state whether it introduces or affects: authentication, autho
 ### Rule 29 — Architecture Drift Detection
 
 Every change must answer:
+
 - Does this violate an ADR?
 - Does it supersede an ADR?
 - Does it require a new ADR?
@@ -61,6 +70,7 @@ Every change must answer:
 ### Rule 30 — AI Confidence Declaration
 
 For every significant statement, classify as one of:
+
 - VERIFIED
 - REPOSITORY EVIDENCE
 - TEST EVIDENCE

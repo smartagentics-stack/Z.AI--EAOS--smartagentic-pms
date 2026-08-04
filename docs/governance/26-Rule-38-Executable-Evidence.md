@@ -4,6 +4,12 @@
 **Created:** 2026-08-03
 **Source:** Principal engineer final review
 
+Enforcement Type: Machine-Enforceable
+Verification Method: pnpm verify (documentation claims must be backed by executable checks)
+Responsible Verifier: packages/engineering-assurance/src/verifiers/ (all)
+Regression Test: packages/engineering-assurance/src/verifiers/**tests**/
+Falsification Criteria: A governance document that makes a claim but has no executable verifier backing that claim proves Rule 38 is violated.
+
 ---
 
 > Every engineering claim must be backed by executable artifacts, not just documentation.
@@ -29,4 +35,5 @@ This rule complements the Evidence Hierarchy (Rule 23) and makes it even harder 
 No new rules will be added. The next investment is automation (EAP Phase A-C).
 
 **Engineering Charter:**
+
 > Engineering decisions are accepted based on independently reproducible evidence—not confidence, authority, or AI assertions.

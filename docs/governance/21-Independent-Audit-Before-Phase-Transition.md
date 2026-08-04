@@ -4,6 +4,12 @@
 **Created:** 2026-08-02
 **Source:** Senior engineering review of SPIKE-01 verification audit
 
+Enforcement Type: Reviewer-Enforced
+Verification Method: Engineering Acceptance Review (mandatory before phase transition)
+Responsible Verifier: N/A (reviewer-enforced)
+Regression Test: N/A
+Falsification Criteria: A phase transition completed without an independent audit report proves the rule was violated.
+
 ---
 
 ## Rule
@@ -25,6 +31,7 @@ Only after this audit may a spike be marked ADOPT and the next spike begin.
 ## Implementation
 
 The audit follows the 12-part Engineering Verification Audit format:
+
 1. Git evidence
 2. File evidence
 3. Spike evidence
@@ -41,6 +48,7 @@ The audit follows the 12-part Engineering Verification Audit format:
 ## Provenance
 
 This rule was added after the SPIKE-01 verification audit revealed:
+
 - TypeScript errors that the AI's self-report missed
 - A temporary file accidentally committed
 - CI never triggered
