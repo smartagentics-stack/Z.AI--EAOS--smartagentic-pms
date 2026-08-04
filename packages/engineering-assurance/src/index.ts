@@ -14,6 +14,7 @@ import { serializationVerifier } from './verifiers/serialization-verifier.js';
 import { forbiddenCodeVerifier } from './verifiers/forbidden-code-verifier.js';
 import { dependencyVerifier } from './verifiers/dependency-verifier.js';
 import { traceabilityVerifier } from './verifiers/traceability-verifier.js';
+import { promptStructureVerifier } from './verifiers/prompt-structure-verifier.js';
 import { generateReports } from './reports/report-generator.js';
 
 export {
@@ -25,6 +26,7 @@ export {
   forbiddenCodeVerifier,
   dependencyVerifier,
   traceabilityVerifier,
+  promptStructureVerifier,
 };
 export { generateReports };
 
@@ -37,6 +39,7 @@ export const ALL_VERIFIERS: Verifier[] = [
   forbiddenCodeVerifier,
   dependencyVerifier,
   traceabilityVerifier,
+  promptStructureVerifier,
 ];
 
 export async function runAllVerifiers(repoRoot: string): Promise<VerificationResult[]> {

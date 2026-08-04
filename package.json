@@ -29,6 +29,7 @@
     "verify:security": "tsx packages/engineering-assurance/src/cli.ts forbidden",
     "verify:dependencies": "tsx packages/engineering-assurance/src/cli.ts dependencies",
     "verify:traceability": "tsx packages/engineering-assurance/src/cli.ts traceability",
+    "verify:prompt": "tsx packages/engineering-assurance/src/cli.ts prompt",
     "verify:ear": "tsx packages/engineering-assurance/src/cli.ts all"
   },
   "devDependencies": {

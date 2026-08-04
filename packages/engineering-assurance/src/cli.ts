@@ -32,6 +32,7 @@ const VERIFIER_MAP: Record<string, Verifier> = {
   forbidden: ALL_VERIFIERS.find((v) => v.name === 'forbidden-code')!,
   dependencies: ALL_VERIFIERS.find((v) => v.name === 'dependency-audit')!,
   traceability: ALL_VERIFIERS.find((v) => v.name === 'traceability-compliance')!,
+  prompt: ALL_VERIFIERS.find((v) => v.name === 'prompt-structure')!,
 };
 
 async function main() {
