@@ -44,11 +44,12 @@ const REQUIRED_SECTIONS: { name: string; pattern: RegExp }[] = [
 const DIFF_BLOCK_PATTERN = /```diff[\s\S]*?```|```[\s\S]*?^[+-][^\n]*[\s\S]*?```/m;
 
 const SOURCE_FILE_PATTERN = /\.(ts|tsx|js|jsx|py|go|rs|java)$/;
-// Adoption date: when Rule 47 (expanded sections) was adopted.
-// Only commits after this date need the 11 required sections.
-// Previous commits (702aefb through 43e074d) are exempt — they comply with
-// the original Rule 39 (6 sections) which was the standard at their time.
-const ADOPTION_DATE = '2026-08-04 16:50:00 UTC';
+// Adoption date: when Rule 47/48 (expanded sections + diff block) was adopted.
+// Set to 1 minute AFTER commit f81dafc (which adopted Rules 44-48) so that
+// f81dafc itself is exempt — it was the commit that adopted the rule, so it
+// cannot retroactively comply with Rule 48's diff block requirement.
+// All commits AFTER this date must include the full 11 sections + diff block.
+const ADOPTION_DATE = '2026-08-04 16:53:00 UTC';
 
 interface CommitInfo {
   hash: string;

@@ -85,12 +85,15 @@ const EXCLUDE_DIRS = ['node_modules', 'dist', '.next', '.turbo', '.git'];
 const GOVERNANCE_DIR = 'docs/governance/';
 
 function isPromptFile(content: string, filename: string, relativePath: string): boolean {
+  // Normalize path separators: Windows uses \, Unix uses /.
+  // GOVERNANCE_DIR and other patterns use forward slashes, so convert to forward slashes.
+  const normalizedPath = relativePath.replace(/\\/g, '/');
   // Exclude governance docs — they are rule definitions, not implementation prompts
-  if (relativePath.startsWith(GOVERNANCE_DIR)) return false;
+  if (normalizedPath.startsWith(GOVERNANCE_DIR)) return false;
   // Filename contains .PROMPT.md (case-insensitive)
   if (filename.toUpperCase().includes('.PROMPT.MD')) return true;
   // File is under prompts/ or docs/prompts/
-  if (relativePath.toLowerCase().includes('prompt')) return true;
+  if (normalizedPath.toLowerCase().includes('prompt')) return true;
   // Content contains directive marker
   return PROMPT_INDICATORS.some((p) => p.test(content));
 }

@@ -150,7 +150,10 @@ function scanGitCommits(repoRoot: string, count = 20): { commit: string; message
 
 function isExempt(file: string, exemptGlobs?: string[]): boolean {
   if (!exemptGlobs || exemptGlobs.length === 0) return false;
-  return exemptGlobs.some((g) => file.startsWith(g));
+  // Normalize path separators: Windows uses \, Unix uses /.
+  // exemptGlobs use forward slashes, so convert file to forward slashes.
+  const normalizedFile = file.replace(/\\/g, '/');
+  return exemptGlobs.some((g) => normalizedFile.startsWith(g));
 }
 
 export const forbiddenCodeVerifier: Verifier = {
