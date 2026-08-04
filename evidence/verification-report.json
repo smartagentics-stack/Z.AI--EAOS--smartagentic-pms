@@ -1,0 +1,70 @@
+{
+  "timestamp": "2026-08-04T22:55:07.701Z",
+  "commit": "52a6169166b7a463672c6fd2e622bbc8190ba80a",
+  "branch": "main",
+  "verifier": "master-audit",
+  "scope": "Engineering Assurance Platform (EAP) — 9 verifiers",
+  "runtime": {
+    "pnpmVerify": {
+      "exitCode": 0,
+      "result": "PASS=7, FAIL=0, WARN=2",
+      "durationMs": 2049
+    },
+    "pnpmVerifyGovernance": {
+      "exitCode": 0,
+      "result": "PASS — 13 docs, 9/9 Rule 43 compliant",
+      "durationMs": 585
+    },
+    "pnpmVerifyAdr": {
+      "exitCode": 0,
+      "result": "WARN — 10 ADRs missing Context",
+      "durationMs": 595
+    },
+    "pnpmVerifyEvidence": {
+      "exitCode": 0,
+      "result": "PASS — all artifacts present",
+      "durationMs": 595
+    },
+    "pnpmVerifyArchitecture": {
+      "exitCode": 0,
+      "result": "PASS — 28 files scanned, 0 violations",
+      "durationMs": 623
+    },
+    "pnpmVerifySerialization": {
+      "exitCode": 0,
+      "result": "PASS — round-trip verified",
+      "durationMs": 618
+    },
+    "pnpmVerifySecurity": {
+      "exitCode": 0,
+      "result": "WARN — 21 warnings, 0 violations",
+      "durationMs": 617
+    },
+    "pnpmVerifyDependencies": {
+      "exitCode": 0,
+      "result": "PASS — 0 vulnerabilities",
+      "durationMs": 2025
+    },
+    "pnpmVerifyTraceability": {
+      "exitCode": 0,
+      "result": "PASS — 2 commits verified",
+      "durationMs": 598
+    },
+    "pnpmVerifyPrompt": {
+      "exitCode": 0,
+      "result": "PASS — 0 prompts to validate",
+      "durationMs": 591
+    }
+  },
+  "tests": {
+    "total": 37,
+    "passed": 37,
+    "failed": 0,
+    "testFiles": 9
+  },
+  "falsification": {
+    "total": 12,
+    "passed": 12,
+    "failed": 0
+  }
+}

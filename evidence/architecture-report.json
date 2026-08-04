@@ -1,26 +1,167 @@
-[
-  {
-    "name": "architecture-drift",
-    "status": "PASS",
-    "message": "No architecture drift detected (3 rules checked)",
-    "evidence": [
-      "ADR-009-no-nextjs-in-sdk: checked 0 files, 0 violation(s)",
-      "ADR-012-no-flat-sqlite-columns: checked 0 files, 0 violation(s)",
-      "ADR-006-no-postgres-in-spike: checked 0 files, 0 violation(s)"
-    ],
-    "durationMs": 0
+{
+  "timestamp": "2026-08-04T22:55:07.701Z",
+  "commit": "52a6169166b7a463672c6fd2e622bbc8190ba80a",
+  "branch": "main",
+  "rules": {
+    "total": 48,
+    "active": 48,
+    "proposed": 0,
+    "registry": "docs/governance/RULES.md"
   },
-  {
-    "name": "serialization-consistency",
-    "status": "PASS",
-    "message": "Canonical model round-trip verified (serialize → SQLite → deserialize → equal)",
-    "evidence": [
-      "canonical-record.ts exists",
-      "Serialized payload type: string",
-      "Round-trip equality: true",
-      "Original payload.name: test",
-      "Reconstructed payload.name: test"
-    ],
-    "durationMs": 10
+  "ruleDocs": {
+    "total": 31,
+    "withEnforcementType": 9,
+    "withoutEnforcementType": 22,
+    "details": [
+      {
+        "file": "docs/governance/00-Coding-Rules.md",
+        "hasEnforcementType": false
+      },
+      {
+        "file": "docs/governance/01-Engineering-Governance-Manual.md",
+        "hasEnforcementType": false
+      },
+      {
+        "file": "docs/governance/02-Product-Definition-Document.md",
+        "hasEnforcementType": false
+      },
+      {
+        "file": "docs/governance/03-Phase-1-Scope.md",
+        "hasEnforcementType": false
+      },
+      {
+        "file": "docs/governance/04-Build-vs-Buy-Matrix.md",
+        "hasEnforcementType": false
+      },
+      {
+        "file": "docs/governance/05-Requirements-Traceability-Matrix.md",
+        "hasEnforcementType": false
+      },
+      {
+        "file": "docs/governance/06-Success-Metrics.md",
+        "hasEnforcementType": false
+      },
+      {
+        "file": "docs/governance/07-Office-Ownership-Model.md",
+        "hasEnforcementType": false
+      },
+      {
+        "file": "docs/governance/08-AI-Development-Policy.md",
+        "hasEnforcementType": false
+      },
+      {
+        "file": "docs/governance/09-Engineering-Economics-Framework.md",
+        "hasEnforcementType": false
+      },
+      {
+        "file": "docs/governance/10-Customer-Discovery-Program.md",
+        "hasEnforcementType": false
+      },
+      {
+        "file": "docs/governance/11-Competitive-Intelligence-Matrix.md",
+        "hasEnforcementType": false
+      },
+      {
+        "file": "docs/governance/12-Feature-Prioritization-and-PoC.md",
+        "hasEnforcementType": false
+      },
+      {
+        "file": "docs/governance/13-Engineering-Metrics-and-Roadmap.md",
+        "hasEnforcementType": false
+      },
+      {
+        "file": "docs/governance/14-Engineering-Program-Blueprint.md",
+        "hasEnforcementType": false
+      },
+      {
+        "file": "docs/governance/15-Engineering-Bootstrap-Spec.md",
+        "hasEnforcementType": false
+      },
+      {
+        "file": "docs/governance/18-Senior-Engineering-Operating-Rules.md",
+        "hasEnforcementType": true
+      },
+      {
+        "file": "docs/governance/19-Evidence-First-Debugging-Methodology.md",
+        "hasEnforcementType": false
+      },
+      {
+        "file": "docs/governance/20-Engineering-Verification-Evidence-Policy.md",
+        "hasEnforcementType": false
+      },
+      {
+        "file": "docs/governance/21-Independent-Audit-Before-Phase-Transition.md",
+        "hasEnforcementType": true
+      },
+      {
+        "file": "docs/governance/22-Independent-Engineering-Acceptance-Policy.md",
+        "hasEnforcementType": true
+      },
+      {
+        "file": "docs/governance/23-Engineering-Assurance-Framework-Addendum.md",
+        "hasEnforcementType": true
+      },
+      {
+        "file": "docs/governance/24-Engineering-Assurance-Framework-v2.md",
+        "hasEnforcementType": true
+      },
+      {
+        "file": "docs/governance/25-Rule-36-Governance-Automation.md",
+        "hasEnforcementType": true
+      },
+      {
+        "file": "docs/governance/26-Rule-38-Executable-Evidence.md",
+        "hasEnforcementType": true
+      },
+      {
+        "file": "docs/governance/27-Rules-39-43-Traceability-Executable-Recommendations-Prompt-Discipline-Classification.md",
+        "hasEnforcementType": true
+      },
+      {
+        "file": "docs/governance/28-Rules-44-48-Code-First-Working-Code-Verifiable-Samples-Executable-Proof-Diff-Evidence.md",
+        "hasEnforcementType": true
+      },
+      {
+        "file": "docs/governance/ADR-001-Reference-Stack.md",
+        "hasEnforcementType": false
+      },
+      {
+        "file": "docs/governance/MASTER-EAR-PROMPT-DEFINITIVE.md",
+        "hasEnforcementType": false
+      },
+      {
+        "file": "docs/governance/MASTER-ENGINEERING-ASSURANCE-PROMPT.md",
+        "hasEnforcementType": false
+      },
+      {
+        "file": "docs/governance/RULES.md",
+        "hasEnforcementType": false
+      }
+    ]
+  },
+  "adrs": {
+    "total": 13,
+    "numbers": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
+    "allSequential": true
+  },
+  "verifiers": {
+    "total": 9,
+    "registered": [
+      "governance-compliance",
+      "adr-compliance",
+      "evidence-completeness",
+      "architecture-drift",
+      "serialization-consistency",
+      "forbidden-code",
+      "dependency-audit",
+      "traceability-compliance",
+      "prompt-structure"
+    ]
+  },
+  "ci": {
+    "workflow": ".github/workflows/ci.yml",
+    "jobs": ["quality (ubuntu-latest)", "windows-compat (windows-latest)"],
+    "verifyStepPresent": true,
+    "fetchDepth": 0
   }
-]
+}

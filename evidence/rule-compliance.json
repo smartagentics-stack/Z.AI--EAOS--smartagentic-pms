@@ -1,0 +1,301 @@
+{
+  "timestamp": "2026-08-04T22:55:07.701Z",
+  "commit": "52a6169166b7a463672c6fd2e622bbc8190ba80a",
+  "branch": "main",
+  "totalRules": 48,
+  "rules": [
+    {
+      "rule": 1,
+      "title": "Evidence Before Conclusion",
+      "status": "COMPLIANT",
+      "enforcement": "Reviewer-Enforced"
+    },
+    {
+      "rule": 2,
+      "title": "Single Variable Engineering",
+      "status": "COMPLIANT",
+      "enforcement": "Process"
+    },
+    {
+      "rule": 3,
+      "title": "Mandatory Root Cause Analysis",
+      "status": "COMPLIANT",
+      "enforcement": "Reviewer-Enforced"
+    },
+    {
+      "rule": 4,
+      "title": "Observability First",
+      "status": "COMPLIANT",
+      "enforcement": "Machine (evidence-verifier)"
+    },
+    {
+      "rule": 5,
+      "title": "Canonical Domain Model",
+      "status": "COMPLIANT",
+      "enforcement": "Machine (serialization-verifier)"
+    },
+    {
+      "rule": 6,
+      "title": "Mandatory Schema Validation",
+      "status": "COMPLIANT",
+      "enforcement": "Machine (serialization-verifier)"
+    },
+    {
+      "rule": 7,
+      "title": "Production Quality Code Only",
+      "status": "COMPLIANT",
+      "enforcement": "Reviewer-Enforced"
+    },
+    {
+      "rule": 8,
+      "title": "Real Working Code Samples",
+      "status": "COMPLIANT",
+      "enforcement": "Reviewer-Enforced"
+    },
+    {
+      "rule": 9,
+      "title": "Deep Technical Research",
+      "status": "COMPLIANT",
+      "enforcement": "Process"
+    },
+    {
+      "rule": 10,
+      "title": "Every Recommendation Must Include Proof",
+      "status": "COMPLIANT",
+      "enforcement": "Reviewer-Enforced"
+    },
+    {
+      "rule": 11,
+      "title": "Mandatory Code Evidence",
+      "status": "COMPLIANT",
+      "enforcement": "Machine (all verifiers)"
+    },
+    {
+      "rule": 12,
+      "title": "Engineering Verification Report",
+      "status": "COMPLIANT",
+      "enforcement": "Reviewer-Enforced"
+    },
+    {
+      "rule": 13,
+      "title": "No Unsupported Claims",
+      "status": "COMPLIANT",
+      "enforcement": "Machine (forbidden-code-verifier Rule 40)"
+    },
+    {
+      "rule": 14,
+      "title": "Mandatory Falsification",
+      "status": "COMPLIANT",
+      "enforcement": "Reviewer-Enforced (12 falsification tests)"
+    },
+    {
+      "rule": 15,
+      "title": "Independent Reproduction",
+      "status": "COMPLIANT",
+      "enforcement": "Machine (CI)"
+    },
+    {
+      "rule": 16,
+      "title": "Separation of Duties",
+      "status": "COMPLIANT",
+      "enforcement": "Process"
+    },
+    {
+      "rule": 17,
+      "title": "Independent Audit Before Phase Transition",
+      "status": "COMPLIANT",
+      "enforcement": "Process"
+    },
+    {
+      "rule": 18,
+      "title": "Engineering Acceptance Review (EAR)",
+      "status": "COMPLIANT",
+      "enforcement": "Process"
+    },
+    {
+      "rule": 19,
+      "title": "Git Evidence Required",
+      "status": "COMPLIANT",
+      "enforcement": "Machine (report-generator)"
+    },
+    {
+      "rule": 20,
+      "title": "CI/CD Evidence Required",
+      "status": "COMPLIANT",
+      "enforcement": "Machine (CI includes pnpm verify)"
+    },
+    {
+      "rule": 21,
+      "title": "Mandatory Real Code Evidence",
+      "status": "COMPLIANT",
+      "enforcement": "Reviewer-Enforced"
+    },
+    {
+      "rule": 22,
+      "title": "Completion Criteria",
+      "status": "COMPLIANT",
+      "enforcement": "Process"
+    },
+    {
+      "rule": 23,
+      "title": "Evidence Hierarchy",
+      "status": "COMPLIANT",
+      "enforcement": "Reviewer-Enforced"
+    },
+    {
+      "rule": 24,
+      "title": "Evidence Quality Matrix",
+      "status": "COMPLIANT",
+      "enforcement": "Reviewer-Enforced"
+    },
+    {
+      "rule": 25,
+      "title": "Negative Evidence",
+      "status": "COMPLIANT",
+      "enforcement": "Reviewer-Enforced"
+    },
+    {
+      "rule": 26,
+      "title": "Rollback Evidence",
+      "status": "COMPLIANT",
+      "enforcement": "Reviewer-Enforced"
+    },
+    {
+      "rule": 27,
+      "title": "Performance Regression Gate",
+      "status": "NOT_IMPLEMENTED",
+      "enforcement": "Machine (not yet built)"
+    },
+    {
+      "rule": 28,
+      "title": "Security Verification Gate",
+      "status": "COMPLIANT",
+      "enforcement": "Machine (forbidden-code + dependency verifiers)"
+    },
+    {
+      "rule": 29,
+      "title": "Architecture Drift Detection",
+      "status": "COMPLIANT",
+      "enforcement": "Machine (architecture-drift-verifier, B2 fixed)"
+    },
+    {
+      "rule": 30,
+      "title": "AI Confidence Declaration",
+      "status": "COMPLIANT",
+      "enforcement": "Reviewer-Enforced"
+    },
+    {
+      "rule": 31,
+      "title": "Change Risk Classification",
+      "status": "COMPLIANT",
+      "enforcement": "Process"
+    },
+    {
+      "rule": 32,
+      "title": "Dependency Impact Analysis",
+      "status": "COMPLIANT",
+      "enforcement": "Machine (dependency-verifier)"
+    },
+    {
+      "rule": 33,
+      "title": "Release Readiness Checklist",
+      "status": "COMPLIANT",
+      "enforcement": "Process"
+    },
+    {
+      "rule": 34,
+      "title": "AI Decision Log",
+      "status": "COMPLIANT",
+      "enforcement": "Reviewer-Enforced"
+    },
+    {
+      "rule": 35,
+      "title": "Production Readiness Gate",
+      "status": "COMPLIANT",
+      "enforcement": "Process"
+    },
+    {
+      "rule": 36,
+      "title": "Governance Automation",
+      "status": "COMPLIANT",
+      "enforcement": "Machine (pnpm verify)"
+    },
+    {
+      "rule": 37,
+      "title": "Evidence Traceability Matrix",
+      "status": "COMPLIANT",
+      "enforcement": "Reviewer-Enforced"
+    },
+    {
+      "rule": 38,
+      "title": "Executable Evidence",
+      "status": "COMPLIANT",
+      "enforcement": "Machine (all verifiers)"
+    },
+    {
+      "rule": 39,
+      "title": "Engineering Traceability Block",
+      "status": "COMPLIANT",
+      "enforcement": "Machine (traceability-verifier)"
+    },
+    {
+      "rule": 40,
+      "title": "No Unsupported Engineering Claims",
+      "status": "COMPLIANT",
+      "enforcement": "Machine (forbidden-code-verifier Phase 2, FAIL severity)"
+    },
+    {
+      "rule": 41,
+      "title": "Every Recommendation Must Be Executable",
+      "status": "COMPLIANT",
+      "enforcement": "Reviewer-Enforced"
+    },
+    {
+      "rule": 42,
+      "title": "Engineer Before You Prompt",
+      "status": "COMPLIANT",
+      "enforcement": "Hybrid (prompt-structure-verifier, 15 sections)"
+    },
+    {
+      "rule": 43,
+      "title": "Every Rule Must Be Classified",
+      "status": "COMPLIANT",
+      "enforcement": "Machine (governance-verifier Rule 43 check)"
+    },
+    {
+      "rule": 44,
+      "title": "Code First, Explanation Second",
+      "status": "COMPLIANT",
+      "enforcement": "Hybrid (prompt-structure-verifier ordering)"
+    },
+    {
+      "rule": 45,
+      "title": "Every Prompt Must Contain Working Code",
+      "status": "COMPLIANT",
+      "enforcement": "Machine (forbidden-code-verifier pseudocode rule)"
+    },
+    {
+      "rule": 46,
+      "title": "Every Code Sample Must Be Verifiable",
+      "status": "COMPLIANT",
+      "enforcement": "Reviewer-Enforced"
+    },
+    {
+      "rule": 47,
+      "title": "Every Claim Must Have Executable Proof",
+      "status": "COMPLIANT",
+      "enforcement": "Machine (traceability-verifier 11 sections)"
+    },
+    {
+      "rule": 48,
+      "title": "Engineering Diff Evidence",
+      "status": "COMPLIANT",
+      "enforcement": "Machine (traceability-verifier diff block check)"
+    }
+  ],
+  "summary": {
+    "compliant": 47,
+    "notImplemented": 1,
+    "nonCompliant": 0
+  }
+}

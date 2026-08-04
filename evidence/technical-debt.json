@@ -1,0 +1,74 @@
+{
+  "timestamp": "2026-08-04T22:55:07.701Z",
+  "commit": "52a6169166b7a463672c6fd2e622bbc8190ba80a",
+  "branch": "main",
+  "findings": [
+    {
+      "id": "TD-001",
+      "severity": "LOW",
+      "category": "Duplicated Code",
+      "description": "scanDirectory() function duplicated in forbidden-code-verifier.ts and prompt-structure-verifier.ts",
+      "files": [
+        "packages/engineering-assurance/src/verifiers/forbidden-code-verifier.ts:110",
+        "packages/engineering-assurance/src/verifiers/prompt-structure-verifier.ts:101"
+      ],
+      "recommendation": "Extract to shared utility module packages/engineering-assurance/src/utils/scanner.ts"
+    },
+    {
+      "id": "TD-002",
+      "severity": "LOW",
+      "category": "Duplicated Constants",
+      "description": "EXCLUDE_DIRS defined separately in 3 verifiers with slightly different values",
+      "files": [
+        "architecture-drift-verifier.ts:61 (6 dirs)",
+        "forbidden-code-verifier.ts:108 (5 dirs — missing .git)",
+        "prompt-structure-verifier.ts:80 (5 dirs — missing coverage)"
+      ],
+      "recommendation": "Unify into shared constant packages/engineering-assurance/src/utils/constants.ts"
+    },
+    {
+      "id": "TD-003",
+      "severity": "INFO",
+      "category": "Placeholder Exports",
+      "description": "3 packages have empty export {} (bootstrap placeholders)",
+      "files": [
+        "packages/shared/src/index.ts:1",
+        "packages/db/src/index.ts:1",
+        "packages/ai/src/index.ts:1"
+      ],
+      "recommendation": "Expected for bootstrap phase — will be replaced with real exports in Phase B"
+    },
+    {
+      "id": "TD-004",
+      "severity": "INFO",
+      "category": "ADR Context Missing",
+      "description": "10 of 13 ADRs missing optional Context section",
+      "files": "docs/adr/ADR-002 through ADR-011",
+      "recommendation": "Add ## Context section to each ADR for completeness"
+    },
+    {
+      "id": "TD-005",
+      "severity": "LOW",
+      "category": "Large File",
+      "description": "forbidden-code-verifier.ts is 257 lines — approaching complexity threshold",
+      "file": "packages/engineering-assurance/src/verifiers/forbidden-code-verifier.ts",
+      "recommendation": "Consider splitting Phase 1 (source scan) and Phase 2 (commit scan) into separate modules"
+    },
+    {
+      "id": "TD-006",
+      "severity": "INFO",
+      "category": "Console Statements",
+      "description": "21 console.log warnings in CLI (legitimate CLI output using process.stdout)",
+      "files": "packages/engineering-assurance/src/cli.ts",
+      "recommendation": "Already mitigated with out() helper — warnings are from pattern detection, not actual console.log calls"
+    }
+  ],
+  "totalFindings": 6,
+  "bySeverity": {
+    "CRITICAL": 0,
+    "HIGH": 0,
+    "MEDIUM": 0,
+    "LOW": 3,
+    "INFO": 3
+  }
+}

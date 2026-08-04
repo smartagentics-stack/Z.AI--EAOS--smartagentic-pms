@@ -1,55 +1,48 @@
-[
-  {
-    "name": "forbidden-code",
-    "status": "WARN",
-    "message": "28 warning(s) (TODOs, console.log, placeholders)",
-    "details": {
-      "warnings": [
-        "packages/ai/src/index.ts:1 — Placeholder/empty export found",
-        "packages/db/src/index.ts:1 — Placeholder/empty export found",
-        "packages/engineering-assurance/src/cli.ts:40 — console.log/debug in production code",
-        "packages/engineering-assurance/src/cli.ts:41 — console.log/debug in production code",
-        "packages/engineering-assurance/src/cli.ts:42 — console.log/debug in production code",
-        "packages/engineering-assurance/src/cli.ts:43 — console.log/debug in production code",
-        "packages/engineering-assurance/src/cli.ts:44 — console.log/debug in production code",
-        "packages/engineering-assurance/src/cli.ts:45 — console.log/debug in production code",
-        "packages/engineering-assurance/src/cli.ts:63 — console.log/debug in production code",
-        "packages/engineering-assurance/src/cli.ts:64 — console.log/debug in production code",
-        "packages/engineering-assurance/src/cli.ts:65 — console.log/debug in production code",
-        "packages/engineering-assurance/src/cli.ts:66 — console.log/debug in production code",
-        "packages/engineering-assurance/src/cli.ts:76 — console.log/debug in production code",
-        "packages/engineering-assurance/src/cli.ts:77 — console.log/debug in production code",
-        "packages/engineering-assurance/src/cli.ts:78 — console.log/debug in production code",
-        "packages/engineering-assurance/src/cli.ts:81 — console.log/debug in production code",
-        "packages/engineering-assurance/src/cli.ts:84 — console.log/debug in production code",
-        "packages/engineering-assurance/src/cli.ts:87 — console.log/debug in production code",
-        "packages/engineering-assurance/src/cli.ts:94 — console.log/debug in production code",
-        "packages/engineering-assurance/src/cli.ts:97 — console.log/debug in production code",
-        "packages/engineering-assurance/src/verifiers/forbidden-code-verifier.ts:19 — TODO/FIXME found",
-        "packages/engineering-assurance/src/verifiers/forbidden-code-verifier.ts:4 — Placeholder/empty export found",
-        "packages/engineering-assurance/src/verifiers/forbidden-code-verifier.ts:21 — Placeholder/empty export found",
-        "packages/engineering-assurance/src/verifiers/forbidden-code-verifier.ts:47 — Placeholder/empty export found",
-        "packages/engineering-assurance/src/verifiers/forbidden-code-verifier.ts:96 — Placeholder/empty export found",
-        "packages/shared/src/index.ts:1 — Placeholder/empty export found",
-        "apps/web/tests/placeholder.test.ts:2 — Placeholder/empty export found",
-        "apps/worker/src/index.ts:1 — Placeholder/empty export found"
+{
+  "timestamp": "2026-08-04T22:55:07.701Z",
+  "commit": "52a6169166b7a463672c6fd2e622bbc8190ba80a",
+  "branch": "main",
+  "checks": {
+    "evalUsage": {
+      "status": "PASS",
+      "found": 0,
+      "exempt": ["forbidden-code-verifier.ts", "__tests__/"]
+    },
+    "childProcessUsage": {
+      "status": "PASS",
+      "found": 4,
+      "locations": [
+        "packages/engineering-assurance/src/verifiers/forbidden-code-verifier.ts (exempt)",
+        "packages/engineering-assurance/src/verifiers/traceability-verifier.ts (exempt)",
+        "packages/engineering-assurance/src/verifiers/dependency-verifier.ts (exempt)",
+        "packages/engineering-assurance/src/reports/report-generator.ts (exempt)"
       ]
     },
-    "evidence": [
-      "Files scanned: 40",
-      "Warnings: 28",
-      "Violations: 0"
-    ],
-    "durationMs": 2
+    "functionConstructor": {
+      "status": "PASS",
+      "found": 0
+    },
+    "commandInjection": {
+      "status": "WARN",
+      "details": "execSync uses template literals with git hash/count variables — not user input, low risk",
+      "locations": [
+        "traceability-verifier.ts:82 (git diff-tree with hash)",
+        "forbidden-code-verifier.ts:132 (git log with count)"
+      ]
+    },
+    "hardcodedPaths": {
+      "status": "PASS",
+      "found": 0
+    },
+    "credentialExposure": {
+      "status": "PASS",
+      "found": 0,
+      "note": "No PATs, tokens, or secrets in source"
+    },
+    "unsafeRegex": {
+      "status": "PASS",
+      "found": 0
+    }
   },
-  {
-    "name": "dependency-audit",
-    "status": "PASS",
-    "message": "No high/critical vulnerabilities (low/moderate may exist)",
-    "evidence": [
-      "Total vulnerabilities: 0",
-      "High/Critical: 0"
-    ],
-    "durationMs": 1742
-  }
-]
+  "overallSecurityStatus": "PASS"
+}
