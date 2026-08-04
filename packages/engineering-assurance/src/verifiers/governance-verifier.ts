@@ -1,7 +1,12 @@
 /**
  * Verifier: Governance Compliance
  *
- * Checks that all required governance documents exist.
+ * Checks that all required governance documents exist, including the
+ * canonical Rule Registry (docs/governance/RULES.md).
+ *
+ * The Rule Registry is the single source of truth for all engineering
+ * rules. Its existence is enforced by this verifier per Rule 38
+ * (Executable Evidence) and Rule 36 (Governance Automation).
  */
 
 import { existsSync } from 'node:fs';
@@ -9,6 +14,7 @@ import { resolve } from 'node:path';
 import type { Verifier, VerificationResult, VerificationContext } from '../types/index.js';
 
 const REQUIRED_DOCS = [
+  'docs/governance/RULES.md',
   'docs/governance/MASTER-ENGINEERING-ASSURANCE-PROMPT.md',
   'docs/governance/MASTER-EAR-PROMPT-DEFINITIVE.md',
   'docs/governance/18-Senior-Engineering-Operating-Rules.md',
