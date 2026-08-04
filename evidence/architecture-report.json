@@ -1,0 +1,26 @@
+[
+  {
+    "name": "architecture-drift",
+    "status": "PASS",
+    "message": "No architecture drift detected (3 rules checked)",
+    "evidence": [
+      "ADR-009-no-nextjs-in-sdk: checked 0 files, 0 violation(s)",
+      "ADR-012-no-flat-sqlite-columns: checked 0 files, 0 violation(s)",
+      "ADR-006-no-postgres-in-spike: checked 0 files, 0 violation(s)"
+    ],
+    "durationMs": 0
+  },
+  {
+    "name": "serialization-consistency",
+    "status": "PASS",
+    "message": "Canonical model round-trip verified (serialize → SQLite → deserialize → equal)",
+    "evidence": [
+      "canonical-record.ts exists",
+      "Serialized payload type: string",
+      "Round-trip equality: true",
+      "Original payload.name: test",
+      "Reconstructed payload.name: test"
+    ],
+    "durationMs": 10
+  }
+]

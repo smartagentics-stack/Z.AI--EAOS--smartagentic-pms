@@ -1,0 +1,25 @@
+{
+  "name": "adr-compliance",
+  "status": "WARN",
+  "message": "10 ADR(s) missing Context section",
+  "details": {
+    "warnings": [
+      "ADR-002-monorepo-structure.md: missing Context section (recommended)",
+      "ADR-003-pnpm.md: missing Context section (recommended)",
+      "ADR-004-turborepo.md: missing Context section (recommended)",
+      "ADR-005-prisma.md: missing Context section (recommended)",
+      "ADR-006-sqlite.md: missing Context section (recommended)",
+      "ADR-007-restate.md: missing Context section (recommended)",
+      "ADR-008-event-driven.md: missing Context section (recommended)",
+      "ADR-009-internal-sdk.md: missing Context section (recommended)",
+      "ADR-010-dev-config-package.md: missing Context section (recommended)",
+      "ADR-011-trb-007-vision-reference.md: missing Context section (recommended)"
+    ]
+  },
+  "evidence": [
+    "ADR files found: 13",
+    "ADR numbers: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13",
+    "Warnings: 10"
+  ],
+  "durationMs": 1
+}

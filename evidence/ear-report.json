@@ -1,0 +1,46 @@
+{
+  "timestamp": "2026-08-04T00:22:21.888Z",
+  "commit": "b8061b94d95f6a8c23f61e3fa43017baea16ddc8",
+  "branch": "main",
+  "overallStatus": "WARN",
+  "passCount": 5,
+  "failCount": 0,
+  "warnCount": 2,
+  "verifiers": [
+    {
+      "name": "governance-compliance",
+      "status": "PASS",
+      "message": "All 10 governance documents present"
+    },
+    {
+      "name": "adr-compliance",
+      "status": "WARN",
+      "message": "10 ADR(s) missing Context section"
+    },
+    {
+      "name": "evidence-completeness",
+      "status": "PASS",
+      "message": "All required evidence artifacts present"
+    },
+    {
+      "name": "architecture-drift",
+      "status": "PASS",
+      "message": "No architecture drift detected (3 rules checked)"
+    },
+    {
+      "name": "serialization-consistency",
+      "status": "PASS",
+      "message": "Canonical model round-trip verified (serialize → SQLite → deserialize → equal)"
+    },
+    {
+      "name": "forbidden-code",
+      "status": "WARN",
+      "message": "28 warning(s) (TODOs, console.log, placeholders)"
+    },
+    {
+      "name": "dependency-audit",
+      "status": "PASS",
+      "message": "No high/critical vulnerabilities (low/moderate may exist)"
+    }
+  ]
+}

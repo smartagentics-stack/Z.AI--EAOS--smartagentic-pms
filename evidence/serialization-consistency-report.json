@@ -1,0 +1,13 @@
+{
+  "name": "serialization-consistency",
+  "status": "PASS",
+  "message": "Canonical model round-trip verified (serialize → SQLite → deserialize → equal)",
+  "evidence": [
+    "canonical-record.ts exists",
+    "Serialized payload type: string",
+    "Round-trip equality: true",
+    "Original payload.name: test",
+    "Reconstructed payload.name: test"
+  ],
+  "durationMs": 10
+}

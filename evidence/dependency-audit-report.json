@@ -1,0 +1,10 @@
+{
+  "name": "dependency-audit",
+  "status": "PASS",
+  "message": "No high/critical vulnerabilities (low/moderate may exist)",
+  "evidence": [
+    "Total vulnerabilities: 0",
+    "High/Critical: 0"
+  ],
+  "durationMs": 1742
+}

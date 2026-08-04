@@ -2,8 +2,12 @@
   "name": "smartagentics",
   "private": true,
   "version": "0.1.0-alpha.0",
-  "description": "SmartAgentics AI Enterprise Platform — Hotel PMS (Phase 1)",
-  "workspaces": ["apps/*", "packages/*", "spikes/*"],
+  "description": "SmartAgentics AI Enterprise Platform \u2014 Hotel PMS (Phase 1)",
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "spikes/*"
+  ],
   "scripts": {
     "dev": "turbo run dev",
     "build": "turbo run build",
@@ -15,7 +19,16 @@
     "db:generate": "turbo run db:generate",
     "bootstrap": "pnpm install && pnpm db:generate && pnpm test && pnpm test:fitness",
     "clean": "turbo run clean && rm -rf node_modules",
-    "prepare": "husky"
+    "prepare": "husky",
+    "verify": "tsx packages/engineering-assurance/src/cli.ts",
+    "verify:governance": "tsx packages/engineering-assurance/src/cli.ts governance",
+    "verify:adr": "tsx packages/engineering-assurance/src/cli.ts adr",
+    "verify:evidence": "tsx packages/engineering-assurance/src/cli.ts evidence",
+    "verify:architecture": "tsx packages/engineering-assurance/src/cli.ts architecture",
+    "verify:serialization": "tsx packages/engineering-assurance/src/cli.ts serialization",
+    "verify:security": "tsx packages/engineering-assurance/src/cli.ts forbidden",
+    "verify:dependencies": "tsx packages/engineering-assurance/src/cli.ts dependencies",
+    "verify:ear": "tsx packages/engineering-assurance/src/cli.ts all"
   },
   "devDependencies": {
     "@smartagentics/dev-config": "workspace:*",
@@ -28,5 +41,8 @@
     "vitest": "^2.0.0"
   },
   "packageManager": "pnpm@9.0.0",
-  "engines": { "node": ">=20.0.0", "pnpm": ">=9.0.0" }
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0"
+  }
 }

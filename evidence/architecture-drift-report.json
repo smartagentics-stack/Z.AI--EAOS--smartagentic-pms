@@ -1,0 +1,11 @@
+{
+  "name": "architecture-drift",
+  "status": "PASS",
+  "message": "No architecture drift detected (3 rules checked)",
+  "evidence": [
+    "ADR-009-no-nextjs-in-sdk: checked 0 files, 0 violation(s)",
+    "ADR-012-no-flat-sqlite-columns: checked 0 files, 0 violation(s)",
+    "ADR-006-no-postgres-in-spike: checked 0 files, 0 violation(s)"
+  ],
+  "durationMs": 0
+}

@@ -1,0 +1,18 @@
+{
+  "name": "governance-compliance",
+  "status": "PASS",
+  "message": "All 10 governance documents present",
+  "evidence": [
+    "✅ docs/governance/MASTER-ENGINEERING-ASSURANCE-PROMPT.md",
+    "✅ docs/governance/MASTER-EAR-PROMPT-DEFINITIVE.md",
+    "✅ docs/governance/18-Senior-Engineering-Operating-Rules.md",
+    "✅ docs/governance/19-Evidence-First-Debugging-Methodology.md",
+    "✅ docs/governance/20-Engineering-Verification-Evidence-Policy.md",
+    "✅ docs/governance/21-Independent-Audit-Before-Phase-Transition.md",
+    "✅ docs/governance/22-Independent-Engineering-Acceptance-Policy.md",
+    "✅ docs/governance/24-Engineering-Assurance-Framework-v2.md",
+    "✅ docs/governance/25-Rule-36-Governance-Automation.md",
+    "✅ docs/governance/26-Rule-38-Executable-Evidence.md"
+  ],
+  "durationMs": 0
+}
