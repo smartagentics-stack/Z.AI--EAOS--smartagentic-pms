@@ -1,11 +1,28 @@
 /**
- * Verifier: Architecture Drift
+ * Verifier: Architecture Drift (B2 fixed)
  *
  * Checks that no code violates ADRs by scanning for forbidden patterns.
+ *
+ * B2 FIX: The original findFiles() function resolved glob patterns like
+ * 'packages/sdk/src/\u002A\u002A/\u002A.ts' to a literal directory
+ * 'packages/sdk/src/\u002A\u002A' which does not exist, causing 0 files
+ * to be scanned and a false PASS. This version properly parses globs to
+ * find the base directory and recursively scans it, filtering files by
+ * extension.
+ *
+ * Enforcement Type: Machine-Enforceable (Rule 43)
+ * Verification Method: pnpm verify:architecture
+ * Responsible Verifier: this file
+ * Regression Test: __tests__/architecture-drift-verifier.test.ts
+ * Falsification Criteria:
+ *   - a source file matching a drift rule's glob containing the forbidden
+ *     pattern causes FAIL
+ *   - a drift rule scanning 0 files when matching files exist proves the
+ *     glob bug is present
  */
 
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
-import { resolve, join, extname } from 'node:path';
+import { resolve, join, relative } from 'node:path';
 import type { Verifier, VerificationResult, VerificationContext } from '../types/index.js';
 
 interface DriftRule {
@@ -41,28 +58,63 @@ const DRIFT_RULES: DriftRule[] = [
   },
 ];
 
-function findFiles(dir: string, pattern: string[]): string[] {
+const EXCLUDE_DIRS = ['node_modules', 'dist', '.next', 'coverage', '.turbo', '.git'];
+
+/**
+ * Parse a glob pattern into a base directory and a file extension.
+ *
+ * Examples:
+ *   'packages/sdk/src/\u002A\u002A/\u002A.ts' → baseDir='packages/sdk/src', fileExt='.ts'
+ *   'spikes/SPIKE-01/src/\u002A\u002A/\u002A.ts' → baseDir='spikes/SPIKE-01/src', fileExt='.ts'
+ */
+function parseGlob(glob: string): { baseDir: string; fileExt: string } {
+  const parts = glob.split('/');
+  const starStarIdx = parts.indexOf('**');
+
+  if (starStarIdx !== -1) {
+    // Glob has ** — base dir is everything before **
+    const baseDir = parts.slice(0, starStarIdx).join('/');
+    // File extension is in the last segment (e.g., '*.ts' → '.ts')
+    const lastPart = parts[parts.length - 1];
+    const extMatch = lastPart.match(/\.(.+)$/);
+    return { baseDir, fileExt: extMatch ? '.' + extMatch[1] : '' };
+  }
+
+  // No ** — base dir is everything except the last segment
+  const baseDir = parts.slice(0, -1).join('/');
+  const lastPart = parts[parts.length - 1];
+  const extMatch = lastPart.match(/\.(.+)$/);
+  return { baseDir, fileExt: extMatch ? '.' + extMatch[1] : '' };
+}
+
+/**
+ * Recursively scan a directory and return all files matching the extension.
+ * Returns relative paths (relative to repoRoot) for consistent reporting.
+ */
+function scanDirRecursive(dir: string, fileExt: string, repoRoot: string): string[] {
   const results: string[] = [];
   if (!existsSync(dir)) return results;
 
   for (const entry of readdirSync(dir)) {
+    if (EXCLUDE_DIRS.includes(entry)) continue;
     const fullPath = join(dir, entry);
     const stat = statSync(fullPath);
     if (stat.isDirectory()) {
-      results.push(...findFiles(fullPath, pattern));
-    } else {
-      const ext = extname(fullPath);
-      if (pattern.some(p => {
-        // Simple glob matching
-        if (p.endsWith('.ts')) return ext === '.ts';
-        if (p.endsWith('.tsx')) return ext === '.tsx';
-        return false;
-      })) {
-        results.push(fullPath);
-      }
+      results.push(...scanDirRecursive(fullPath, fileExt, repoRoot));
+    } else if (entry.endsWith(fileExt)) {
+      results.push(relative(repoRoot, fullPath));
     }
   }
   return results;
+}
+
+/**
+ * Find all files matching a glob pattern, relative to repoRoot.
+ */
+function findFilesForGlob(repoRoot: string, glob: string): string[] {
+  const { baseDir, fileExt } = parseGlob(glob);
+  const fullBaseDir = resolve(repoRoot, baseDir);
+  return scanDirRecursive(fullBaseDir, fileExt, repoRoot);
 }
 
 export const architectureDriftVerifier: Verifier = {
@@ -78,17 +130,15 @@ export const architectureDriftVerifier: Verifier = {
       let foundViolations = 0;
 
       for (const glob of rule.glob) {
-        // Resolve glob relative to repo root
-        const dir = resolve(ctx.repoRoot, glob.split('/').slice(0, -1).join('/'));
-        const files = findFiles(dir, [glob]);
+        const files = findFilesForGlob(ctx.repoRoot, glob);
 
         for (const file of files) {
           checkedFiles++;
-          const content = readFileSync(file, 'utf-8');
+          const fullPath = resolve(ctx.repoRoot, file);
+          const content = readFileSync(fullPath, 'utf-8');
           if (rule.pattern.test(content)) {
             foundViolations++;
-            const relativePath = file.replace(ctx.repoRoot + '/', '');
-            violations.push(`${rule.id}: ${relativePath} violates ${rule.adr} — ${rule.description}`);
+            violations.push(`${rule.id}: ${file} violates ${rule.adr} — ${rule.description}`);
           }
         }
       }

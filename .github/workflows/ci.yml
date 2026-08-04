@@ -6,10 +6,12 @@ on:
     branches: [main, develop]
 jobs:
   quality:
-    name: Lint + Build + Test
+    name: Lint + Build + Test + Verify
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: pnpm/action-setup@v3
         with: { version: 9 }
       - uses: actions/setup-node@v4
@@ -20,12 +22,16 @@ jobs:
       - run: pnpm build
       - run: pnpm test
       - run: pnpm test:fitness
+      - run: pnpm verify
+        name: Engineering Assurance (Rules 1-43)
   windows-compat:
     name: Windows Compatibility
     runs-on: windows-latest
     needs: quality
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: pnpm/action-setup@v3
         with: { version: 9 }
       - uses: actions/setup-node@v4
@@ -33,3 +39,5 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
       - run: pnpm test
+      - run: pnpm verify
+        name: Engineering Assurance (Windows)
