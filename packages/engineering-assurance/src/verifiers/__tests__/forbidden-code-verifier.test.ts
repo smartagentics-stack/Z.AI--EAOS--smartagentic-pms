@@ -16,6 +16,7 @@ import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { forbiddenCodeVerifier } from '../forbidden-code-verifier.js';
 import { mkdtempSync, rmSync, writeFileSync, mkdirSync } from 'node:fs';
 import { join } from 'node:path';
+import { tmpdir } from 'node:os';
 import { execSync } from 'node:child_process';
 
 function setupRepo(repoDir: string): void {
@@ -36,7 +37,7 @@ describe('forbiddenCodeVerifier — B3 closure + Rule 40 enforcement', () => {
   let tmpRepo: string;
 
   beforeAll(() => {
-    tmpRepo = mkdtempSync('/tmp/eae-forbid-');
+    tmpRepo = mkdtempSync(join(tmpdir(), 'eae-forbid-'));
   });
 
   afterAll(() => {

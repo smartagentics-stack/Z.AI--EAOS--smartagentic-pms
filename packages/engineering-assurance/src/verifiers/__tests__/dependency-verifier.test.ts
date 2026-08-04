@@ -18,13 +18,14 @@ import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { dependencyVerifier } from '../dependency-verifier.js';
 import { mkdtempSync, rmSync, mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { tmpdir } from 'node:os';
 import { execSync } from 'node:child_process';
 
 describe('dependencyVerifier', () => {
   let tmpRepo: string;
 
   beforeAll(() => {
-    tmpRepo = mkdtempSync('/tmp/eae-deps-');
+    tmpRepo = mkdtempSync(join(tmpdir(), 'eae-deps-'));
   });
 
   afterAll(() => {

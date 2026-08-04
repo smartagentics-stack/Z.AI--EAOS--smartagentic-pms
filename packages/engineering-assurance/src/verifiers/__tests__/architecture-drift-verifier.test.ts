@@ -15,12 +15,13 @@ import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { architectureDriftVerifier } from '../architecture-drift-verifier.js';
 import { mkdtempSync, rmSync, mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { tmpdir } from 'node:os';
 
 describe('architectureDriftVerifier — B1 closure + B2 falsification', () => {
   let tmpRepo: string;
 
   beforeAll(() => {
-    tmpRepo = mkdtempSync('/tmp/eae-archdrift-');
+    tmpRepo = mkdtempSync(join(tmpdir(), 'eae-archdrift-'));
   });
 
   afterAll(() => {

@@ -15,12 +15,13 @@ import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { serializationVerifier } from '../serialization-verifier.js';
 import { mkdtempSync, rmSync, mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { tmpdir } from 'node:os';
 
 describe('serializationVerifier', () => {
   let tmpRepo: string;
 
   beforeAll(() => {
-    tmpRepo = mkdtempSync('/tmp/eae-serial-');
+    tmpRepo = mkdtempSync(join(tmpdir(), 'eae-serial-'));
   });
 
   afterAll(() => {

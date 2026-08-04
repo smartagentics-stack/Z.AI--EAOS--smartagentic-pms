@@ -15,6 +15,7 @@ import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { traceabilityVerifier } from '../traceability-verifier.js';
 import { mkdtempSync, rmSync, writeFileSync, mkdirSync } from 'node:fs';
 import { join } from 'node:path';
+import { tmpdir } from 'node:os';
 import { execSync } from 'node:child_process';
 
 const FULL_TRACEABILITY_BLOCK = `Add bar module
@@ -38,7 +39,7 @@ describe('traceabilityVerifier — Rule 39 enforcement', () => {
   let tmpRepo: string;
 
   beforeAll(() => {
-    tmpRepo = mkdtempSync('/tmp/eae-trace-');
+    tmpRepo = mkdtempSync(join(tmpdir(), 'eae-trace-'));
     mkdirSync(join(tmpRepo, 'src'), { recursive: true });
     execSync('git init -b main', { cwd: tmpRepo, stdio: 'pipe' });
     execSync('git config user.email t@t.t', { cwd: tmpRepo, stdio: 'pipe' });
@@ -94,7 +95,7 @@ describe('traceabilityVerifier — Rule 39 enforcement', () => {
 
   it('PASSES when no source-modifying commits exist since adoption date', async () => {
     // Create a new repo with only documentation commits
-    const docRepo = mkdtempSync('/tmp/eae-trace-doc-');
+    const docRepo = mkdtempSync(join(tmpdir(), 'eae-trace-doc-'));
     mkdirSync(join(docRepo, 'docs'), { recursive: true });
     execSync('git init -b main', { cwd: docRepo, stdio: 'pipe' });
     execSync('git config user.email t@t.t', { cwd: docRepo, stdio: 'pipe' });

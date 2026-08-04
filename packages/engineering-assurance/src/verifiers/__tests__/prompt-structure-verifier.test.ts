@@ -15,6 +15,7 @@ import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { promptStructureVerifier } from '../prompt-structure-verifier.js';
 import { mkdtempSync, rmSync, writeFileSync, mkdirSync } from 'node:fs';
 import { join } from 'node:path';
+import { tmpdir } from 'node:os';
 import { execSync } from 'node:child_process';
 
 const ALL_10_SECTIONS = [
@@ -36,7 +37,7 @@ describe('promptStructureVerifier — Rule 42 enforcement', () => {
   let tmpRepo: string;
 
   beforeAll(() => {
-    tmpRepo = mkdtempSync('/tmp/eae-prompt-');
+    tmpRepo = mkdtempSync(join(tmpdir(), 'eae-prompt-'));
     mkdirSync(join(tmpRepo, 'docs', 'prompts'), { recursive: true });
     execSync('git init -b main', { cwd: tmpRepo, stdio: 'pipe' });
     execSync('git config user.email t@t.t', { cwd: tmpRepo, stdio: 'pipe' });
@@ -100,7 +101,7 @@ describe('promptStructureVerifier — Rule 42 enforcement', () => {
   });
 
   it('PASSES when no implementation prompts exist (Rule 42 not applicable)', async () => {
-    const emptyRepo = mkdtempSync('/tmp/eae-prompt-empty-');
+    const emptyRepo = mkdtempSync(join(tmpdir(), 'eae-prompt-empty-'));
     mkdirSync(join(emptyRepo, 'docs'), { recursive: true });
     execSync('git init -b main', { cwd: emptyRepo, stdio: 'pipe' });
     execSync('git config user.email t@t.t', { cwd: emptyRepo, stdio: 'pipe' });

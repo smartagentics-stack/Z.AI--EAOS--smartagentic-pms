@@ -15,6 +15,7 @@ import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { adrVerifier } from '../adr-verifier.js';
 import { mkdtempSync, rmSync, mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { tmpdir } from 'node:os';
 
 function createAdrDir(repoDir: string): void {
   const adrDir = join(repoDir, 'docs', 'adr');
@@ -25,7 +26,7 @@ describe('adrVerifier', () => {
   let tmpRepo: string;
 
   beforeAll(() => {
-    tmpRepo = mkdtempSync('/tmp/eae-adr-');
+    tmpRepo = mkdtempSync(join(tmpdir(), 'eae-adr-'));
   });
 
   afterAll(() => {

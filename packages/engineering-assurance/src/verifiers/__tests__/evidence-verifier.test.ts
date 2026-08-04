@@ -14,6 +14,7 @@ import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { evidenceVerifier } from '../evidence-verifier.js';
 import { mkdtempSync, rmSync, mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { tmpdir } from 'node:os';
 
 const REQUIRED_SPIKE_EVIDENCE = [
   'evidence-phase1.json',
@@ -35,7 +36,7 @@ describe('evidenceVerifier', () => {
   let tmpRepo: string;
 
   beforeAll(() => {
-    tmpRepo = mkdtempSync('/tmp/eae-evidence-');
+    tmpRepo = mkdtempSync(join(tmpdir(), 'eae-evidence-'));
   });
 
   afterAll(() => {

@@ -20,6 +20,7 @@ import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { governanceVerifier } from '../governance-verifier.js';
 import { mkdtempSync, rmSync, mkdirSync, writeFileSync, renameSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { tmpdir } from 'node:os';
 import { execSync } from 'node:child_process';
 
 // Rule docs that must declare Enforcement Type per Rule 43
@@ -53,7 +54,7 @@ describe('governanceVerifier — Rule 43 enforcement', () => {
   // Helper: create a temporary repo with all required governance docs,
   // including Enforcement Type declarations on rule docs.
   function createTmpRepoWithAllDocs(): string {
-    const tmp = mkdtempSync('/tmp/eae-gov-');
+    const tmp = mkdtempSync(join(tmpdir(), 'eae-gov-'));
     const docsDir = join(tmp, 'docs', 'governance');
     mkdirSync(docsDir, { recursive: true });
 

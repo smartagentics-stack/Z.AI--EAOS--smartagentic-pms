@@ -23,33 +23,52 @@ const ctx: VerificationContext = {
   evidenceDir: resolve(repoRoot, 'evidence'),
 };
 
+/**
+ * Find a verifier by name, throwing if not found (avoids non-null assertion).
+ */
+function requireVerifier(name: string): Verifier {
+  const verifier = ALL_VERIFIERS.find((v) => v.name === name);
+  if (!verifier) {
+    throw new Error(`Verifier '${name}' not found in ALL_VERIFIERS`);
+  }
+  return verifier;
+}
+
 const VERIFIER_MAP: Record<string, Verifier> = {
-  governance: ALL_VERIFIERS.find((v) => v.name === 'governance-compliance')!,
-  adr: ALL_VERIFIERS.find((v) => v.name === 'adr-compliance')!,
-  evidence: ALL_VERIFIERS.find((v) => v.name === 'evidence-completeness')!,
-  architecture: ALL_VERIFIERS.find((v) => v.name === 'architecture-drift')!,
-  serialization: ALL_VERIFIERS.find((v) => v.name === 'serialization-consistency')!,
-  forbidden: ALL_VERIFIERS.find((v) => v.name === 'forbidden-code')!,
-  dependencies: ALL_VERIFIERS.find((v) => v.name === 'dependency-audit')!,
-  traceability: ALL_VERIFIERS.find((v) => v.name === 'traceability-compliance')!,
-  prompt: ALL_VERIFIERS.find((v) => v.name === 'prompt-structure')!,
+  governance: requireVerifier('governance-compliance'),
+  adr: requireVerifier('adr-compliance'),
+  evidence: requireVerifier('evidence-completeness'),
+  architecture: requireVerifier('architecture-drift'),
+  serialization: requireVerifier('serialization-consistency'),
+  forbidden: requireVerifier('forbidden-code'),
+  dependencies: requireVerifier('dependency-audit'),
+  traceability: requireVerifier('traceability-compliance'),
+  prompt: requireVerifier('prompt-structure'),
 };
+
+/**
+ * Write to stdout without using console.log (ESLint forbids console.log
+ * in production code; CLI output is legitimate but must use process.stdout).
+ */
+function out(message: string): void {
+  process.stdout.write(message + '\n');
+}
 
 async function main() {
   const target = process.argv[2];
 
-  console.log('═══════════════════════════════════════════════════════');
-  console.log('Engineering Assurance Engine (EAE)');
-  console.log('═══════════════════════════════════════════════════════');
-  console.log(`Repository: ${repoRoot}`);
-  console.log(`Evidence:   ${ctx.evidenceDir}`);
-  console.log('');
+  out('═══════════════════════════════════════════════════════');
+  out('Engineering Assurance Engine (EAE)');
+  out('═══════════════════════════════════════════════════════');
+  out(`Repository: ${repoRoot}`);
+  out(`Evidence:   ${ctx.evidenceDir}`);
+  out('');
 
   if (target && target !== 'all') {
     const verifier = VERIFIER_MAP[target];
     if (!verifier) {
-      console.error(`Unknown verifier: ${target}`);
-      console.error(`Available: ${Object.keys(VERIFIER_MAP).join(', ')}, all`);
+      process.stderr.write(`Unknown verifier: ${target}\n`);
+      process.stderr.write(`Available: ${Object.keys(VERIFIER_MAP).join(', ')}, all\n`);
       process.exit(1);
     }
 
@@ -61,10 +80,10 @@ async function main() {
   // Run all verifiers
   const results = await runAllVerifiers(repoRoot);
 
-  console.log('');
-  console.log('═══════════════════════════════════════════════════════');
-  console.log('RESULTS');
-  console.log('═══════════════════════════════════════════════════════');
+  out('');
+  out('═══════════════════════════════════════════════════════');
+  out('RESULTS');
+  out('═══════════════════════════════════════════════════════');
 
   for (const result of results) {
     printResult(result);
@@ -74,18 +93,18 @@ async function main() {
   const failCount = results.filter((r) => r.status === 'FAIL').length;
   const warnCount = results.filter((r) => r.status === 'WARN').length;
 
-  console.log('');
-  console.log('═══════════════════════════════════════════════════════');
-  console.log(`PASS: ${passCount}  FAIL: ${failCount}  WARN: ${warnCount}`);
+  out('');
+  out('═══════════════════════════════════════════════════════');
+  out(`PASS: ${passCount}  FAIL: ${failCount}  WARN: ${warnCount}`);
 
   if (failCount > 0) {
-    console.log('❌ ENGINEERING ASSURANCE: FAILED');
+    out('❌ ENGINEERING ASSURANCE: FAILED');
     process.exit(1);
   } else if (warnCount > 0) {
-    console.log('⚠️  ENGINEERING ASSURANCE: PASSED WITH WARNINGS');
+    out('⚠️  ENGINEERING ASSURANCE: PASSED WITH WARNINGS');
     process.exit(0);
   } else {
-    console.log('✅ ENGINEERING ASSURANCE: PASSED');
+    out('✅ ENGINEERING ASSURANCE: PASSED');
     process.exit(0);
   }
 }
@@ -95,7 +114,7 @@ function printResult(result: {
   status: string;
   message: string;
   evidence?: string[];
-}) {
+}): void {
   const icon =
     result.status === 'PASS'
       ? '✅'
@@ -104,15 +123,15 @@ function printResult(result: {
         : result.status === 'WARN'
           ? '⚠️'
           : '⏭️';
-  console.log(`${icon} ${result.name}: ${result.message}`);
+  out(`${icon} ${result.name}: ${result.message}`);
   if (result.evidence) {
     for (const e of result.evidence) {
-      console.log(`   ${e}`);
+      out(`   ${e}`);
     }
   }
 }
 
 main().catch((err) => {
-  console.error('FATAL:', err);
+  process.stderr.write(`FATAL: ${err}\n`);
   process.exit(1);
 });
