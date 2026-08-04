@@ -2,10 +2,53 @@
  * Verifier: Dependency Audit
  *
  * Checks for high-severity vulnerabilities in production dependencies.
+ *
+ * Enforcement Type: Machine-Enforceable (Rule 43)
+ * Verification Method: pnpm verify:dependencies
+ * Responsible Verifier: this file
+ * Regression Test: __tests__/dependency-verifier.test.ts
+ * Falsification Criteria: a high/critical vulnerability in production deps causes FAIL
  */
 
 import { execSync } from 'node:child_process';
 import type { Verifier, VerificationResult, VerificationContext } from '../types/index.js';
+
+/**
+ * Pnpm audit vulnerability entry.
+ * See: https://pnpm.io/cli/audit#--json
+ */
+interface PnpmAuditVulnerability {
+  readonly severity: 'low' | 'moderate' | 'high' | 'critical';
+  readonly name?: string;
+  readonly via?: unknown;
+}
+
+/**
+ * Pnpm audit JSON output structure (subset — only fields we use).
+ */
+interface PnpmAuditResult {
+  readonly vulnerabilities?: Record<string, PnpmAuditVulnerability>;
+}
+
+/**
+ * Error thrown by execSync when the command exits non-zero.
+ * Node.js provides stdout/stderr on the error object.
+ */
+interface ExecSyncError {
+  readonly stdout?: string;
+  readonly stderr?: string;
+  readonly message: string;
+  readonly status?: number;
+}
+
+/**
+ * Filter vulnerabilities to only high/critical severity.
+ */
+function filterHighCritical(
+  vulns: Record<string, PnpmAuditVulnerability>,
+): PnpmAuditVulnerability[] {
+  return Object.values(vulns).filter((v) => v.severity === 'high' || v.severity === 'critical');
+}
 
 export const dependencyVerifier: Verifier = {
   name: 'dependency-audit',
@@ -21,11 +64,9 @@ export const dependencyVerifier: Verifier = {
         timeout: 30000,
       });
 
-      const audit = JSON.parse(output);
+      const audit = JSON.parse(output) as PnpmAuditResult;
       const vulns = audit.vulnerabilities || {};
-      const highVulns = Object.values(vulns).filter(
-        (v: any) => v.severity === 'high' || v.severity === 'critical'
-      );
+      const highVulns = filterHighCritical(vulns);
 
       evidence.push(`Total vulnerabilities: ${Object.keys(vulns).length}`);
       evidence.push(`High/Critical: ${highVulns.length}`);
@@ -45,15 +86,14 @@ export const dependencyVerifier: Verifier = {
         message: 'No high/critical vulnerabilities in production dependencies',
         evidence,
       };
-    } catch (err: any) {
-      // pnpm audit exits non-zero if vulns found — parse stdout
-      if (err.stdout) {
+    } catch (err: unknown) {
+      // pnpm audit exits non-zero if vulns found — parse stdout from the error
+      const execErr = err as ExecSyncError;
+      if (execErr.stdout) {
         try {
-          const audit = JSON.parse(err.stdout);
+          const audit = JSON.parse(execErr.stdout) as PnpmAuditResult;
           const vulns = audit.vulnerabilities || {};
-          const highVulns = Object.values(vulns).filter(
-            (v: any) => v.severity === 'high' || v.severity === 'critical'
-          );
+          const highVulns = filterHighCritical(vulns);
 
           evidence.push(`Total vulnerabilities: ${Object.keys(vulns).length}`);
           evidence.push(`High/Critical: ${highVulns.length}`);
