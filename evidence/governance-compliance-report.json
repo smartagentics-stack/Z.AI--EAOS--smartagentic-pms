@@ -1,8 +1,9 @@
 {
   "name": "governance-compliance",
   "status": "PASS",
-  "message": "All 10 governance documents present",
+  "message": "All 13 governance documents present and Rule 43 compliant (9 rule docs)",
   "evidence": [
+    "✅ docs/governance/RULES.md",
     "✅ docs/governance/MASTER-ENGINEERING-ASSURANCE-PROMPT.md",
     "✅ docs/governance/MASTER-EAR-PROMPT-DEFINITIVE.md",
     "✅ docs/governance/18-Senior-Engineering-Operating-Rules.md",
@@ -12,7 +13,20 @@
     "✅ docs/governance/22-Independent-Engineering-Acceptance-Policy.md",
     "✅ docs/governance/24-Engineering-Assurance-Framework-v2.md",
     "✅ docs/governance/25-Rule-36-Governance-Automation.md",
-    "✅ docs/governance/26-Rule-38-Executable-Evidence.md"
+    "✅ docs/governance/26-Rule-38-Executable-Evidence.md",
+    "✅ docs/governance/27-Rules-39-43-Traceability-Executable-Recommendations-Prompt-Discipline-Classification.md",
+    "✅ docs/governance/28-Rules-44-48-Code-First-Working-Code-Verifiable-Samples-Executable-Proof-Diff-Evidence.md",
+    "   ✅ docs/governance/18-Senior-Engineering-Operating-Rules.md: Hybrid",
+    "   ✅ docs/governance/21-Independent-Audit-Before-Phase-Transition.md: Reviewer-Enforced",
+    "   ✅ docs/governance/22-Independent-Engineering-Acceptance-Policy.md: Reviewer-Enforced",
+    "   ✅ docs/governance/23-Engineering-Assurance-Framework-Addendum.md: Hybrid",
+    "   ✅ docs/governance/24-Engineering-Assurance-Framework-v2.md: Hybrid",
+    "   ✅ docs/governance/25-Rule-36-Governance-Automation.md: Machine-Enforceable",
+    "   ✅ docs/governance/26-Rule-38-Executable-Evidence.md: Machine-Enforceable",
+    "   ✅ docs/governance/27-Rules-39-43-Traceability-Executable-Recommendations-Prompt-Discipline-Classification.md: Hybrid",
+    "   ✅ docs/governance/28-Rules-44-48-Code-First-Working-Code-Verifiable-Samples-Executable-Proof-Diff-Evidence.md: Hybrid",
+    "Rule docs checked for Rule 43: 9",
+    "Rule 43 compliant: 9/9"
   ],
   "durationMs": 0
 }

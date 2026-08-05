@@ -1,16 +1,16 @@
 {
-  "timestamp": "2026-08-04T00:22:21.888Z",
-  "commit": "b8061b94d95f6a8c23f61e3fa43017baea16ddc8",
+  "timestamp": "2026-08-05T07:05:40.638Z",
+  "commit": "6e45f0f3cd5497f35fb5d107ec0d5f756bddc19a",
   "branch": "main",
   "overallStatus": "WARN",
-  "passCount": 5,
+  "passCount": 8,
   "failCount": 0,
   "warnCount": 2,
   "verifiers": [
     {
       "name": "governance-compliance",
       "status": "PASS",
-      "message": "All 10 governance documents present"
+      "message": "All 13 governance documents present and Rule 43 compliant (9 rule docs)"
     },
     {
       "name": "adr-compliance",
@@ -35,12 +35,27 @@
     {
       "name": "forbidden-code",
       "status": "WARN",
-      "message": "28 warning(s) (TODOs, console.log, placeholders)"
+      "message": "21 warning(s) (TODOs, console.log, placeholders, Rule 40 bare claims)"
     },
     {
       "name": "dependency-audit",
       "status": "PASS",
-      "message": "No high/critical vulnerabilities (low/moderate may exist)"
+      "message": "No high/critical vulnerabilities in production dependencies"
+    },
+    {
+      "name": "traceability-compliance",
+      "status": "PASS",
+      "message": "4 commit(s) verified — all include Engineering Traceability Block"
+    },
+    {
+      "name": "prompt-structure",
+      "status": "PASS",
+      "message": "No implementation prompts to validate"
+    },
+    {
+      "name": "performance-regression",
+      "status": "PASS",
+      "message": "All 3 benchmarks within threshold"
     }
   ]
 }

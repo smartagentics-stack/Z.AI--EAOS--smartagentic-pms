@@ -1,13 +1,14 @@
 {
-  "timestamp": "2026-08-04T00:22:21.888Z",
-  "commit": "b8061b94d95f6a8c23f61e3fa43017baea16ddc8",
+  "timestamp": "2026-08-05T07:05:40.638Z",
+  "commit": "6e45f0f3cd5497f35fb5d107ec0d5f756bddc19a",
   "branch": "main",
   "results": [
     {
       "name": "governance-compliance",
       "status": "PASS",
-      "message": "All 10 governance documents present",
+      "message": "All 13 governance documents present and Rule 43 compliant (9 rule docs)",
       "evidence": [
+        "✅ docs/governance/RULES.md",
         "✅ docs/governance/MASTER-ENGINEERING-ASSURANCE-PROMPT.md",
         "✅ docs/governance/MASTER-EAR-PROMPT-DEFINITIVE.md",
         "✅ docs/governance/18-Senior-Engineering-Operating-Rules.md",
@@ -17,7 +18,20 @@
         "✅ docs/governance/22-Independent-Engineering-Acceptance-Policy.md",
         "✅ docs/governance/24-Engineering-Assurance-Framework-v2.md",
         "✅ docs/governance/25-Rule-36-Governance-Automation.md",
-        "✅ docs/governance/26-Rule-38-Executable-Evidence.md"
+        "✅ docs/governance/26-Rule-38-Executable-Evidence.md",
+        "✅ docs/governance/27-Rules-39-43-Traceability-Executable-Recommendations-Prompt-Discipline-Classification.md",
+        "✅ docs/governance/28-Rules-44-48-Code-First-Working-Code-Verifiable-Samples-Executable-Proof-Diff-Evidence.md",
+        "   ✅ docs/governance/18-Senior-Engineering-Operating-Rules.md: Hybrid",
+        "   ✅ docs/governance/21-Independent-Audit-Before-Phase-Transition.md: Reviewer-Enforced",
+        "   ✅ docs/governance/22-Independent-Engineering-Acceptance-Policy.md: Reviewer-Enforced",
+        "   ✅ docs/governance/23-Engineering-Assurance-Framework-Addendum.md: Hybrid",
+        "   ✅ docs/governance/24-Engineering-Assurance-Framework-v2.md: Hybrid",
+        "   ✅ docs/governance/25-Rule-36-Governance-Automation.md: Machine-Enforceable",
+        "   ✅ docs/governance/26-Rule-38-Executable-Evidence.md: Machine-Enforceable",
+        "   ✅ docs/governance/27-Rules-39-43-Traceability-Executable-Recommendations-Prompt-Discipline-Classification.md: Hybrid",
+        "   ✅ docs/governance/28-Rules-44-48-Code-First-Working-Code-Verifiable-Samples-Executable-Proof-Diff-Evidence.md: Hybrid",
+        "Rule docs checked for Rule 43: 9",
+        "Rule 43 compliant: 9/9"
       ],
       "durationMs": 0
     },
@@ -51,7 +65,7 @@
       "status": "PASS",
       "message": "All required evidence artifacts present",
       "evidence": [
-        "evidence/ contains 13 files: adr-compliance-report.json, adr-report.json, architecture-drift-report.json, architecture-report.json, dependency-audit-report.json, ear-report.json, evidence-completeness-report.json, forbidden-code-report.json, governance-compliance-report.json, governance-report.json, security-report.json, serialization-consistency-report.json, verification-summary.json",
+        "evidence/ contains 25 files: adr-compliance-report.json, adr-report.json, architecture-drift-report.json, architecture-report.json, benchmark-results.json, coverage-report.json, dependency-audit-report.json, ear-report.json, evidence-completeness-report.json, falsification-report.json, forbidden-code-report.json, governance-compliance-report.json, governance-report.json, performance-history.json, performance-regression-report.json, performance-report.json, performance-summary.json, prompt-structure-report.json, rule-compliance.json, security-report.json, serialization-consistency-report.json, technical-debt.json, traceability-compliance-report.json, verification-report.json, verification-summary.json",
         "✅ spikes/SPIKE-01/evidence-phase1.json",
         "✅ spikes/SPIKE-01/trace-report.json",
         "✅ spikes/SPIKE-01/results-run8-1h.json",
@@ -65,11 +79,11 @@
       "status": "PASS",
       "message": "No architecture drift detected (3 rules checked)",
       "evidence": [
-        "ADR-009-no-nextjs-in-sdk: checked 0 files, 0 violation(s)",
-        "ADR-012-no-flat-sqlite-columns: checked 0 files, 0 violation(s)",
-        "ADR-006-no-postgres-in-spike: checked 0 files, 0 violation(s)"
+        "ADR-009-no-nextjs-in-sdk: checked 12 files, 0 violation(s)",
+        "ADR-012-no-flat-sqlite-columns: checked 8 files, 0 violation(s)",
+        "ADR-006-no-postgres-in-spike: checked 8 files, 0 violation(s)"
       ],
-      "durationMs": 0
+      "durationMs": 4
     },
     {
       "name": "serialization-consistency",
@@ -82,66 +96,128 @@
         "Original payload.name: test",
         "Reconstructed payload.name: test"
       ],
-      "durationMs": 10
+      "durationMs": 4
     },
     {
       "name": "forbidden-code",
       "status": "WARN",
-      "message": "28 warning(s) (TODOs, console.log, placeholders)",
+      "message": "21 warning(s) (TODOs, console.log, placeholders, Rule 40 bare claims)",
       "details": {
         "warnings": [
-          "packages/ai/src/index.ts:1 — Placeholder/empty export found",
-          "packages/db/src/index.ts:1 — Placeholder/empty export found",
-          "packages/engineering-assurance/src/cli.ts:40 — console.log/debug in production code",
-          "packages/engineering-assurance/src/cli.ts:41 — console.log/debug in production code",
-          "packages/engineering-assurance/src/cli.ts:42 — console.log/debug in production code",
-          "packages/engineering-assurance/src/cli.ts:43 — console.log/debug in production code",
-          "packages/engineering-assurance/src/cli.ts:44 — console.log/debug in production code",
-          "packages/engineering-assurance/src/cli.ts:45 — console.log/debug in production code",
-          "packages/engineering-assurance/src/cli.ts:63 — console.log/debug in production code",
-          "packages/engineering-assurance/src/cli.ts:64 — console.log/debug in production code",
-          "packages/engineering-assurance/src/cli.ts:65 — console.log/debug in production code",
-          "packages/engineering-assurance/src/cli.ts:66 — console.log/debug in production code",
-          "packages/engineering-assurance/src/cli.ts:76 — console.log/debug in production code",
-          "packages/engineering-assurance/src/cli.ts:77 — console.log/debug in production code",
-          "packages/engineering-assurance/src/cli.ts:78 — console.log/debug in production code",
-          "packages/engineering-assurance/src/cli.ts:81 — console.log/debug in production code",
-          "packages/engineering-assurance/src/cli.ts:84 — console.log/debug in production code",
-          "packages/engineering-assurance/src/cli.ts:87 — console.log/debug in production code",
-          "packages/engineering-assurance/src/cli.ts:94 — console.log/debug in production code",
-          "packages/engineering-assurance/src/cli.ts:97 — console.log/debug in production code",
-          "packages/engineering-assurance/src/verifiers/forbidden-code-verifier.ts:19 — TODO/FIXME found",
-          "packages/engineering-assurance/src/verifiers/forbidden-code-verifier.ts:4 — Placeholder/empty export found",
-          "packages/engineering-assurance/src/verifiers/forbidden-code-verifier.ts:21 — Placeholder/empty export found",
-          "packages/engineering-assurance/src/verifiers/forbidden-code-verifier.ts:47 — Placeholder/empty export found",
-          "packages/engineering-assurance/src/verifiers/forbidden-code-verifier.ts:96 — Placeholder/empty export found",
-          "packages/shared/src/index.ts:1 — Placeholder/empty export found",
-          "apps/web/tests/placeholder.test.ts:2 — Placeholder/empty export found",
-          "apps/worker/src/index.ts:1 — Placeholder/empty export found"
+          "packages/ai/src/index.ts:1 — Placeholder/empty export found [placeholder]",
+          "packages/db/src/index.ts:1 — Placeholder/empty export found [placeholder]",
+          "packages/engineering-assurance/src/verifiers/__tests__/architecture-drift-verifier.test.ts:86 — Placeholder/empty export found [placeholder]",
+          "packages/engineering-assurance/src/verifiers/__tests__/architecture-drift-verifier.test.ts:87 — Placeholder/empty export found [placeholder]",
+          "packages/engineering-assurance/src/verifiers/__tests__/architecture-drift-verifier.test.ts:88 — Placeholder/empty export found [placeholder]",
+          "packages/engineering-assurance/src/verifiers/__tests__/architecture-drift-verifier.test.ts:89 — Placeholder/empty export found [placeholder]",
+          "packages/engineering-assurance/src/verifiers/__tests__/evidence-verifier.test.ts:31 — Placeholder/empty export found [placeholder]",
+          "packages/engineering-assurance/src/verifiers/__tests__/serialization-verifier.test.ts:39 — Placeholder/empty export found [placeholder]",
+          "packages/engineering-assurance/src/verifiers/__tests__/serialization-verifier.test.ts:75 — Placeholder/empty export found [placeholder]",
+          "packages/engineering-assurance/src/verifiers/forbidden-code-verifier.ts:5 — TODO/FIXME found [todo]",
+          "packages/engineering-assurance/src/verifiers/forbidden-code-verifier.ts:41 — TODO/FIXME found [todo]",
+          "packages/engineering-assurance/src/verifiers/forbidden-code-verifier.ts:80 — TODO/FIXME found [todo]",
+          "packages/engineering-assurance/src/verifiers/forbidden-code-verifier.ts:7 — Placeholder/empty export found [placeholder]",
+          "packages/engineering-assurance/src/verifiers/forbidden-code-verifier.ts:51 — Placeholder/empty export found [placeholder]",
+          "packages/engineering-assurance/src/verifiers/forbidden-code-verifier.ts:52 — Placeholder/empty export found [placeholder]",
+          "packages/engineering-assurance/src/verifiers/forbidden-code-verifier.ts:80 — Placeholder/empty export found [placeholder]",
+          "packages/engineering-assurance/src/verifiers/forbidden-code-verifier.ts:82 — Placeholder/empty export found [placeholder]",
+          "packages/engineering-assurance/src/verifiers/forbidden-code-verifier.ts:244 — Placeholder/empty export found [placeholder]",
+          "packages/shared/src/index.ts:1 — Placeholder/empty export found [placeholder]",
+          "apps/web/tests/placeholder.test.ts:2 — Placeholder/empty export found [placeholder]",
+          "apps/worker/src/index.ts:1 — Placeholder/empty export found [placeholder]"
         ]
       },
-      "evidence": [
-        "Files scanned: 40",
-        "Warnings: 28",
-        "Violations: 0"
-      ],
-      "durationMs": 2
+      "evidence": ["Files scanned: 54", "Commits scanned: 20", "Warnings: 21", "Violations: 0"],
+      "durationMs": 15
     },
     {
       "name": "dependency-audit",
       "status": "PASS",
-      "message": "No high/critical vulnerabilities (low/moderate may exist)",
+      "message": "No high/critical vulnerabilities in production dependencies",
+      "evidence": ["Total vulnerabilities: 0", "High/Critical: 0"],
+      "durationMs": 679
+    },
+    {
+      "name": "traceability-compliance",
+      "status": "PASS",
+      "message": "4 commit(s) verified — all include Engineering Traceability Block",
       "evidence": [
-        "Total vulnerabilities: 0",
-        "High/Critical: 0"
+        "Commits since 2026-08-04 16:53:00 UTC: 5",
+        "Source-modifying commits: 4",
+        "6e45f0f: ✅ full Engineering Traceability Block present",
+        "8ea103b: ✅ full Engineering Traceability Block present",
+        "52a6169: ✅ full Engineering Traceability Block present",
+        "27b0657: ✅ full Engineering Traceability Block present"
       ],
-      "durationMs": 1742
+      "durationMs": 21
+    },
+    {
+      "name": "prompt-structure",
+      "status": "PASS",
+      "message": "No implementation prompts to validate",
+      "evidence": [
+        "Implementation prompts found: 0",
+        "No implementation prompts in repository — Rule 42 not yet applicable"
+      ],
+      "durationMs": 2
+    },
+    {
+      "name": "performance-regression",
+      "status": "PASS",
+      "message": "All 3 benchmarks within threshold",
+      "details": {
+        "results": [
+          {
+            "name": "verify",
+            "measurements": [619, 620, 620],
+            "medianMs": 620,
+            "baselineMs": 3000,
+            "thresholdPercent": 15,
+            "ratio": 0.20666666666666667,
+            "status": "PASS",
+            "regression": false
+          },
+          {
+            "name": "architecture",
+            "measurements": [633, 613, 609],
+            "medianMs": 613,
+            "baselineMs": 2500,
+            "thresholdPercent": 15,
+            "ratio": 0.2452,
+            "status": "PASS",
+            "regression": false
+          },
+          {
+            "name": "serialization",
+            "measurements": [624, 619, 606],
+            "medianMs": 619,
+            "baselineMs": 2800,
+            "thresholdPercent": 15,
+            "ratio": 0.22107142857142856,
+            "status": "PASS",
+            "regression": false
+          }
+        ]
+      },
+      "evidence": [
+        "✅ Baseline loaded: baseline-performance.json",
+        "Threshold: 15% (WARN), 30% (FAIL)",
+        "Benchmark runs per metric: 3",
+        "Running benchmark: verify (proxy: pnpm verify:evidence)...",
+        "  verify: median=620ms, baseline=3000ms, ratio=0.21, status=PASS",
+        "Running benchmark: architecture...",
+        "  architecture: median=613ms, baseline=2500ms, ratio=0.25, status=PASS",
+        "Running benchmark: serialization...",
+        "  serialization: median=619ms, baseline=2800ms, ratio=0.22, status=PASS",
+        "Reports: performance-report.json, performance-summary.json, performance-history.json, benchmark-results.json"
+      ],
+      "durationMs": 5566
     }
   ],
   "overallStatus": "WARN",
-  "passCount": 5,
+  "passCount": 8,
   "failCount": 0,
   "warnCount": 2,
   "skipCount": 0,
-  "totalDurationMs": 1755
+  "totalDurationMs": 6292
 }

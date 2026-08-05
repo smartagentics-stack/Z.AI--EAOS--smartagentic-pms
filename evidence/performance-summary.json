@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-08-05T00:29:47.156Z",
+  "timestamp": "2026-08-05T07:05:40.625Z",
   "totalBenchmarks": 3,
   "pass": 3,
   "warn": 0,
@@ -8,23 +8,23 @@
   "results": [
     {
       "name": "verify",
-      "medianMs": 631,
+      "medianMs": 620,
       "baselineMs": 3000,
-      "ratio": 0.21033333333333334,
+      "ratio": 0.20666666666666667,
       "status": "PASS"
     },
     {
       "name": "architecture",
-      "medianMs": 636,
+      "medianMs": 613,
       "baselineMs": 2500,
-      "ratio": 0.2544,
+      "ratio": 0.2452,
       "status": "PASS"
     },
     {
       "name": "serialization",
-      "medianMs": 642,
+      "medianMs": 619,
       "baselineMs": 2800,
-      "ratio": 0.2292857142857143,
+      "ratio": 0.22107142857142856,
       "status": "PASS"
     }
   ]

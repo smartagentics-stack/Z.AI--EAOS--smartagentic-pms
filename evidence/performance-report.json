@@ -1,33 +1,33 @@
 {
-  "timestamp": "2026-08-05T00:29:47.156Z",
+  "timestamp": "2026-08-05T07:05:40.625Z",
   "results": [
     {
       "name": "verify",
-      "measurements": [633, 631, 627],
-      "medianMs": 631,
+      "measurements": [619, 620, 620],
+      "medianMs": 620,
       "baselineMs": 3000,
       "thresholdPercent": 15,
-      "ratio": 0.21033333333333334,
+      "ratio": 0.20666666666666667,
       "status": "PASS",
       "regression": false
     },
     {
       "name": "architecture",
-      "measurements": [639, 636, 633],
-      "medianMs": 636,
+      "measurements": [633, 613, 609],
+      "medianMs": 613,
       "baselineMs": 2500,
       "thresholdPercent": 15,
-      "ratio": 0.2544,
+      "ratio": 0.2452,
       "status": "PASS",
       "regression": false
     },
     {
       "name": "serialization",
-      "measurements": [641, 642, 647],
-      "medianMs": 642,
+      "measurements": [624, 619, 606],
+      "medianMs": 619,
       "baselineMs": 2800,
       "thresholdPercent": 15,
-      "ratio": 0.2292857142857143,
+      "ratio": 0.22107142857142856,
       "status": "PASS",
       "regression": false
     }

@@ -47,5 +47,11 @@
   "engines": {
     "node": ">=20.0.0",
     "pnpm": ">=9.0.0"
+  },
+  "pnpm": {
+    "overrides": {
+      "sharp": ">=0.35.0",
+      "postcss": ">=8.5.23"
+    }
   }
 }

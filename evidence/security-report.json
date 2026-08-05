@@ -1,48 +1,41 @@
-{
-  "timestamp": "2026-08-04T22:55:07.701Z",
-  "commit": "52a6169166b7a463672c6fd2e622bbc8190ba80a",
-  "branch": "main",
-  "checks": {
-    "evalUsage": {
-      "status": "PASS",
-      "found": 0,
-      "exempt": ["forbidden-code-verifier.ts", "__tests__/"]
-    },
-    "childProcessUsage": {
-      "status": "PASS",
-      "found": 4,
-      "locations": [
-        "packages/engineering-assurance/src/verifiers/forbidden-code-verifier.ts (exempt)",
-        "packages/engineering-assurance/src/verifiers/traceability-verifier.ts (exempt)",
-        "packages/engineering-assurance/src/verifiers/dependency-verifier.ts (exempt)",
-        "packages/engineering-assurance/src/reports/report-generator.ts (exempt)"
+[
+  {
+    "name": "forbidden-code",
+    "status": "WARN",
+    "message": "21 warning(s) (TODOs, console.log, placeholders, Rule 40 bare claims)",
+    "details": {
+      "warnings": [
+        "packages/ai/src/index.ts:1 — Placeholder/empty export found [placeholder]",
+        "packages/db/src/index.ts:1 — Placeholder/empty export found [placeholder]",
+        "packages/engineering-assurance/src/verifiers/__tests__/architecture-drift-verifier.test.ts:86 — Placeholder/empty export found [placeholder]",
+        "packages/engineering-assurance/src/verifiers/__tests__/architecture-drift-verifier.test.ts:87 — Placeholder/empty export found [placeholder]",
+        "packages/engineering-assurance/src/verifiers/__tests__/architecture-drift-verifier.test.ts:88 — Placeholder/empty export found [placeholder]",
+        "packages/engineering-assurance/src/verifiers/__tests__/architecture-drift-verifier.test.ts:89 — Placeholder/empty export found [placeholder]",
+        "packages/engineering-assurance/src/verifiers/__tests__/evidence-verifier.test.ts:31 — Placeholder/empty export found [placeholder]",
+        "packages/engineering-assurance/src/verifiers/__tests__/serialization-verifier.test.ts:39 — Placeholder/empty export found [placeholder]",
+        "packages/engineering-assurance/src/verifiers/__tests__/serialization-verifier.test.ts:75 — Placeholder/empty export found [placeholder]",
+        "packages/engineering-assurance/src/verifiers/forbidden-code-verifier.ts:5 — TODO/FIXME found [todo]",
+        "packages/engineering-assurance/src/verifiers/forbidden-code-verifier.ts:41 — TODO/FIXME found [todo]",
+        "packages/engineering-assurance/src/verifiers/forbidden-code-verifier.ts:80 — TODO/FIXME found [todo]",
+        "packages/engineering-assurance/src/verifiers/forbidden-code-verifier.ts:7 — Placeholder/empty export found [placeholder]",
+        "packages/engineering-assurance/src/verifiers/forbidden-code-verifier.ts:51 — Placeholder/empty export found [placeholder]",
+        "packages/engineering-assurance/src/verifiers/forbidden-code-verifier.ts:52 — Placeholder/empty export found [placeholder]",
+        "packages/engineering-assurance/src/verifiers/forbidden-code-verifier.ts:80 — Placeholder/empty export found [placeholder]",
+        "packages/engineering-assurance/src/verifiers/forbidden-code-verifier.ts:82 — Placeholder/empty export found [placeholder]",
+        "packages/engineering-assurance/src/verifiers/forbidden-code-verifier.ts:244 — Placeholder/empty export found [placeholder]",
+        "packages/shared/src/index.ts:1 — Placeholder/empty export found [placeholder]",
+        "apps/web/tests/placeholder.test.ts:2 — Placeholder/empty export found [placeholder]",
+        "apps/worker/src/index.ts:1 — Placeholder/empty export found [placeholder]"
       ]
     },
-    "functionConstructor": {
-      "status": "PASS",
-      "found": 0
-    },
-    "commandInjection": {
-      "status": "WARN",
-      "details": "execSync uses template literals with git hash/count variables — not user input, low risk",
-      "locations": [
-        "traceability-verifier.ts:82 (git diff-tree with hash)",
-        "forbidden-code-verifier.ts:132 (git log with count)"
-      ]
-    },
-    "hardcodedPaths": {
-      "status": "PASS",
-      "found": 0
-    },
-    "credentialExposure": {
-      "status": "PASS",
-      "found": 0,
-      "note": "No PATs, tokens, or secrets in source"
-    },
-    "unsafeRegex": {
-      "status": "PASS",
-      "found": 0
-    }
+    "evidence": ["Files scanned: 54", "Commits scanned: 20", "Warnings: 21", "Violations: 0"],
+    "durationMs": 15
   },
-  "overallSecurityStatus": "PASS"
-}
+  {
+    "name": "dependency-audit",
+    "status": "PASS",
+    "message": "No high/critical vulnerabilities in production dependencies",
+    "evidence": ["Total vulnerabilities: 0", "High/Critical: 0"],
+    "durationMs": 679
+  }
+]
