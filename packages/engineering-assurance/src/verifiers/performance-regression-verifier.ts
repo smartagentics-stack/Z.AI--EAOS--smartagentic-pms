@@ -61,11 +61,31 @@ function loadBaseline(repoRoot: string): BaselineFile {
     throw new Error(`Baseline file not found: ${BASELINE_FILE}`);
   }
   const content = readFileSync(baselinePath, 'utf-8');
+  let parsed: BaselineFile;
   try {
-    return JSON.parse(content) as BaselineFile;
+    parsed = JSON.parse(content) as BaselineFile;
   } catch {
     throw new Error(`Baseline file is corrupt (invalid JSON): ${BASELINE_FILE}`);
   }
+
+  // Validate each metric has a positive finite number.
+  // Without this guard, a baseline like `{ "verify": { "maxExecutionMs": "NaN" } }`
+  // would parse successfully but silently break every threshold comparison:
+  //   - `baselineMs <= 0` is false for the string "NaN" (string vs number comparison)
+  //   - `actualMs / "NaN"` produces NaN, which makes `ratio > threshold` always false
+  //   - Result: status = PASS for a poisoned baseline → defeats the entire gate.
+  for (const [key, metric] of Object.entries(parsed)) {
+    if (metric != null) {
+      const ms = (metric as BaselineMetric).maxExecutionMs;
+      if (typeof ms !== 'number' || !Number.isFinite(ms) || ms <= 0) {
+        throw new Error(
+          `Invalid baseline metric '${key}.maxExecutionMs': expected positive finite number, got ${JSON.stringify(ms)}`,
+        );
+      }
+    }
+  }
+
+  return parsed;
 }
 
 function median(values: number[]): number {
@@ -112,10 +132,13 @@ function benchmarkVerify(repoRoot: string): number[] {
       // Use verify:evidence as proxy for overall verify performance.
       // Cannot run full `pnpm verify` because it includes this performance
       // verifier itself, causing infinite recursion.
-      execSync('pnpm verify:evidence > /dev/null 2>&1', {
+      // NOTE: use `stdio: 'ignore'` instead of `> /dev/null 2>&1` so the
+      // benchmark works on Windows too (no /dev/null on Win32).
+      execSync('pnpm verify:evidence', {
         cwd: repoRoot,
         encoding: 'utf-8',
         timeout: 10000,
+        stdio: 'ignore',
       });
     } catch {
       // Benchmark doesn't care about verify result, only timing
@@ -126,10 +149,12 @@ function benchmarkVerify(repoRoot: string): number[] {
 function benchmarkArchitecture(repoRoot: string): number[] {
   return runBenchmark(() => {
     try {
-      execSync('pnpm verify:architecture > /dev/null 2>&1', {
+      // `stdio: 'ignore'` for Windows compatibility (no /dev/null on Win32).
+      execSync('pnpm verify:architecture', {
         cwd: repoRoot,
         encoding: 'utf-8',
         timeout: 10000,
+        stdio: 'ignore',
       });
     } catch {
       // Timing only
@@ -140,10 +165,12 @@ function benchmarkArchitecture(repoRoot: string): number[] {
 function benchmarkSerialization(repoRoot: string): number[] {
   return runBenchmark(() => {
     try {
-      execSync('pnpm verify:serialization > /dev/null 2>&1', {
+      // `stdio: 'ignore'` for Windows compatibility (no /dev/null on Win32).
+      execSync('pnpm verify:serialization', {
         cwd: repoRoot,
         encoding: 'utf-8',
         timeout: 10000,
+        stdio: 'ignore',
       });
     } catch {
       // Timing only
@@ -301,7 +328,7 @@ export const performanceRegressionVerifier: Verifier = {
 
     const results: BenchmarkResult[] = [];
 
-    evidence.push('Running benchmark: verify (full suite)...');
+    evidence.push('Running benchmark: verify (proxy: pnpm verify:evidence)...');
     const verifyMeasurements = benchmarkVerify(ctx.repoRoot);
     const verifyResult = evaluateBenchmark(
       'verify',

@@ -17,11 +17,16 @@
 import Database from 'better-sqlite3';
 import { randomUUID } from 'node:crypto';
 import { writeFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { tmpdir } from 'node:os';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 // ─── Setup ───────────────────────────────────────────────────────────────────
 
-const DB_A = '/tmp/spike-01-evidence-a.db';
-const DB_B = '/tmp/spike-01-evidence-b.db';
+const DB_A = join(tmpdir(), 'spike-01-evidence-a.db');
+const DB_B = join(tmpdir(), 'spike-01-evidence-b.db');
 
 function setupDatabase(path: string): Database.Database {
   const db = new Database(path);
@@ -56,9 +61,21 @@ console.log('');
 
 // ─── Stage 2: SQLite row immediately after insert ────────────────────────────
 
-dbA.prepare('INSERT OR IGNORE INTO sync_records (id, idempotencyKey, name, value, timestamp, clientId, sequenceNumber, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)').run(
-  record.id, record.idempotencyKey, record.payload.name, record.payload.value, record.payload.timestamp, record.clientId, record.sequenceNumber, record.createdAt, record.updatedAt
-);
+dbA
+  .prepare(
+    'INSERT OR IGNORE INTO sync_records (id, idempotencyKey, name, value, timestamp, clientId, sequenceNumber, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+  )
+  .run(
+    record.id,
+    record.idempotencyKey,
+    record.payload.name,
+    record.payload.value,
+    record.payload.timestamp,
+    record.clientId,
+    record.sequenceNumber,
+    record.createdAt,
+    record.updatedAt,
+  );
 
 const sqliteRow = dbA.prepare('SELECT * FROM sync_records WHERE idempotencyKey = ?').get('A-1');
 
@@ -68,7 +85,9 @@ console.log('');
 
 // ─── Stage 3: SQLite row returned by replay SELECT ───────────────────────────
 
-const replayRows = dbA.prepare('SELECT * FROM sync_records WHERE clientId = ? ORDER BY sequenceNumber ASC').all('A');
+const replayRows = dbA
+  .prepare('SELECT * FROM sync_records WHERE clientId = ? ORDER BY sequenceNumber ASC')
+  .all('A');
 const replayRow = replayRows[0];
 
 console.log('=== STAGE 3: SQLite row returned by replay SELECT ===');
@@ -134,8 +153,12 @@ for (const s of stages) {
   }
 }
 
-console.log('Field                    | Stage 1 (Original)           | Stage 2 (SQLite)             | Stage 3 (Replay SELECT)      | Stage 6 (Server received)');
-console.log('-------------------------|------------------------------|------------------------------|------------------------------|------------------------------');
+console.log(
+  'Field                    | Stage 1 (Original)           | Stage 2 (SQLite)             | Stage 3 (Replay SELECT)      | Stage 6 (Server received)',
+);
+console.log(
+  '-------------------------|------------------------------|------------------------------|------------------------------|------------------------------',
+);
 for (const field of allFields) {
   let row = field.padEnd(24) + ' | ';
   for (const s of stages) {
@@ -154,7 +177,9 @@ console.log('');
 for (const s of stages) {
   const hasPayload = (s.obj as Record<string, unknown>)?.payload !== undefined;
   const hasName = (s.obj as Record<string, unknown>)?.name !== undefined;
-  console.log(`${s.stage}: payload=${hasPayload ? 'EXISTS' : 'MISSING'}, name=${hasName ? 'EXISTS (flat)' : 'MISSING'}`);
+  console.log(
+    `${s.stage}: payload=${hasPayload ? 'EXISTS' : 'MISSING'}, name=${hasName ? 'EXISTS (flat)' : 'MISSING'}`,
+  );
 }
 
 console.log('');
@@ -169,17 +194,27 @@ for (const s of stages) {
     console.log(`SHAPE CHANGE: payload field DISAPPEARED at stage "${s.stage}"`);
     console.log('  Before this stage: record.payload = { name, value, timestamp } (nested object)');
     console.log('  After this stage: record.name, record.value, record.timestamp (flat fields)');
-    console.log('  Root cause: SQLite stores payload fields as separate columns, not as a JSON object.');
+    console.log(
+      '  Root cause: SQLite stores payload fields as separate columns, not as a JSON object.',
+    );
     console.log('  SELECT * returns flat columns, not the original nested structure.');
   }
   prevPayload = currPayload;
 }
 
 // Write evidence to file
-writeFileSync('/home/z/smartagentics/spikes/SPIKE-01/evidence-phase1.json', JSON.stringify({
-  stages: stages.map(s => ({ stage: s.stage, object: s.obj })),
-  transformationPoint: 'SQLite SELECT * returns flat columns (name, value, timestamp) instead of nested payload object',
-}, null, 2));
+writeFileSync(
+  join(__dirname, 'evidence-phase1.json'),
+  JSON.stringify(
+    {
+      stages: stages.map((s) => ({ stage: s.stage, object: s.obj })),
+      transformationPoint:
+        'SQLite SELECT * returns flat columns (name, value, timestamp) instead of nested payload object',
+    },
+    null,
+    2,
+  ),
+);
 
 console.log('');
 console.log('Evidence written to spikes/SPIKE-01/evidence-phase1.json');

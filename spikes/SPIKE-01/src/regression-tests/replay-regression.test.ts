@@ -14,6 +14,8 @@ import * as net from 'node:net';
 import { createSyncServer } from '../sync-server.js';
 import { createSyncClient } from '../sync-client.js';
 import type { SyncRecord } from '../canonical-record.js';
+import { join } from 'node:path';
+import { tmpdir } from 'node:os';
 
 function setupDatabase(path: string): Database.Database {
   const db = new Database(path);
@@ -33,8 +35,8 @@ describe('Regression Test 2: Replay After Disconnect', () => {
   let serverB: net.Server;
 
   beforeEach(() => {
-    dbA = setupDatabase('/tmp/spike-01-regression-a.db');
-    dbB = setupDatabase('/tmp/spike-01-regression-b.db');
+    dbA = setupDatabase(join(tmpdir(), 'spike-01-regression-a.db'));
+    dbB = setupDatabase(join(tmpdir(), 'spike-01-regression-b.db'));
   });
 
   afterEach(() => {
@@ -57,7 +59,7 @@ describe('Regression Test 2: Replay After Disconnect', () => {
     // Connect both clients
     await clientA.connect();
     await clientB.connect();
-    await new Promise(r => setTimeout(r, 500));
+    await new Promise((r) => setTimeout(r, 500));
 
     // Write 10 records while connected
     for (let i = 1; i <= 10; i++) {
@@ -65,8 +67,10 @@ describe('Regression Test 2: Replay After Disconnect', () => {
         id: randomUUID(),
         idempotencyKey: `A-${i}`,
         payload: { name: `r-${i}`, value: i, timestamp: Date.now() },
-        clientId: 'A', sequenceNumber: i,
-        createdAt: Date.now(), updatedAt: Date.now(),
+        clientId: 'A',
+        sequenceNumber: i,
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
       };
       await clientA.writeRecord(record);
     }
@@ -77,15 +81,17 @@ describe('Regression Test 2: Replay After Disconnect', () => {
         id: randomUUID(),
         idempotencyKey: `B-${i}`,
         payload: { name: `r-${i}`, value: i, timestamp: Date.now() },
-        clientId: 'B', sequenceNumber: i,
-        createdAt: Date.now(), updatedAt: Date.now(),
+        clientId: 'B',
+        sequenceNumber: i,
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
       };
       await clientB.writeRecord(record);
     }
 
     // Disconnect A
     clientA.disconnect();
-    await new Promise(r => setTimeout(r, 500));
+    await new Promise((r) => setTimeout(r, 500));
 
     // Write 50 more records while A is disconnected
     for (let i = 11; i <= 60; i++) {
@@ -93,8 +99,10 @@ describe('Regression Test 2: Replay After Disconnect', () => {
         id: randomUUID(),
         idempotencyKey: `A-${i}`,
         payload: { name: `r-${i}`, value: i, timestamp: Date.now() },
-        clientId: 'A', sequenceNumber: i,
-        createdAt: Date.now(), updatedAt: Date.now(),
+        clientId: 'A',
+        sequenceNumber: i,
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
       };
       await clientA.writeRecord(record);
     }
@@ -102,14 +110,18 @@ describe('Regression Test 2: Replay After Disconnect', () => {
     // Reconnect A
     await clientA.connect();
     // Wait for replay to complete
-    await new Promise(r => setTimeout(r, 3000));
+    await new Promise((r) => setTimeout(r, 3000));
 
     // Verify: all records should be in both databases
-    const recordsA = dbA.prepare('SELECT idempotencyKey FROM sync_records').all() as { idempotencyKey: string }[];
-    const recordsB = dbB.prepare('SELECT idempotencyKey FROM sync_records').all() as { idempotencyKey: string }[];
+    const recordsA = dbA.prepare('SELECT idempotencyKey FROM sync_records').all() as {
+      idempotencyKey: string;
+    }[];
+    const recordsB = dbB.prepare('SELECT idempotencyKey FROM sync_records').all() as {
+      idempotencyKey: string;
+    }[];
 
-    const keysA = new Set(recordsA.map(r => r.idempotencyKey));
-    const keysB = new Set(recordsB.map(r => r.idempotencyKey));
+    const keysA = new Set(recordsA.map((r) => r.idempotencyKey));
+    const keysB = new Set(recordsB.map((r) => r.idempotencyKey));
 
     // A should have all 65 records (60 A + 5 B)
     expect(keysA.size).toBe(65);
@@ -118,10 +130,10 @@ describe('Regression Test 2: Replay After Disconnect', () => {
     expect(keysB.size).toBe(65);
 
     // No missing records
-    const missingFromB = [...keysA].filter(k => !keysB.has(k));
+    const missingFromB = [...keysA].filter((k) => !keysB.has(k));
     expect(missingFromB).toHaveLength(0);
 
-    const missingFromA = [...keysB].filter(k => !keysA.has(k));
+    const missingFromA = [...keysB].filter((k) => !keysA.has(k));
     expect(missingFromA).toHaveLength(0);
 
     // No duplicates

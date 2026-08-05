@@ -14,20 +14,32 @@ import { execSync } from 'node:child_process';
 import type { Verifier, VerificationResult, VerificationContext } from '../types/index.js';
 
 /**
- * Pnpm audit vulnerability entry.
+ * Pnpm 9.x audit JSON output structure (subset — only fields we use).
  * See: https://pnpm.io/cli/audit#--json
- */
-interface PnpmAuditVulnerability {
-  readonly severity: 'low' | 'moderate' | 'high' | 'critical';
-  readonly name?: string;
-  readonly via?: unknown;
-}
-
-/**
- * Pnpm audit JSON output structure (subset — only fields we use).
+ *
+ * IMPORTANT: pnpm 9.x changed the audit schema. The legacy
+ * `audit.vulnerabilities` field NO LONGER EXISTS. Aggregate counts live under
+ * `audit.metadata.vulnerabilities` (info/low/moderate/high/critical), and
+ * per-advisory detail lives under `audit.advisories` (keyed by advisory ID).
  */
 interface PnpmAuditResult {
-  readonly vulnerabilities?: Record<string, PnpmAuditVulnerability>;
+  readonly metadata?: {
+    readonly vulnerabilities?: {
+      readonly info?: number;
+      readonly low?: number;
+      readonly moderate?: number;
+      readonly high?: number;
+      readonly critical?: number;
+    };
+  };
+  readonly advisories?: Record<
+    string,
+    {
+      readonly severity: string;
+      readonly module_name?: string;
+      readonly vulnerable_versions?: string;
+    }
+  >;
 }
 
 /**
@@ -42,12 +54,51 @@ interface ExecSyncError {
 }
 
 /**
- * Filter vulnerabilities to only high/critical severity.
+ * Count high/critical vulnerabilities from pnpm 9.x audit output.
+ *
+ * Reads from BOTH sources and takes the max (safety: if EITHER method detects
+ * vulns, we fail):
+ *  - `metadata.vulnerabilities` — aggregate counts (info/low/moderate/high/critical)
+ *  - `advisories` — per-advisory detail with a `severity` field
+ *
+ * Returns total vuln count, high/critical count, and human-readable details
+ * (package + severity) for evidence.
  */
-function filterHighCritical(
-  vulns: Record<string, PnpmAuditVulnerability>,
-): PnpmAuditVulnerability[] {
-  return Object.values(vulns).filter((v) => v.severity === 'high' || v.severity === 'critical');
+function countHighCritical(audit: PnpmAuditResult): {
+  total: number;
+  highCritical: number;
+  details: string[];
+} {
+  // Method 1: Read counts from metadata.vulnerabilities
+  const meta = audit.metadata?.vulnerabilities;
+  const highFromMeta = meta?.high ?? 0;
+  const criticalFromMeta = meta?.critical ?? 0;
+  const highCriticalFromMeta = highFromMeta + criticalFromMeta;
+
+  // Method 2: Count from advisories (cross-check)
+  const advisories = audit.advisories ?? {};
+  const highCriticalAdvisories = Object.values(advisories).filter(
+    (a) => a.severity === 'high' || a.severity === 'critical',
+  );
+  const highCriticalFromAdvisories = highCriticalAdvisories.length;
+
+  // Use the higher count (safety: if either method detects vulns, fail)
+  const highCritical = Math.max(highCriticalFromMeta, highCriticalFromAdvisories);
+
+  // Total vulnerabilities from metadata
+  const total =
+    (meta?.info ?? 0) +
+    (meta?.low ?? 0) +
+    (meta?.moderate ?? 0) +
+    (meta?.high ?? 0) +
+    (meta?.critical ?? 0);
+
+  // Build details for evidence
+  const details = highCriticalAdvisories.map(
+    (a) => `${a.module_name || 'unknown'} (${a.severity})`,
+  );
+
+  return { total, highCritical, details };
 }
 
 export const dependencyVerifier: Verifier = {
@@ -65,17 +116,19 @@ export const dependencyVerifier: Verifier = {
       });
 
       const audit = JSON.parse(output) as PnpmAuditResult;
-      const vulns = audit.vulnerabilities || {};
-      const highVulns = filterHighCritical(vulns);
+      const { total, highCritical, details } = countHighCritical(audit);
 
-      evidence.push(`Total vulnerabilities: ${Object.keys(vulns).length}`);
-      evidence.push(`High/Critical: ${highVulns.length}`);
+      evidence.push(`Total vulnerabilities: ${total}`);
+      evidence.push(`High/Critical: ${highCritical}`);
+      if (details.length > 0) {
+        evidence.push(`Affected packages: ${details.join(', ')}`);
+      }
 
-      if (highVulns.length > 0) {
+      if (highCritical > 0) {
         return {
           name: this.name,
           status: 'FAIL',
-          message: `${highVulns.length} high/critical vulnerability(ies) found`,
+          message: `${highCritical} high/critical vulnerability(ies) found`,
           evidence,
         };
       }
@@ -92,17 +145,19 @@ export const dependencyVerifier: Verifier = {
       if (execErr.stdout) {
         try {
           const audit = JSON.parse(execErr.stdout) as PnpmAuditResult;
-          const vulns = audit.vulnerabilities || {};
-          const highVulns = filterHighCritical(vulns);
+          const { total, highCritical, details } = countHighCritical(audit);
 
-          evidence.push(`Total vulnerabilities: ${Object.keys(vulns).length}`);
-          evidence.push(`High/Critical: ${highVulns.length}`);
+          evidence.push(`Total vulnerabilities: ${total}`);
+          evidence.push(`High/Critical: ${highCritical}`);
+          if (details.length > 0) {
+            evidence.push(`Affected packages: ${details.join(', ')}`);
+          }
 
-          if (highVulns.length > 0) {
+          if (highCritical > 0) {
             return {
               name: this.name,
               status: 'FAIL',
-              message: `${highVulns.length} high/critical vulnerability(ies) found`,
+              message: `${highCritical} high/critical vulnerability(ies) found`,
               evidence,
             };
           }
@@ -114,11 +169,16 @@ export const dependencyVerifier: Verifier = {
             evidence,
           };
         } catch {
-          evidence.push('Audit JSON parse failed — treating as pass');
+          // Fail-closed-adjacent: do NOT silently PASS when we cannot parse the
+          // audit output. A hard FAIL is inappropriate because the audit may
+          // have errored for non-security reasons (e.g. registry timeout), but
+          // a silent PASS would hide a real vuln dump we failed to parse.
+          // WARN surfaces the problem for human triage.
+          evidence.push('Audit JSON parse failed — treating as WARN (cannot verify)');
           return {
             name: this.name,
-            status: 'PASS',
-            message: 'Dependency audit completed (could not parse JSON)',
+            status: 'WARN',
+            message: 'Dependency audit ran but output could not be parsed',
             evidence,
           };
         }

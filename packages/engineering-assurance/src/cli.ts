@@ -13,11 +13,28 @@
  *   npx eae dependencies       — Run only dependency audit
  */
 
-import { resolve } from 'node:path';
+import { resolve, join } from 'node:path';
+import { existsSync } from 'node:fs';
 import { runAllVerifiers, ALL_VERIFIERS } from './index.js';
 import type { Verifier, VerificationContext } from './types/index.js';
 
-const repoRoot = resolve(process.cwd());
+/**
+ * Walk up from startDir to find the nearest repository root.
+ * Recognized repo-root markers: a `.git` directory, or the workspace
+ * `baseline-performance.json` file. Falls back to startDir if none found.
+ */
+function findRepoRoot(startDir: string): string {
+  let dir = startDir;
+  while (dir !== resolve(dir, '..')) {
+    if (existsSync(join(dir, '.git')) || existsSync(join(dir, 'baseline-performance.json'))) {
+      return dir;
+    }
+    dir = resolve(dir, '..');
+  }
+  return startDir; // fallback to cwd
+}
+
+const repoRoot = findRepoRoot(process.cwd());
 const ctx: VerificationContext = {
   repoRoot,
   evidenceDir: resolve(repoRoot, 'evidence'),
