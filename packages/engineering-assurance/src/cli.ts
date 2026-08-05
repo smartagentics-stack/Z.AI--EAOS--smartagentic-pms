@@ -44,6 +44,7 @@ const VERIFIER_MAP: Record<string, Verifier> = {
   dependencies: requireVerifier('dependency-audit'),
   traceability: requireVerifier('traceability-compliance'),
   prompt: requireVerifier('prompt-structure'),
+  performance: requireVerifier('performance-regression'),
 };
 
 /**

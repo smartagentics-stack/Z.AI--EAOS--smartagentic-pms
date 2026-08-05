@@ -30,6 +30,7 @@
     "verify:dependencies": "tsx packages/engineering-assurance/src/cli.ts dependencies",
     "verify:traceability": "tsx packages/engineering-assurance/src/cli.ts traceability",
     "verify:prompt": "tsx packages/engineering-assurance/src/cli.ts prompt",
+    "verify:performance": "tsx packages/engineering-assurance/src/cli.ts performance",
     "verify:ear": "tsx packages/engineering-assurance/src/cli.ts all"
   },
   "devDependencies": {

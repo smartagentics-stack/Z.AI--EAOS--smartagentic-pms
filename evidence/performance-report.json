@@ -1,0 +1,35 @@
+{
+  "timestamp": "2026-08-05T00:29:47.156Z",
+  "results": [
+    {
+      "name": "verify",
+      "measurements": [633, 631, 627],
+      "medianMs": 631,
+      "baselineMs": 3000,
+      "thresholdPercent": 15,
+      "ratio": 0.21033333333333334,
+      "status": "PASS",
+      "regression": false
+    },
+    {
+      "name": "architecture",
+      "measurements": [639, 636, 633],
+      "medianMs": 636,
+      "baselineMs": 2500,
+      "thresholdPercent": 15,
+      "ratio": 0.2544,
+      "status": "PASS",
+      "regression": false
+    },
+    {
+      "name": "serialization",
+      "measurements": [641, 642, 647],
+      "medianMs": 642,
+      "baselineMs": 2800,
+      "thresholdPercent": 15,
+      "ratio": 0.2292857142857143,
+      "status": "PASS",
+      "regression": false
+    }
+  ]
+}

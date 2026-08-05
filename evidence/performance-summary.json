@@ -1,0 +1,31 @@
+{
+  "timestamp": "2026-08-05T00:29:47.156Z",
+  "totalBenchmarks": 3,
+  "pass": 3,
+  "warn": 0,
+  "fail": 0,
+  "overallStatus": "PASS",
+  "results": [
+    {
+      "name": "verify",
+      "medianMs": 631,
+      "baselineMs": 3000,
+      "ratio": 0.21033333333333334,
+      "status": "PASS"
+    },
+    {
+      "name": "architecture",
+      "medianMs": 636,
+      "baselineMs": 2500,
+      "ratio": 0.2544,
+      "status": "PASS"
+    },
+    {
+      "name": "serialization",
+      "medianMs": 642,
+      "baselineMs": 2800,
+      "ratio": 0.2292857142857143,
+      "status": "PASS"
+    }
+  ]
+}

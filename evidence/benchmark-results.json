@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-08-05T00:29:47.157Z",
+  "runs": 3,
+  "results": [
+    {
+      "name": "verify",
+      "measurements": [633, 631, 627],
+      "medianMs": 631
+    },
+    {
+      "name": "architecture",
+      "measurements": [639, 636, 633],
+      "medianMs": 636
+    },
+    {
+      "name": "serialization",
+      "measurements": [641, 642, 647],
+      "medianMs": 642
+    }
+  ]
+}
