@@ -1,109 +1,5 @@
 [
   {
-    "timestamp": "2026-08-05T00:27:23.809Z",
-    "results": [
-      {
-        "name": "verify",
-        "medianMs": 1215,
-        "baselineMs": 2500,
-        "ratio": 0.486,
-        "status": "PASS"
-      },
-      {
-        "name": "architecture",
-        "medianMs": 808,
-        "baselineMs": 800,
-        "ratio": 1.01,
-        "status": "PASS"
-      },
-      {
-        "name": "serialization",
-        "medianMs": 711,
-        "baselineMs": 800,
-        "ratio": 0.88875,
-        "status": "PASS"
-      }
-    ]
-  },
-  {
-    "timestamp": "2026-08-05T00:27:26.085Z",
-    "results": [
-      {
-        "name": "verify",
-        "medianMs": 1044,
-        "baselineMs": 2500,
-        "ratio": 0.4176,
-        "status": "PASS"
-      },
-      {
-        "name": "architecture",
-        "medianMs": 884,
-        "baselineMs": 800,
-        "ratio": 1.105,
-        "status": "PASS"
-      },
-      {
-        "name": "serialization",
-        "medianMs": 983,
-        "baselineMs": 800,
-        "ratio": 1.22875,
-        "status": "WARN"
-      }
-    ]
-  },
-  {
-    "timestamp": "2026-08-05T00:27:27.684Z",
-    "results": [
-      {
-        "name": "verify",
-        "medianMs": 1083,
-        "baselineMs": 2500,
-        "ratio": 0.4332,
-        "status": "PASS"
-      },
-      {
-        "name": "architecture",
-        "medianMs": 935,
-        "baselineMs": 800,
-        "ratio": 1.16875,
-        "status": "WARN"
-      },
-      {
-        "name": "serialization",
-        "medianMs": 603,
-        "baselineMs": 800,
-        "ratio": 0.75375,
-        "status": "PASS"
-      }
-    ]
-  },
-  {
-    "timestamp": "2026-08-05T00:27:40.556Z",
-    "results": [
-      {
-        "name": "verify",
-        "medianMs": 11,
-        "baselineMs": 2500,
-        "ratio": 0.0044,
-        "status": "PASS"
-      },
-      {
-        "name": "architecture",
-        "medianMs": 11,
-        "baselineMs": 800,
-        "ratio": 0.01375,
-        "status": "PASS"
-      },
-      {
-        "name": "serialization",
-        "medianMs": 9,
-        "baselineMs": 800,
-        "ratio": 0.01125,
-        "status": "PASS"
-      }
-    ]
-  },
-  {
     "timestamp": "2026-08-05T00:27:41.164Z",
     "results": [
       {
@@ -1295,6 +1191,110 @@
         "medianMs": 619,
         "baselineMs": 2800,
         "ratio": 0.22107142857142856,
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-08-25T16:50:59.557Z",
+    "results": [
+      {
+        "name": "verify",
+        "medianMs": 641,
+        "baselineMs": 3000,
+        "ratio": 0.21366666666666667,
+        "status": "PASS"
+      },
+      {
+        "name": "architecture",
+        "medianMs": 711,
+        "baselineMs": 2500,
+        "ratio": 0.2844,
+        "status": "PASS"
+      },
+      {
+        "name": "serialization",
+        "medianMs": 630,
+        "baselineMs": 2800,
+        "ratio": 0.225,
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-08-25T16:52:50.762Z",
+    "results": [
+      {
+        "name": "verify",
+        "medianMs": 649,
+        "baselineMs": 3000,
+        "ratio": 0.21633333333333332,
+        "status": "PASS"
+      },
+      {
+        "name": "architecture",
+        "medianMs": 656,
+        "baselineMs": 2500,
+        "ratio": 0.2624,
+        "status": "PASS"
+      },
+      {
+        "name": "serialization",
+        "medianMs": 661,
+        "baselineMs": 2800,
+        "ratio": 0.23607142857142857,
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-08-25T16:53:23.506Z",
+    "results": [
+      {
+        "name": "verify",
+        "medianMs": 643,
+        "baselineMs": 3000,
+        "ratio": 0.21433333333333332,
+        "status": "PASS"
+      },
+      {
+        "name": "architecture",
+        "medianMs": 675,
+        "baselineMs": 2500,
+        "ratio": 0.27,
+        "status": "PASS"
+      },
+      {
+        "name": "serialization",
+        "medianMs": 656,
+        "baselineMs": 2800,
+        "ratio": 0.2342857142857143,
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-08-25T16:54:12.257Z",
+    "results": [
+      {
+        "name": "verify",
+        "medianMs": 655,
+        "baselineMs": 3000,
+        "ratio": 0.21833333333333332,
+        "status": "PASS"
+      },
+      {
+        "name": "architecture",
+        "medianMs": 720,
+        "baselineMs": 2500,
+        "ratio": 0.288,
+        "status": "PASS"
+      },
+      {
+        "name": "serialization",
+        "medianMs": 637,
+        "baselineMs": 2800,
+        "ratio": 0.2275,
         "status": "PASS"
       }
     ]

@@ -7,5 +7,5 @@
     "ADR-012-no-flat-sqlite-columns: checked 8 files, 0 violation(s)",
     "ADR-006-no-postgres-in-spike: checked 8 files, 0 violation(s)"
   ],
-  "durationMs": 4
+  "durationMs": 2
 }

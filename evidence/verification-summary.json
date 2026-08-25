@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-08-05T07:05:40.638Z",
-  "commit": "6e45f0f3cd5497f35fb5d107ec0d5f756bddc19a",
+  "timestamp": "2026-08-25T16:54:12.263Z",
+  "commit": "e0fba4d8c0528bcdfa08807f59a57524160c028e",
   "branch": "main",
   "results": [
     {
@@ -83,7 +83,7 @@
         "ADR-012-no-flat-sqlite-columns: checked 8 files, 0 violation(s)",
         "ADR-006-no-postgres-in-spike: checked 8 files, 0 violation(s)"
       ],
-      "durationMs": 4
+      "durationMs": 2
     },
     {
       "name": "serialization-consistency",
@@ -96,7 +96,7 @@
         "Original payload.name: test",
         "Reconstructed payload.name: test"
       ],
-      "durationMs": 4
+      "durationMs": 3
     },
     {
       "name": "forbidden-code",
@@ -128,28 +128,28 @@
         ]
       },
       "evidence": ["Files scanned: 54", "Commits scanned: 20", "Warnings: 21", "Violations: 0"],
-      "durationMs": 15
+      "durationMs": 25
     },
     {
       "name": "dependency-audit",
       "status": "PASS",
       "message": "No high/critical vulnerabilities in production dependencies",
       "evidence": ["Total vulnerabilities: 0", "High/Critical: 0"],
-      "durationMs": 679
+      "durationMs": 785
     },
     {
       "name": "traceability-compliance",
       "status": "PASS",
       "message": "4 commit(s) verified — all include Engineering Traceability Block",
       "evidence": [
-        "Commits since 2026-08-04 16:53:00 UTC: 5",
+        "Commits since 2026-08-04 16:53:00 UTC: 6",
         "Source-modifying commits: 4",
         "6e45f0f: ✅ full Engineering Traceability Block present",
         "8ea103b: ✅ full Engineering Traceability Block present",
         "52a6169: ✅ full Engineering Traceability Block present",
         "27b0657: ✅ full Engineering Traceability Block present"
       ],
-      "durationMs": 21
+      "durationMs": 26
     },
     {
       "name": "prompt-structure",
@@ -159,7 +159,7 @@
         "Implementation prompts found: 0",
         "No implementation prompts in repository — Rule 42 not yet applicable"
       ],
-      "durationMs": 2
+      "durationMs": 3
     },
     {
       "name": "performance-regression",
@@ -169,31 +169,31 @@
         "results": [
           {
             "name": "verify",
-            "measurements": [619, 620, 620],
-            "medianMs": 620,
+            "measurements": [699, 655, 649],
+            "medianMs": 655,
             "baselineMs": 3000,
             "thresholdPercent": 15,
-            "ratio": 0.20666666666666667,
+            "ratio": 0.21833333333333332,
             "status": "PASS",
             "regression": false
           },
           {
             "name": "architecture",
-            "measurements": [633, 613, 609],
-            "medianMs": 613,
+            "measurements": [720, 809, 639],
+            "medianMs": 720,
             "baselineMs": 2500,
             "thresholdPercent": 15,
-            "ratio": 0.2452,
+            "ratio": 0.288,
             "status": "PASS",
             "regression": false
           },
           {
             "name": "serialization",
-            "measurements": [624, 619, 606],
-            "medianMs": 619,
+            "measurements": [637, 651, 633],
+            "medianMs": 637,
             "baselineMs": 2800,
             "thresholdPercent": 15,
-            "ratio": 0.22107142857142856,
+            "ratio": 0.2275,
             "status": "PASS",
             "regression": false
           }
@@ -204,14 +204,14 @@
         "Threshold: 15% (WARN), 30% (FAIL)",
         "Benchmark runs per metric: 3",
         "Running benchmark: verify (proxy: pnpm verify:evidence)...",
-        "  verify: median=620ms, baseline=3000ms, ratio=0.21, status=PASS",
+        "  verify: median=655ms, baseline=3000ms, ratio=0.22, status=PASS",
         "Running benchmark: architecture...",
-        "  architecture: median=613ms, baseline=2500ms, ratio=0.25, status=PASS",
+        "  architecture: median=720ms, baseline=2500ms, ratio=0.29, status=PASS",
         "Running benchmark: serialization...",
-        "  serialization: median=619ms, baseline=2800ms, ratio=0.22, status=PASS",
+        "  serialization: median=637ms, baseline=2800ms, ratio=0.23, status=PASS",
         "Reports: performance-report.json, performance-summary.json, performance-history.json, benchmark-results.json"
       ],
-      "durationMs": 5566
+      "durationMs": 6093
     }
   ],
   "overallStatus": "WARN",
@@ -219,5 +219,5 @@
   "failCount": 0,
   "warnCount": 2,
   "skipCount": 0,
-  "totalDurationMs": 6292
+  "totalDurationMs": 6938
 }

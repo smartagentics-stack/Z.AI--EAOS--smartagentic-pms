@@ -29,13 +29,13 @@
       ]
     },
     "evidence": ["Files scanned: 54", "Commits scanned: 20", "Warnings: 21", "Violations: 0"],
-    "durationMs": 15
+    "durationMs": 25
   },
   {
     "name": "dependency-audit",
     "status": "PASS",
     "message": "No high/critical vulnerabilities in production dependencies",
     "evidence": ["Total vulnerabilities: 0", "High/Critical: 0"],
-    "durationMs": 679
+    "durationMs": 785
   }
 ]

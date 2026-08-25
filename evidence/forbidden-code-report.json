@@ -28,5 +28,5 @@
     ]
   },
   "evidence": ["Files scanned: 54", "Commits scanned: 20", "Warnings: 21", "Violations: 0"],
-  "durationMs": 15
+  "durationMs": 25
 }
