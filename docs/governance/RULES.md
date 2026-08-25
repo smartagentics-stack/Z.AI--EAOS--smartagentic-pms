@@ -552,7 +552,7 @@ Every rule in this registry is classified as one of:
 - **Type:** Machine-Enforceable
 - **Enforcement Mechanism:** `pnpm verify:traceability` (proposed — scans commit messages)
 - **Source Document:** Proposed in `docs/governance/27-Rules-39-43-*.md` (not yet created)
-- **Status:** Proposed
+- **Status:** Active
 - **Related ADR(s):** —
 - **Related Verification Tool:** `traceability-verifier.ts` (proposed)
 - **Last Updated Commit:** — (not yet adopted)
@@ -564,7 +564,7 @@ Every rule in this registry is classified as one of:
 - **Type:** Machine-Enforceable
 - **Enforcement Mechanism:** `pnpm verify:security` (proposed — scans for bare "Done."/"Implemented." without evidence)
 - **Source Document:** Proposed in `docs/governance/27-Rules-39-43-*.md` (not yet created)
-- **Status:** Proposed
+- **Status:** Active
 - **Related ADR(s):** —
 - **Related Verification Tool:** `forbidden-code-verifier.ts` (proposed enhancement)
 - **Last Updated Commit:** — (not yet adopted)
@@ -576,7 +576,7 @@ Every rule in this registry is classified as one of:
 - **Type:** Reviewer Enforced
 - **Enforcement Mechanism:** EAR (reviewer rejects recommendations without executable guidance)
 - **Source Document:** Proposed in `docs/governance/27-Rules-39-43-*.md` (not yet created)
-- **Status:** Proposed
+- **Status:** Active
 - **Related ADR(s):** —
 - **Related Verification Tool:** —
 - **Last Updated Commit:** — (not yet adopted)
@@ -588,7 +588,7 @@ Every rule in this registry is classified as one of:
 - **Type:** Hybrid (Machine + Reviewer)
 - **Enforcement Mechanism:** `pnpm verify:prompt` (proposed — validates prompt structure) + EAR
 - **Source Document:** Proposed in `docs/governance/27-Rules-39-43-*.md` (not yet created)
-- **Status:** Proposed
+- **Status:** Active
 - **Related ADR(s):** —
 - **Related Verification Tool:** `prompt-structure-verifier.ts` (proposed)
 - **Last Updated Commit:** — (not yet adopted)
@@ -600,7 +600,7 @@ Every rule in this registry is classified as one of:
 - **Type:** Machine-Enforceable
 - **Enforcement Mechanism:** `pnpm verify:governance` (proposed — checks every rule doc declares Enforcement Type)
 - **Source Document:** Proposed in `docs/governance/27-Rules-39-43-*.md` (not yet created)
-- **Status:** Proposed
+- **Status:** Active
 - **Related ADR(s):** —
 - **Related Verification Tool:** `governance-verifier.ts` (proposed enhancement)
 - **Last Updated Commit:** — (not yet adopted)
@@ -629,14 +629,6 @@ Rules 36, 37, and 38 were added AFTER doc 24's "Complete Rule Index" was written
 ### Issue 3: Rules 39-43 Are Proposed, Not Adopted
 
 Rules 39-43 were proposed during the EAR-EAP-PHASE-A-001 review. They are listed here as "Proposed" for tracking purposes. They become "Active" only after `docs/governance/27-Rules-39-43-*.md` is created and adopted via the Engineering Review Gate.
-
-### Issue 4: Architecture Drift Verifier Has Known Bug (B2)
-
-Rule 29 (Architecture Drift Detection) is marked "Active (verifier has known glob bug)". The `architecture-drift-verifier.ts` resolves glob patterns like `packages/sdk/src/**/*.ts` to a literal directory `packages/sdk/src/**` which does not exist, causing 0 files to be scanned. This is documented in the EAR-EAP-PHASE-A-001 review as finding B2 and must be fixed before the verifier can be trusted.
-
-### Issue 5: CI Does Not Enforce `pnpm verify`
-
-Rule 20 (CI/CD Evidence Required) is marked Active, but `.github/workflows/ci.yml` does not currently invoke `pnpm verify`. The CI YAML also has a typo: `branches: ain, develop]` (missing `m` in `main` and missing `[`). Both issues are documented in the EAR and must be fixed.
 
 ---
 

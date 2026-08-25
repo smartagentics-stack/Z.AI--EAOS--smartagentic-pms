@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-08-25T19:39:02.404Z",
-  "commit": "b3eb1b6c67f0aa439b69426f83ec3a201f01c809",
+  "timestamp": "2026-08-25T19:54:12.075Z",
+  "commit": "98c5333f02f91be6f388d78f3e84c12b37e0020e",
   "branch": "main",
   "overallStatus": "WARN",
   "passCount": 8,
@@ -35,7 +35,7 @@
     {
       "name": "forbidden-code",
       "status": "WARN",
-      "message": "19 warning(s) (TODOs, console.log, placeholders, Rule 40 bare claims)"
+      "message": "8 warning(s) (TODOs, console.log, placeholders, Rule 40 bare claims)"
     },
     {
       "name": "dependency-audit",
@@ -45,7 +45,7 @@
     {
       "name": "traceability-compliance",
       "status": "PASS",
-      "message": "4 commit(s) verified — all include Engineering Traceability Block"
+      "message": "5 commit(s) verified — all include Engineering Traceability Block"
     },
     {
       "name": "prompt-structure",

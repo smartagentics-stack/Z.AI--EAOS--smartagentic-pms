@@ -1,11 +1,11 @@
 {
   "verify": {
-    "maxExecutionMs": 3000
+    "maxExecutionMs": 1100
   },
   "architecture": {
-    "maxExecutionMs": 2500
+    "maxExecutionMs": 1000
   },
   "serialization": {
-    "maxExecutionMs": 2800
+    "maxExecutionMs": 1000
   }
 }

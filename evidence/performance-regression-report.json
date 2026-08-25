@@ -6,31 +6,31 @@
     "results": [
       {
         "name": "verify",
-        "measurements": [680, 751, 619],
-        "medianMs": 680,
-        "baselineMs": 3000,
+        "measurements": [651, 642, 659],
+        "medianMs": 651,
+        "baselineMs": 1100,
         "thresholdPercent": 15,
-        "ratio": 0.22666666666666666,
+        "ratio": 0.5918181818181818,
         "status": "PASS",
         "regression": false
       },
       {
         "name": "architecture",
-        "measurements": [616, 661, 633],
-        "medianMs": 633,
-        "baselineMs": 2500,
+        "measurements": [793, 716, 715],
+        "medianMs": 716,
+        "baselineMs": 1000,
         "thresholdPercent": 15,
-        "ratio": 0.2532,
+        "ratio": 0.716,
         "status": "PASS",
         "regression": false
       },
       {
         "name": "serialization",
-        "measurements": [685, 674, 658],
-        "medianMs": 674,
-        "baselineMs": 2800,
+        "measurements": [787, 687, 713],
+        "medianMs": 713,
+        "baselineMs": 1000,
         "thresholdPercent": 15,
-        "ratio": 0.24071428571428571,
+        "ratio": 0.713,
         "status": "PASS",
         "regression": false
       }
@@ -41,12 +41,12 @@
     "Threshold: 15% (WARN), 30% (FAIL)",
     "Benchmark runs per metric: 3",
     "Running benchmark: verify (proxy: pnpm verify:evidence)...",
-    "  verify: median=680ms, baseline=3000ms, ratio=0.23, status=PASS",
+    "  verify: median=651ms, baseline=1100ms, ratio=0.59, status=PASS",
     "Running benchmark: architecture...",
-    "  architecture: median=633ms, baseline=2500ms, ratio=0.25, status=PASS",
+    "  architecture: median=716ms, baseline=1000ms, ratio=0.72, status=PASS",
     "Running benchmark: serialization...",
-    "  serialization: median=674ms, baseline=2800ms, ratio=0.24, status=PASS",
+    "  serialization: median=713ms, baseline=1000ms, ratio=0.71, status=PASS",
     "Reports: performance-report.json, performance-summary.json, performance-history.json, benchmark-results.json"
   ],
-  "durationMs": 5979
+  "durationMs": 6364
 }

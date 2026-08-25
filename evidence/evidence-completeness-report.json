@@ -3,7 +3,7 @@
   "status": "PASS",
   "message": "All required evidence artifacts present",
   "evidence": [
-    "evidence/ contains 25 files: adr-compliance-report.json, adr-report.json, architecture-drift-report.json, architecture-report.json, benchmark-results.json, coverage-report.json, dependency-audit-report.json, ear-report.json, evidence-completeness-report.json, falsification-report.json, forbidden-code-report.json, governance-compliance-report.json, governance-report.json, performance-history.json, performance-regression-report.json, performance-report.json, performance-summary.json, prompt-structure-report.json, rule-compliance.json, security-report.json, serialization-consistency-report.json, technical-debt.json, traceability-compliance-report.json, verification-report.json, verification-summary.json",
+    "evidence/ contains 20 files: adr-compliance-report.json, adr-report.json, architecture-drift-report.json, architecture-report.json, benchmark-results.json, dependency-audit-report.json, ear-report.json, evidence-completeness-report.json, forbidden-code-report.json, governance-compliance-report.json, governance-report.json, performance-history.json, performance-regression-report.json, performance-report.json, performance-summary.json, prompt-structure-report.json, security-report.json, serialization-consistency-report.json, traceability-compliance-report.json, verification-summary.json",
     "✅ spikes/SPIKE-01/evidence-phase1.json",
     "✅ spikes/SPIKE-01/trace-report.json",
     "✅ spikes/SPIKE-01/results-run8-1h.json",

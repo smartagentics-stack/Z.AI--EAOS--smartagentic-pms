@@ -52,6 +52,12 @@ const FORBIDDEN_RULES: ForbiddenRule[] = [
     pattern: /placeholder|export\s*\{\s*\};/,
     message: 'Placeholder/empty export found',
     severity: 'WARN',
+    // The verifier source contains the word "placeholder" in patterns/comments.
+    // Test fixtures legitimately use export {} as test data.
+    exemptGlobs: [
+      'packages/engineering-assurance/src/verifiers/forbidden-code-verifier.ts',
+      'packages/engineering-assurance/src/verifiers/__tests__/',
+    ],
   },
   {
     id: 'eval',

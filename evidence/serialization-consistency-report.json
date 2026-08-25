@@ -11,5 +11,5 @@
     "Reconstructed payload.name: test",
     "Validation rejects invalid payload: true"
   ],
-  "durationMs": 40
+  "durationMs": 24
 }

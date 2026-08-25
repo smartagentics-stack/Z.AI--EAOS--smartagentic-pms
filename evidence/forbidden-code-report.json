@@ -1,30 +1,19 @@
 {
   "name": "forbidden-code",
   "status": "WARN",
-  "message": "19 warning(s) (TODOs, console.log, placeholders, Rule 40 bare claims)",
+  "message": "8 warning(s) (TODOs, console.log, placeholders, Rule 40 bare claims)",
   "details": {
     "warnings": [
       "packages/ai/src/index.ts:1 — Placeholder/empty export found [placeholder]",
       "packages/db/src/index.ts:1 — Placeholder/empty export found [placeholder]",
-      "packages/engineering-assurance/src/verifiers/__tests__/architecture-drift-verifier.test.ts:86 — Placeholder/empty export found [placeholder]",
-      "packages/engineering-assurance/src/verifiers/__tests__/architecture-drift-verifier.test.ts:87 — Placeholder/empty export found [placeholder]",
-      "packages/engineering-assurance/src/verifiers/__tests__/architecture-drift-verifier.test.ts:88 — Placeholder/empty export found [placeholder]",
-      "packages/engineering-assurance/src/verifiers/__tests__/architecture-drift-verifier.test.ts:89 — Placeholder/empty export found [placeholder]",
-      "packages/engineering-assurance/src/verifiers/__tests__/evidence-verifier.test.ts:31 — Placeholder/empty export found [placeholder]",
       "packages/engineering-assurance/src/verifiers/forbidden-code-verifier.ts:5 — TODO/FIXME found [todo]",
       "packages/engineering-assurance/src/verifiers/forbidden-code-verifier.ts:41 — TODO/FIXME found [todo]",
-      "packages/engineering-assurance/src/verifiers/forbidden-code-verifier.ts:80 — TODO/FIXME found [todo]",
-      "packages/engineering-assurance/src/verifiers/forbidden-code-verifier.ts:7 — Placeholder/empty export found [placeholder]",
-      "packages/engineering-assurance/src/verifiers/forbidden-code-verifier.ts:51 — Placeholder/empty export found [placeholder]",
-      "packages/engineering-assurance/src/verifiers/forbidden-code-verifier.ts:52 — Placeholder/empty export found [placeholder]",
-      "packages/engineering-assurance/src/verifiers/forbidden-code-verifier.ts:80 — Placeholder/empty export found [placeholder]",
-      "packages/engineering-assurance/src/verifiers/forbidden-code-verifier.ts:82 — Placeholder/empty export found [placeholder]",
-      "packages/engineering-assurance/src/verifiers/forbidden-code-verifier.ts:244 — Placeholder/empty export found [placeholder]",
+      "packages/engineering-assurance/src/verifiers/forbidden-code-verifier.ts:86 — TODO/FIXME found [todo]",
       "packages/shared/src/index.ts:1 — Placeholder/empty export found [placeholder]",
       "apps/web/tests/placeholder.test.ts:2 — Placeholder/empty export found [placeholder]",
       "apps/worker/src/index.ts:1 — Placeholder/empty export found [placeholder]"
     ]
   },
-  "evidence": ["Files scanned: 54", "Commits scanned: 20", "Warnings: 19", "Violations: 0"],
+  "evidence": ["Files scanned: 54", "Commits scanned: 20", "Warnings: 8", "Violations: 0"],
   "durationMs": 11
 }

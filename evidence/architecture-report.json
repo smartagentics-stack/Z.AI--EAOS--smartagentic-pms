@@ -8,7 +8,7 @@
       "ADR-012-no-flat-sqlite-columns: checked 8 files, 0 violation(s)",
       "ADR-006-no-postgres-in-spike: checked 8 files, 0 violation(s)"
     ],
-    "durationMs": 2
+    "durationMs": 3
   },
   {
     "name": "serialization-consistency",
@@ -23,6 +23,6 @@
       "Reconstructed payload.name: test",
       "Validation rejects invalid payload: true"
     ],
-    "durationMs": 40
+    "durationMs": 24
   }
 ]
