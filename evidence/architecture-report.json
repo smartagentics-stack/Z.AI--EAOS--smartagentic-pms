@@ -13,14 +13,16 @@
   {
     "name": "serialization-consistency",
     "status": "PASS",
-    "message": "Canonical model round-trip verified (serialize → SQLite → deserialize → equal)",
+    "message": "Canonical model round-trip verified using actual canonical-record.ts functions (serialize → SQLite → deserialize → equal + Zod validation)",
     "evidence": [
       "canonical-record.ts exists",
+      "Imported actual serializeForSQLite, deserializeFromSQLite, validateRecord from canonical-record.ts",
       "Serialized payload type: string",
       "Round-trip equality: true",
       "Original payload.name: test",
-      "Reconstructed payload.name: test"
+      "Reconstructed payload.name: test",
+      "Validation rejects invalid payload: true"
     ],
-    "durationMs": 3
+    "durationMs": 40
   }
 ]

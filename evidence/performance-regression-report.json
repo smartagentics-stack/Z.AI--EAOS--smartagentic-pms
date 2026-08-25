@@ -6,31 +6,31 @@
     "results": [
       {
         "name": "verify",
-        "measurements": [699, 655, 649],
-        "medianMs": 655,
+        "measurements": [680, 751, 619],
+        "medianMs": 680,
         "baselineMs": 3000,
         "thresholdPercent": 15,
-        "ratio": 0.21833333333333332,
+        "ratio": 0.22666666666666666,
         "status": "PASS",
         "regression": false
       },
       {
         "name": "architecture",
-        "measurements": [720, 809, 639],
-        "medianMs": 720,
+        "measurements": [616, 661, 633],
+        "medianMs": 633,
         "baselineMs": 2500,
         "thresholdPercent": 15,
-        "ratio": 0.288,
+        "ratio": 0.2532,
         "status": "PASS",
         "regression": false
       },
       {
         "name": "serialization",
-        "measurements": [637, 651, 633],
-        "medianMs": 637,
+        "measurements": [685, 674, 658],
+        "medianMs": 674,
         "baselineMs": 2800,
         "thresholdPercent": 15,
-        "ratio": 0.2275,
+        "ratio": 0.24071428571428571,
         "status": "PASS",
         "regression": false
       }
@@ -41,12 +41,12 @@
     "Threshold: 15% (WARN), 30% (FAIL)",
     "Benchmark runs per metric: 3",
     "Running benchmark: verify (proxy: pnpm verify:evidence)...",
-    "  verify: median=655ms, baseline=3000ms, ratio=0.22, status=PASS",
+    "  verify: median=680ms, baseline=3000ms, ratio=0.23, status=PASS",
     "Running benchmark: architecture...",
-    "  architecture: median=720ms, baseline=2500ms, ratio=0.29, status=PASS",
+    "  architecture: median=633ms, baseline=2500ms, ratio=0.25, status=PASS",
     "Running benchmark: serialization...",
-    "  serialization: median=637ms, baseline=2800ms, ratio=0.23, status=PASS",
+    "  serialization: median=674ms, baseline=2800ms, ratio=0.24, status=PASS",
     "Reports: performance-report.json, performance-summary.json, performance-history.json, benchmark-results.json"
   ],
-  "durationMs": 6093
+  "durationMs": 5979
 }

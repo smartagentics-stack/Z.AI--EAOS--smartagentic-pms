@@ -3,12 +3,16 @@
  *
  * Checks that canonical model round-trip works (ADR-012 compliance).
  * Uses in-memory SQLite to verify serialize → store → deserialize → equality.
+ *
+ * Tests the ACTUAL canonical-record.ts functions (not a simulation).
+ * This verifier runs under tsx, which supports TypeScript imports.
  */
 
 import Database from 'better-sqlite3';
 import { randomUUID } from 'node:crypto';
 import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { pathToFileURL } from 'node:url';
 import type { Verifier, VerificationResult, VerificationContext } from '../types/index.js';
 
 export const serializationVerifier: Verifier = {
@@ -30,9 +34,48 @@ export const serializationVerifier: Verifier = {
     }
     evidence.push('canonical-record.ts exists');
 
-    // Dynamically import and test
+    // Dynamically import the ACTUAL canonical-record.ts functions
+    // This verifier runs under tsx, which supports TypeScript imports.
+    let serializeForSQLite: (record: unknown) => Record<string, unknown>;
+    let deserializeFromSQLite: (row: Record<string, unknown>) => unknown;
+    let validateRecord: (
+      data: unknown,
+    ) => { success: true; data: unknown } | { success: false; error: string };
+
     try {
-      // We can't use dynamic import for TS files without tsx, so we test the concept directly
+      const canonicalUrl = pathToFileURL(canonicalPath).href;
+      const imported = await import(canonicalUrl);
+      serializeForSQLite = imported.serializeForSQLite;
+      deserializeFromSQLite = imported.deserializeFromSQLite;
+      validateRecord = imported.validateRecord;
+
+      if (
+        typeof serializeForSQLite !== 'function' ||
+        typeof deserializeFromSQLite !== 'function' ||
+        typeof validateRecord !== 'function'
+      ) {
+        return {
+          name: this.name,
+          status: 'FAIL',
+          message:
+            'canonical-record.ts does not export required functions (serializeForSQLite, deserializeFromSQLite, validateRecord)',
+          evidence,
+        };
+      }
+      evidence.push(
+        'Imported actual serializeForSQLite, deserializeFromSQLite, validateRecord from canonical-record.ts',
+      );
+    } catch (err) {
+      return {
+        name: this.name,
+        status: 'FAIL',
+        message: `Failed to import canonical-record.ts: ${(err as Error).message}`,
+        evidence,
+      };
+    }
+
+    // Test the actual functions
+    try {
       const original = {
         id: randomUUID(),
         idempotencyKey: 'eae-serialization-test',
@@ -43,11 +86,8 @@ export const serializationVerifier: Verifier = {
         updatedAt: Date.now(),
       };
 
-      // Simulate serializeForSQLite
-      const serialized = {
-        ...original,
-        payload: JSON.stringify(original.payload),
-      };
+      // Use the ACTUAL serializeForSQLite function
+      const serialized = serializeForSQLite(original);
       evidence.push(`Serialized payload type: ${typeof serialized.payload}`);
 
       // Store in SQLite
@@ -59,36 +99,57 @@ export const serializationVerifier: Verifier = {
       )`);
 
       db.prepare(
-        'INSERT INTO sync_records (id, idempotencyKey, payload, clientId, sequenceNumber, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?)'
+        'INSERT INTO sync_records (id, idempotencyKey, payload, clientId, sequenceNumber, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?)',
       ).run(
-        serialized.id, serialized.idempotencyKey, serialized.payload,
-        serialized.clientId, serialized.sequenceNumber, serialized.createdAt, serialized.updatedAt
+        serialized.id as string,
+        serialized.idempotencyKey as string,
+        serialized.payload as string,
+        serialized.clientId as string,
+        serialized.sequenceNumber as number,
+        serialized.createdAt as number,
+        serialized.updatedAt as number,
       );
 
       // Read back
-      const row = db.prepare('SELECT * FROM sync_records WHERE idempotencyKey = ?').get('eae-serialization-test') as {
-        id: string; idempotencyKey: string; payload: string; clientId: string;
-        sequenceNumber: number; createdAt: number; updatedAt: number;
-      };
-
-      // Simulate deserializeFromSQLite
-      const reconstructed = {
-        id: row.id,
-        idempotencyKey: row.idempotencyKey,
-        payload: JSON.parse(row.payload),
-        clientId: row.clientId,
-        sequenceNumber: row.sequenceNumber,
-        createdAt: row.createdAt,
-        updatedAt: row.updatedAt,
+      const row = db
+        .prepare('SELECT * FROM sync_records WHERE idempotencyKey = ?')
+        .get('eae-serialization-test') as {
+        id: string;
+        idempotencyKey: string;
+        payload: string;
+        clientId: string;
+        sequenceNumber: number;
+        createdAt: number;
+        updatedAt: number;
       };
 
       db.close();
 
+      // Use the ACTUAL deserializeFromSQLite function (includes Zod validation)
+      const reconstructed = deserializeFromSQLite(row);
+
       // Equality check
       const isEqual = JSON.stringify(original) === JSON.stringify(reconstructed);
       evidence.push(`Round-trip equality: ${isEqual}`);
-      evidence.push(`Original payload.name: ${original.payload.name}`);
-      evidence.push(`Reconstructed payload.name: ${reconstructed.payload.name}`);
+      evidence.push(
+        `Original payload.name: ${(original as { payload: { name: string } }).payload.name}`,
+      );
+      evidence.push(
+        `Reconstructed payload.name: ${(reconstructed as { payload: { name: string } }).payload.name}`,
+      );
+
+      // Falsification: verify that validateRecord rejects invalid data
+      const invalidRecord = {
+        id: 'bad',
+        idempotencyKey: 'bad',
+        payload: 'not-an-object',
+        clientId: 'X',
+        sequenceNumber: 1,
+        createdAt: 1,
+        updatedAt: 1,
+      };
+      const validationResult = validateRecord(invalidRecord);
+      evidence.push(`Validation rejects invalid payload: ${!validationResult.success}`);
 
       if (!isEqual) {
         return {
@@ -99,10 +160,21 @@ export const serializationVerifier: Verifier = {
         };
       }
 
+      // If validateRecord did NOT reject invalid data, that's a FAIL
+      if (validationResult.success) {
+        return {
+          name: this.name,
+          status: 'FAIL',
+          message: 'validateRecord did not reject invalid payload — Zod validation is broken',
+          evidence,
+        };
+      }
+
       return {
         name: this.name,
         status: 'PASS',
-        message: 'Canonical model round-trip verified (serialize → SQLite → deserialize → equal)',
+        message:
+          'Canonical model round-trip verified using actual canonical-record.ts functions (serialize → SQLite → deserialize → equal + Zod validation)',
         evidence,
       };
     } catch (err) {

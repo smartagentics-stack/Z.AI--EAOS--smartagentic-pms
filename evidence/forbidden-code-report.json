@@ -1,7 +1,7 @@
 {
   "name": "forbidden-code",
   "status": "WARN",
-  "message": "21 warning(s) (TODOs, console.log, placeholders, Rule 40 bare claims)",
+  "message": "19 warning(s) (TODOs, console.log, placeholders, Rule 40 bare claims)",
   "details": {
     "warnings": [
       "packages/ai/src/index.ts:1 — Placeholder/empty export found [placeholder]",
@@ -11,8 +11,6 @@
       "packages/engineering-assurance/src/verifiers/__tests__/architecture-drift-verifier.test.ts:88 — Placeholder/empty export found [placeholder]",
       "packages/engineering-assurance/src/verifiers/__tests__/architecture-drift-verifier.test.ts:89 — Placeholder/empty export found [placeholder]",
       "packages/engineering-assurance/src/verifiers/__tests__/evidence-verifier.test.ts:31 — Placeholder/empty export found [placeholder]",
-      "packages/engineering-assurance/src/verifiers/__tests__/serialization-verifier.test.ts:39 — Placeholder/empty export found [placeholder]",
-      "packages/engineering-assurance/src/verifiers/__tests__/serialization-verifier.test.ts:75 — Placeholder/empty export found [placeholder]",
       "packages/engineering-assurance/src/verifiers/forbidden-code-verifier.ts:5 — TODO/FIXME found [todo]",
       "packages/engineering-assurance/src/verifiers/forbidden-code-verifier.ts:41 — TODO/FIXME found [todo]",
       "packages/engineering-assurance/src/verifiers/forbidden-code-verifier.ts:80 — TODO/FIXME found [todo]",
@@ -27,6 +25,6 @@
       "apps/worker/src/index.ts:1 — Placeholder/empty export found [placeholder]"
     ]
   },
-  "evidence": ["Files scanned: 54", "Commits scanned: 20", "Warnings: 21", "Violations: 0"],
-  "durationMs": 25
+  "evidence": ["Files scanned: 54", "Commits scanned: 20", "Warnings: 19", "Violations: 0"],
+  "durationMs": 11
 }

@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-08-25T16:54:12.263Z",
-  "commit": "e0fba4d8c0528bcdfa08807f59a57524160c028e",
+  "timestamp": "2026-08-25T19:39:02.404Z",
+  "commit": "b3eb1b6c67f0aa439b69426f83ec3a201f01c809",
   "branch": "main",
   "overallStatus": "WARN",
   "passCount": 8,
@@ -30,12 +30,12 @@
     {
       "name": "serialization-consistency",
       "status": "PASS",
-      "message": "Canonical model round-trip verified (serialize → SQLite → deserialize → equal)"
+      "message": "Canonical model round-trip verified using actual canonical-record.ts functions (serialize → SQLite → deserialize → equal + Zod validation)"
     },
     {
       "name": "forbidden-code",
       "status": "WARN",
-      "message": "21 warning(s) (TODOs, console.log, placeholders, Rule 40 bare claims)"
+      "message": "19 warning(s) (TODOs, console.log, placeholders, Rule 40 bare claims)"
     },
     {
       "name": "dependency-audit",

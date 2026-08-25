@@ -1,21 +1,21 @@
 {
-  "timestamp": "2026-08-25T16:54:12.257Z",
+  "timestamp": "2026-08-25T19:39:02.398Z",
   "runs": 3,
   "results": [
     {
       "name": "verify",
-      "measurements": [699, 655, 649],
-      "medianMs": 655
+      "measurements": [680, 751, 619],
+      "medianMs": 680
     },
     {
       "name": "architecture",
-      "measurements": [720, 809, 639],
-      "medianMs": 720
+      "measurements": [616, 661, 633],
+      "medianMs": 633
     },
     {
       "name": "serialization",
-      "measurements": [637, 651, 633],
-      "medianMs": 637
+      "measurements": [685, 674, 658],
+      "medianMs": 674
     }
   ]
 }

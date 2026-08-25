@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-08-25T16:54:12.263Z",
-  "commit": "e0fba4d8c0528bcdfa08807f59a57524160c028e",
+  "timestamp": "2026-08-25T19:39:02.404Z",
+  "commit": "b3eb1b6c67f0aa439b69426f83ec3a201f01c809",
   "branch": "main",
   "results": [
     {
@@ -88,20 +88,22 @@
     {
       "name": "serialization-consistency",
       "status": "PASS",
-      "message": "Canonical model round-trip verified (serialize → SQLite → deserialize → equal)",
+      "message": "Canonical model round-trip verified using actual canonical-record.ts functions (serialize → SQLite → deserialize → equal + Zod validation)",
       "evidence": [
         "canonical-record.ts exists",
+        "Imported actual serializeForSQLite, deserializeFromSQLite, validateRecord from canonical-record.ts",
         "Serialized payload type: string",
         "Round-trip equality: true",
         "Original payload.name: test",
-        "Reconstructed payload.name: test"
+        "Reconstructed payload.name: test",
+        "Validation rejects invalid payload: true"
       ],
-      "durationMs": 3
+      "durationMs": 40
     },
     {
       "name": "forbidden-code",
       "status": "WARN",
-      "message": "21 warning(s) (TODOs, console.log, placeholders, Rule 40 bare claims)",
+      "message": "19 warning(s) (TODOs, console.log, placeholders, Rule 40 bare claims)",
       "details": {
         "warnings": [
           "packages/ai/src/index.ts:1 — Placeholder/empty export found [placeholder]",
@@ -111,8 +113,6 @@
           "packages/engineering-assurance/src/verifiers/__tests__/architecture-drift-verifier.test.ts:88 — Placeholder/empty export found [placeholder]",
           "packages/engineering-assurance/src/verifiers/__tests__/architecture-drift-verifier.test.ts:89 — Placeholder/empty export found [placeholder]",
           "packages/engineering-assurance/src/verifiers/__tests__/evidence-verifier.test.ts:31 — Placeholder/empty export found [placeholder]",
-          "packages/engineering-assurance/src/verifiers/__tests__/serialization-verifier.test.ts:39 — Placeholder/empty export found [placeholder]",
-          "packages/engineering-assurance/src/verifiers/__tests__/serialization-verifier.test.ts:75 — Placeholder/empty export found [placeholder]",
           "packages/engineering-assurance/src/verifiers/forbidden-code-verifier.ts:5 — TODO/FIXME found [todo]",
           "packages/engineering-assurance/src/verifiers/forbidden-code-verifier.ts:41 — TODO/FIXME found [todo]",
           "packages/engineering-assurance/src/verifiers/forbidden-code-verifier.ts:80 — TODO/FIXME found [todo]",
@@ -127,29 +127,29 @@
           "apps/worker/src/index.ts:1 — Placeholder/empty export found [placeholder]"
         ]
       },
-      "evidence": ["Files scanned: 54", "Commits scanned: 20", "Warnings: 21", "Violations: 0"],
-      "durationMs": 25
+      "evidence": ["Files scanned: 54", "Commits scanned: 20", "Warnings: 19", "Violations: 0"],
+      "durationMs": 11
     },
     {
       "name": "dependency-audit",
       "status": "PASS",
       "message": "No high/critical vulnerabilities in production dependencies",
       "evidence": ["Total vulnerabilities: 0", "High/Critical: 0"],
-      "durationMs": 785
+      "durationMs": 756
     },
     {
       "name": "traceability-compliance",
       "status": "PASS",
       "message": "4 commit(s) verified — all include Engineering Traceability Block",
       "evidence": [
-        "Commits since 2026-08-04 16:53:00 UTC: 6",
+        "Commits since 2026-08-04 16:53:00 UTC: 7",
         "Source-modifying commits: 4",
         "6e45f0f: ✅ full Engineering Traceability Block present",
         "8ea103b: ✅ full Engineering Traceability Block present",
         "52a6169: ✅ full Engineering Traceability Block present",
         "27b0657: ✅ full Engineering Traceability Block present"
       ],
-      "durationMs": 26
+      "durationMs": 27
     },
     {
       "name": "prompt-structure",
@@ -159,7 +159,7 @@
         "Implementation prompts found: 0",
         "No implementation prompts in repository — Rule 42 not yet applicable"
       ],
-      "durationMs": 3
+      "durationMs": 2
     },
     {
       "name": "performance-regression",
@@ -169,31 +169,31 @@
         "results": [
           {
             "name": "verify",
-            "measurements": [699, 655, 649],
-            "medianMs": 655,
+            "measurements": [680, 751, 619],
+            "medianMs": 680,
             "baselineMs": 3000,
             "thresholdPercent": 15,
-            "ratio": 0.21833333333333332,
+            "ratio": 0.22666666666666666,
             "status": "PASS",
             "regression": false
           },
           {
             "name": "architecture",
-            "measurements": [720, 809, 639],
-            "medianMs": 720,
+            "measurements": [616, 661, 633],
+            "medianMs": 633,
             "baselineMs": 2500,
             "thresholdPercent": 15,
-            "ratio": 0.288,
+            "ratio": 0.2532,
             "status": "PASS",
             "regression": false
           },
           {
             "name": "serialization",
-            "measurements": [637, 651, 633],
-            "medianMs": 637,
+            "measurements": [685, 674, 658],
+            "medianMs": 674,
             "baselineMs": 2800,
             "thresholdPercent": 15,
-            "ratio": 0.2275,
+            "ratio": 0.24071428571428571,
             "status": "PASS",
             "regression": false
           }
@@ -204,14 +204,14 @@
         "Threshold: 15% (WARN), 30% (FAIL)",
         "Benchmark runs per metric: 3",
         "Running benchmark: verify (proxy: pnpm verify:evidence)...",
-        "  verify: median=655ms, baseline=3000ms, ratio=0.22, status=PASS",
+        "  verify: median=680ms, baseline=3000ms, ratio=0.23, status=PASS",
         "Running benchmark: architecture...",
-        "  architecture: median=720ms, baseline=2500ms, ratio=0.29, status=PASS",
+        "  architecture: median=633ms, baseline=2500ms, ratio=0.25, status=PASS",
         "Running benchmark: serialization...",
-        "  serialization: median=637ms, baseline=2800ms, ratio=0.23, status=PASS",
+        "  serialization: median=674ms, baseline=2800ms, ratio=0.24, status=PASS",
         "Reports: performance-report.json, performance-summary.json, performance-history.json, benchmark-results.json"
       ],
-      "durationMs": 6093
+      "durationMs": 5979
     }
   ],
   "overallStatus": "WARN",
@@ -219,5 +219,5 @@
   "failCount": 0,
   "warnCount": 2,
   "skipCount": 0,
-  "totalDurationMs": 6938
+  "totalDurationMs": 6818
 }
