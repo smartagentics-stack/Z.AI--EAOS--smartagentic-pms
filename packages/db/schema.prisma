@@ -1,3 +1,140 @@
-generator client { provider = "prisma-client-js" }
-datasource db { provider = "sqlite"; url = env("DATABASE_URL") }
-model SystemMeta { id String @id @default(cuid()) key String @unique value String createdAt DateTime @default(now()) updatedAt DateTime @updatedAt }
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Existing placeholder model (preserved) ──────────────────────────────────
+
+model SystemMeta {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ─── Sprint 1 Business Models ───────────────────────────────────────────────
+// All models conform to SDK StorageEntity contract: { id, createdAt, updatedAt }
+// All tenant-scoped models include tenantId per doc 07 + SDK EventMetadataSchema
+// No soft deletes (deletedAt) — confirmed absent from SDK StorageEntity
+// Hard delete via StorageRepository.delete() — confirmed in SDK
+
+model Tenant {
+  id        String   @id @default(cuid())
+  name      String
+  code      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  users        User[]
+  rooms        Room[]
+  reservations Reservation[]
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String
+  passwordHash String
+  displayName  String
+  roles        String // JSON array of UserRole values: 'admin' | 'manager' | 'front-desk' | 'housekeeping' | 'accountant'
+  tenantId     String
+  tenant       Tenant   @relation(fields: [tenantId], references: [id])
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  lastLoginAt  DateTime?
+
+  @@unique([tenantId, email])
+  @@index([tenantId])
+}
+
+model Room {
+  id         String   @id @default(cuid())
+  roomNumber String
+  roomType   String
+  floor      Int?
+  status     String   @default("available") // available | occupied | cleaning | maintenance (matches SDK RoomStatusChangedPayloadSchema)
+  tenantId   String
+  tenant     Tenant   @relation(fields: [tenantId], references: [id])
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  reservations Reservation[]
+
+  @@unique([tenantId, roomNumber])
+  @@index([tenantId, status])
+}
+
+model Reservation {
+  id             String   @id @default(cuid())
+  guestName      String
+  guestEmail     String?
+  guestPhone     String?
+  roomType       String
+  roomId         String?
+  room           Room?    @relation(fields: [roomId], references: [id])
+  checkInDate    DateTime
+  checkOutDate   DateTime
+  ratePerNight   Float
+  status         String   @default("pending") // pending | confirmed | checked_in | checked_out | cancelled
+  idempotencyKey String
+  tenantId       String
+  tenant         Tenant   @relation(fields: [tenantId], references: [id])
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@unique([tenantId, idempotencyKey])
+  @@index([tenantId, checkInDate])
+  @@index([tenantId, status])
+}
+
+model Invoice {
+  id            String   @id @default(cuid())
+  reservationId String
+  totalAmount   Float
+  currency      String   @default("NGN")
+  lineItems     String // JSON array of { description: string, amount: number, quantity: number }
+  status        String   @default("draft") // draft | issued | paid | void
+  tenantId      String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([tenantId, reservationId])
+}
+
+model InventoryItem {
+  id        String   @id @default(cuid())
+  name      String
+  sku       String?
+  quantity  Int      @default(0)
+  unit      String   @default("unit")
+  tenantId  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([tenantId, name])
+  @@index([tenantId])
+}
+
+model AuditEvent {
+  id           String   @id @default(cuid())
+  eventType    String
+  eventVersion Int      @default(1)
+  actorId      String?
+  actorType    String?
+  action       String
+  resource     String
+  result       String?
+  severity     String   @default("info")
+  details      String? // JSON string
+  traceId      String?
+  tenantId     String
+  timestamp    DateTime @default(now())
+
+  @@index([tenantId, timestamp])
+  @@index([tenantId, eventType])
+  @@index([traceId])
+}

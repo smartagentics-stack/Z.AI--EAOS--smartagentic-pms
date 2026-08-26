@@ -1,31 +1,5 @@
 [
   {
-    "timestamp": "2026-08-05T00:28:21.138Z",
-    "results": [
-      {
-        "name": "verify",
-        "medianMs": 1175,
-        "baselineMs": 2500,
-        "ratio": 0.47,
-        "status": "PASS"
-      },
-      {
-        "name": "architecture",
-        "medianMs": 927,
-        "baselineMs": 800,
-        "ratio": 1.15875,
-        "status": "WARN"
-      },
-      {
-        "name": "serialization",
-        "medianMs": 447,
-        "baselineMs": 800,
-        "ratio": 0.55875,
-        "status": "PASS"
-      }
-    ]
-  },
-  {
     "timestamp": "2026-08-05T00:28:23.956Z",
     "results": [
       {
@@ -1295,6 +1269,32 @@
         "medianMs": 686,
         "baselineMs": 1000,
         "ratio": 0.686,
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-08-26T18:26:24.327Z",
+    "results": [
+      {
+        "name": "verify",
+        "medianMs": 670,
+        "baselineMs": 1100,
+        "ratio": 0.6090909090909091,
+        "status": "PASS"
+      },
+      {
+        "name": "architecture",
+        "medianMs": 731,
+        "baselineMs": 1000,
+        "ratio": 0.731,
+        "status": "PASS"
+      },
+      {
+        "name": "serialization",
+        "medianMs": 747,
+        "baselineMs": 1000,
+        "ratio": 0.747,
         "status": "PASS"
       }
     ]

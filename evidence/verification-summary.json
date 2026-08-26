@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-08-25T19:54:12.075Z",
-  "commit": "98c5333f02f91be6f388d78f3e84c12b37e0020e",
+  "timestamp": "2026-08-26T18:26:24.334Z",
+  "commit": "031fc5be51f6c3e61a01db9cb1a9e5d57beaa760",
   "branch": "main",
   "results": [
     {
@@ -33,7 +33,7 @@
         "Rule docs checked for Rule 43: 9",
         "Rule 43 compliant: 9/9"
       ],
-      "durationMs": 0
+      "durationMs": 4
     },
     {
       "name": "adr-compliance",
@@ -58,7 +58,7 @@
         "ADR numbers: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13",
         "Warnings: 10"
       ],
-      "durationMs": 1
+      "durationMs": 4
     },
     {
       "name": "evidence-completeness",
@@ -83,7 +83,7 @@
         "ADR-012-no-flat-sqlite-columns: checked 8 files, 0 violation(s)",
         "ADR-006-no-postgres-in-spike: checked 8 files, 0 violation(s)"
       ],
-      "durationMs": 3
+      "durationMs": 4
     },
     {
       "name": "serialization-consistency",
@@ -98,16 +98,15 @@
         "Reconstructed payload.name: test",
         "Validation rejects invalid payload: true"
       ],
-      "durationMs": 24
+      "durationMs": 41
     },
     {
       "name": "forbidden-code",
       "status": "WARN",
-      "message": "8 warning(s) (TODOs, console.log, placeholders, Rule 40 bare claims)",
+      "message": "7 warning(s) (TODOs, console.log, placeholders, Rule 40 bare claims)",
       "details": {
         "warnings": [
           "packages/ai/src/index.ts:1 — Placeholder/empty export found [placeholder]",
-          "packages/db/src/index.ts:1 — Placeholder/empty export found [placeholder]",
           "packages/engineering-assurance/src/verifiers/forbidden-code-verifier.ts:5 — TODO/FIXME found [todo]",
           "packages/engineering-assurance/src/verifiers/forbidden-code-verifier.ts:41 — TODO/FIXME found [todo]",
           "packages/engineering-assurance/src/verifiers/forbidden-code-verifier.ts:86 — TODO/FIXME found [todo]",
@@ -116,30 +115,31 @@
           "apps/worker/src/index.ts:1 — Placeholder/empty export found [placeholder]"
         ]
       },
-      "evidence": ["Files scanned: 54", "Commits scanned: 20", "Warnings: 8", "Violations: 0"],
-      "durationMs": 11
+      "evidence": ["Files scanned: 55", "Commits scanned: 20", "Warnings: 7", "Violations: 0"],
+      "durationMs": 15
     },
     {
       "name": "dependency-audit",
       "status": "PASS",
       "message": "No high/critical vulnerabilities in production dependencies",
       "evidence": ["Total vulnerabilities: 0", "High/Critical: 0"],
-      "durationMs": 705
+      "durationMs": 844
     },
     {
       "name": "traceability-compliance",
       "status": "PASS",
-      "message": "5 commit(s) verified — all include Engineering Traceability Block",
+      "message": "6 commit(s) verified — all include Engineering Traceability Block",
       "evidence": [
-        "Commits since 2026-08-04 16:53:00 UTC: 8",
-        "Source-modifying commits: 5",
+        "Commits since 2026-08-04 16:53:00 UTC: 10",
+        "Source-modifying commits: 6",
+        "f7f9c5b: ✅ full Engineering Traceability Block present",
         "98c5333: ✅ full Engineering Traceability Block present",
         "6e45f0f: ✅ full Engineering Traceability Block present",
         "8ea103b: ✅ full Engineering Traceability Block present",
         "52a6169: ✅ full Engineering Traceability Block present",
         "27b0657: ✅ full Engineering Traceability Block present"
       ],
-      "durationMs": 33
+      "durationMs": 42
     },
     {
       "name": "prompt-structure",
@@ -149,7 +149,7 @@
         "Implementation prompts found: 0",
         "No implementation prompts in repository — Rule 42 not yet applicable"
       ],
-      "durationMs": 3
+      "durationMs": 16
     },
     {
       "name": "performance-regression",
@@ -159,31 +159,31 @@
         "results": [
           {
             "name": "verify",
-            "measurements": [651, 642, 659],
-            "medianMs": 651,
+            "measurements": [689, 667, 670],
+            "medianMs": 670,
             "baselineMs": 1100,
             "thresholdPercent": 15,
-            "ratio": 0.5918181818181818,
+            "ratio": 0.6090909090909091,
             "status": "PASS",
             "regression": false
           },
           {
             "name": "architecture",
-            "measurements": [793, 716, 715],
-            "medianMs": 716,
+            "measurements": [675, 731, 741],
+            "medianMs": 731,
             "baselineMs": 1000,
             "thresholdPercent": 15,
-            "ratio": 0.716,
+            "ratio": 0.731,
             "status": "PASS",
             "regression": false
           },
           {
             "name": "serialization",
-            "measurements": [787, 687, 713],
-            "medianMs": 713,
+            "measurements": [817, 747, 696],
+            "medianMs": 747,
             "baselineMs": 1000,
             "thresholdPercent": 15,
-            "ratio": 0.713,
+            "ratio": 0.747,
             "status": "PASS",
             "regression": false
           }
@@ -194,14 +194,14 @@
         "Threshold: 15% (WARN), 30% (FAIL)",
         "Benchmark runs per metric: 3",
         "Running benchmark: verify (proxy: pnpm verify:evidence)...",
-        "  verify: median=651ms, baseline=1100ms, ratio=0.59, status=PASS",
+        "  verify: median=670ms, baseline=1100ms, ratio=0.61, status=PASS",
         "Running benchmark: architecture...",
-        "  architecture: median=716ms, baseline=1000ms, ratio=0.72, status=PASS",
+        "  architecture: median=731ms, baseline=1000ms, ratio=0.73, status=PASS",
         "Running benchmark: serialization...",
-        "  serialization: median=713ms, baseline=1000ms, ratio=0.71, status=PASS",
+        "  serialization: median=747ms, baseline=1000ms, ratio=0.75, status=PASS",
         "Reports: performance-report.json, performance-summary.json, performance-history.json, benchmark-results.json"
       ],
-      "durationMs": 6364
+      "durationMs": 6436
     }
   ],
   "overallStatus": "WARN",
@@ -209,5 +209,5 @@
   "failCount": 0,
   "warnCount": 2,
   "skipCount": 0,
-  "totalDurationMs": 7144
+  "totalDurationMs": 7406
 }
