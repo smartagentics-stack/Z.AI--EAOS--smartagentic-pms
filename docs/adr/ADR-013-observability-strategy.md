@@ -50,6 +50,7 @@ The `ReplicationTracer` class (`spikes/SPIKE-01/src/trace.ts`) implements this s
 ### Evidence Escalation Protocol (Rule 18)
 
 When the same defect persists after 3 controlled single-variable experiments:
+
 1. Stop proposing fixes
 2. Freeze implementation
 3. Enter Observability Phase (increase instrumentation, don't change behavior)
@@ -65,12 +66,14 @@ When the same defect persists after 3 controlled single-variable experiments:
 ## Consequences
 
 **Positive:**
+
 - Bugs are found by tracing, not guessing
 - Defect localization is immediate (last successful stage = failure point)
 - Evidence-based debugging replaces hypothesis-driven debugging
 - Reproducible: trace logs can be re-analyzed
 
 **Negative:**
+
 - Slight performance overhead (trace recording) — negligible at Phase 1 scale
 - Additional code complexity (tracer module) — justified by the 6:1 debugging improvement
 
@@ -85,3 +88,24 @@ When the same defect persists after 3 controlled single-variable experiments:
 - Related: ADR-012 (Canonical Domain Model), Senior Engineering Operating Rules Rule 7 and Rule 18
 - Reference implementation: `spikes/SPIKE-01/src/trace.ts`
 - Evidence: `spikes/SPIKE-01/trace-report.json`
+
+---
+
+## Amendment 1 — 2026-09-02 — Phase D Architecture Freeze
+
+**Amendment Authority:** Phase D Architecture Freeze (per Senior Engineer Master Directive)
+
+### Changes
+
+1. **AI-specific observability surface**: Extended. The existing observability strategy (Pino logger + evidence reports) is augmented with AI-specific observability per ADR-059 (Agent Observability) and ADR-091 (AI Observability):
+   - OpenTelemetry GenAI semantic conventions (`gen_ai.*` spans) for all LLM calls
+   - `AIAuditEvent` table for AI-specific audit events (7-year retention, tamper-evident via ADR-084 RFC 6962 Merkle Tree)
+   - Model used, model version, inference duration, token consumption, tool calls, agent execution, failures, retries, human overrides
+
+2. **Self-hosted Langfuse**: Deferred to Phase 2+. Phase 1 uses OTel GenAI spans exported to SQLite `OtelSpan` table. Cloud Langfuse is rejected (conflicts with offline-first principle).
+
+3. **Promptfoo CI**: Added as mandatory CI regression for prompt injection defense (ADR-090). Nightly drift detection deferred to Phase 2+.
+
+### Rationale
+
+Phase B identified that ADR-013 lacks an AI observability surface (FC-8.1). Phase C Stream 8 research established that OTel GenAI semantic conventions are the industry standard for AI observability. This amendment adds the AI surface without modifying the existing Pino/evidence-report observability.
