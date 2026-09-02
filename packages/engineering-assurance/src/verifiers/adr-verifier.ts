@@ -13,10 +13,15 @@ export const adrVerifier: Verifier = {
     const evidence: string[] = [];
 
     if (!existsSync(adrDir)) {
-      return { name: this.name, status: 'FAIL', message: 'docs/adr directory does not exist', evidence };
+      return {
+        name: this.name,
+        status: 'FAIL',
+        message: 'docs/adr directory does not exist',
+        evidence,
+      };
     }
 
-    const files = readdirSync(adrDir).filter(f => f.startsWith('ADR-') && f.endsWith('.md'));
+    const files = readdirSync(adrDir).filter((f) => f.startsWith('ADR-') && f.endsWith('.md'));
     evidence.push(`ADR files found: ${files.length}`);
 
     if (files.length === 0) {
@@ -26,19 +31,23 @@ export const adrVerifier: Verifier = {
     const numbers: number[] = [];
     for (const file of files) {
       const match = file.match(/^ADR-(\d+)-/);
-      if (!match) { issues.push(`Naming: ${file}`); continue; }
+      if (!match) {
+        issues.push(`Naming: ${file}`);
+        continue;
+      }
       numbers.push(parseInt(match[1], 10));
 
       const content = readFileSync(join(adrDir, file), 'utf-8');
       // Required: Status and Decision
+      // Patterns accept both legacy format (## Decision) and 9-field format (## 4. Decision)
       if (!content.match(/Status/i)) {
         issues.push(`${file}: missing Status`);
       }
-      if (!content.match(/##\s*Decision|\*\*Decision/i)) {
+      if (!content.match(/##\s*(\d+\.\s*)?Decision|\*\*Decision/i)) {
         issues.push(`${file}: missing Decision section`);
       }
       // Optional (WARN): Context
-      if (!content.match(/##\s*Context|\*\*Context/i)) {
+      if (!content.match(/##\s*(\d+\.\s*)?Context|\*\*Context/i)) {
         warnings.push(`${file}: missing Context section (recommended)`);
       }
     }
@@ -46,7 +55,7 @@ export const adrVerifier: Verifier = {
     numbers.sort((a, b) => a - b);
     for (let i = 1; i < numbers.length; i++) {
       if (numbers[i] !== numbers[i - 1] + 1) {
-        issues.push(`Gap: ADR-${numbers[i-1]} → ADR-${numbers[i]}`);
+        issues.push(`Gap: ADR-${numbers[i - 1]} → ADR-${numbers[i]}`);
       }
     }
 
@@ -54,13 +63,30 @@ export const adrVerifier: Verifier = {
     evidence.push(`Warnings: ${warnings.length}`);
 
     if (issues.length > 0) {
-      return { name: this.name, status: 'FAIL', message: `${issues.length} issue(s)`, details: { issues, warnings }, evidence };
+      return {
+        name: this.name,
+        status: 'FAIL',
+        message: `${issues.length} issue(s)`,
+        details: { issues, warnings },
+        evidence,
+      };
     }
 
     if (warnings.length > 0) {
-      return { name: this.name, status: 'WARN', message: `${warnings.length} ADR(s) missing Context section`, details: { warnings }, evidence };
+      return {
+        name: this.name,
+        status: 'WARN',
+        message: `${warnings.length} ADR(s) missing Context section`,
+        details: { warnings },
+        evidence,
+      };
     }
 
-    return { name: this.name, status: 'PASS', message: `${files.length} ADRs verified, all compliant`, evidence };
+    return {
+      name: this.name,
+      status: 'PASS',
+      message: `${files.length} ADRs verified, all compliant`,
+      evidence,
+    };
   },
 };

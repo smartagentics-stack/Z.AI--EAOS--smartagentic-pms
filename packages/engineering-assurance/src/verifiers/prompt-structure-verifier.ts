@@ -84,12 +84,19 @@ const EXCLUDE_DIRS = ['node_modules', 'dist', '.next', '.turbo', '.git'];
 // they should not be subject to the 10-section implementation prompt check.
 const GOVERNANCE_DIR = 'docs/governance/';
 
+// ADR files are architecture decision records, not implementation prompts.
+// Even if their filenames contain "prompt" (e.g., ADR-081-prompt-injection-defense.md),
+// they should not be subject to the 15-section implementation prompt check.
+const ADR_DIR = 'docs/adr/';
+
 function isPromptFile(content: string, filename: string, relativePath: string): boolean {
   // Normalize path separators: Windows uses \, Unix uses /.
   // GOVERNANCE_DIR and other patterns use forward slashes, so convert to forward slashes.
   const normalizedPath = relativePath.replace(/\\/g, '/');
   // Exclude governance docs — they are rule definitions, not implementation prompts
   if (normalizedPath.startsWith(GOVERNANCE_DIR)) return false;
+  // Exclude ADR files — they are architecture decision records, not implementation prompts
+  if (normalizedPath.startsWith(ADR_DIR)) return false;
   // Filename contains .PROMPT.md (case-insensitive)
   if (filename.toUpperCase().includes('.PROMPT.MD')) return true;
   // File is under prompts/ or docs/prompts/
