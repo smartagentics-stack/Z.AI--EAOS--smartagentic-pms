@@ -49,12 +49,14 @@ export const SyncRecordSchema = z.object({
 ## Consequences
 
 **Positive:**
+
 - One record model everywhere — no ambiguity
 - Zod validation catches shape mismatches before they reach the database
 - Replay works correctly because records maintain their shape through SQLite
 - Regression test prevents future shape changes
 
 **Negative:**
+
 - Slightly more storage (JSON string vs flat columns) — negligible for Phase 1
 - JSON.parse on every SQLite read — negligible overhead at Phase 1 scale
 
@@ -70,3 +72,28 @@ export const SyncRecordSchema = z.object({
 - Implements: Senior Engineering Operating Rule 6 (No Placeholder Engineering)
 - Evidence: `spikes/SPIKE-01/evidence-phase1.json`, `spikes/SPIKE-01/results-run7.json`
 - Regression test: `spikes/SPIKE-01/src/regression-tests/canonical-model.test.ts`
+
+---
+
+## Amendment 2 — 2026-09-02 — Phase D Revision (Domain-Neutral Architecture)
+
+**Amendment Authority:** Phase D Revision — Domain-Neutral Architecture (per Senior Engineer Directive)
+
+### Changes
+
+1. **Canonical shape principle generalized**: The original principle "ONE canonical model per entity" is amended to "ONE canonical envelope per storage class." Dynamic entities (created at runtime via ADR-097 Domain Meta-Model) inherently have variable shapes per EntityType. The canonical-envelope pattern (already used for `SyncRecord` payload) generalizes to all storage classes:
+   - Platform Core: strongly-typed Prisma models (one canonical shape per entity)
+   - Domain Reference: typed Prisma models per domain package (one canonical shape per entity)
+   - Dynamic Records: generic `Record` envelope with `dataJson` validated against EntityType JSON Schema (one canonical envelope, variable payload)
+
+2. **Multiple shapes are permitted across storage classes**: A `Room` entity may exist as both a Domain Reference Prisma model (for PMS) AND a Dynamic Record (for custom domain extensions). The canonical-envelope principle ensures each storage class has exactly one representation.
+
+### Rationale
+
+Phase D Revision research (FC-DN-01, HIGH severity) identified that ADR-012's "multiple shapes prohibited" rule blocks the domain-neutral architecture. The amendment preserves the principle's intent (no ambiguous entity representation within a single storage class) while allowing the multi-layer persistence strategy (ADR-098) required for domain-neutral extensibility.
+
+### References
+
+- ADR-097: Domain Meta-Model & Dynamic Schema
+- ADR-098: Hybrid Persistence Strategy (3-Layer)
+- FC-DN-01: Foundational conflict resolved

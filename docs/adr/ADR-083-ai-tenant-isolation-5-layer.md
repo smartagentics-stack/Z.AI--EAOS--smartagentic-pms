@@ -125,3 +125,27 @@ The `AIAuditEvent.retrievedChunks[]` field (ADR-085) is cross-checked against th
 - Review if Phase 2+ multi-tenant vector store (collection-per-tenant) is implemented — would relax T4 since the partition itself prevents cross-tenant retrieval, but T4 remains as defense-in-depth.
 - Review if a regulator demands proof of tenant isolation — the `AIAuditEvent.retrievedChunks[]` field provides the audit evidence.
 - Review if the default tenant `0` shared-contract pattern proves unsafe (e.g., a tenant inadvertently modifies tenant 0's contract) — would remove the default tenant and require explicit per-tenant contracts.
+
+---
+
+## Amendment 1 — 2026-09-02 — Phase D Revision (Domain-Neutral Architecture)
+
+**Amendment Authority:** Phase D Revision — Domain-Neutral Architecture (per Senior Engineer Directive)
+
+### Changes
+
+1. **T3 (ACL layer) expanded**: Original T3 enforces `tenantId` via SQL WHERE. Amended to also enforce `domainId` as secondary isolation axis. Authorization now uses both Cedar policies (attribute-based, already adopted) AND OpenFGA relationships (relationship-based, per ADR-099). T3 = "Cedar policies + OpenFGA relationships + SQL WHERE on (tenantId, domainId)."
+
+2. **T4 (context-window invariant) expanded**: Original T4 checks `chunk.tenantId ∈ session.tenantId`. Amended to also check `chunk.domainId ∈ session.authorizedDomains`. An agent scoped to PMS domain cannot access knowledge chunks from a School domain, even within the same tenant.
+
+3. **T5 (prompt-template isolation) expanded**: Original T5 isolates prompt templates per-tenant. Amended to also isolate per-domain: `AgentContract.domainId` determines which domain's context is injected into the system prompt. An agent with `domainId: "pms"` receives only PMS entity definitions, never School or Government definitions.
+
+### Rationale
+
+Phase D Revision research (FC-DN-16, HIGH severity) identified that ADR-083's 5-layer isolation is tenant-only. The domain-neutral architecture introduces `domainId` as a second isolation axis — an agent scoped to the PMS domain must not access data, knowledge, memory, or context from other domains (School, Government, etc.) within the same tenant. This amendment extends T3/T4/T5 to enforce per-domain isolation without weakening the existing per-tenant isolation.
+
+### References
+
+- ADR-099: Fine-Grained Authorization (OpenFGA + Cedar + 5-Way Permission Intersection)
+- ADR-103: Domain-to-AI Context (Schema-to-Prompt Compiler)
+- FC-DN-16: Foundational conflict resolved
