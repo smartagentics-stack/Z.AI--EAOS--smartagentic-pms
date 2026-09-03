@@ -138,3 +138,662 @@ model AuditEvent {
   @@index([tenantId, eventType])
   @@index([traceId])
 }
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// Phase E Step 2 — Additive Prisma Models (APPENDED)
+// ═══════════════════════════════════════════════════════════════════════════════
+// All models below are ADDITIVE. No existing model (SystemMeta, Tenant, User,
+// Room, Reservation, Invoice, InventoryItem, AuditEvent) is modified — no
+// existing column, index, or relation is changed.
+//
+// Conformance:
+//  - Every model has `tenantId String` (NOT NULL) + @@index([tenantId])  (ADR-072)
+//  - Every mutable model has sync metadata: updatedAt @updatedAt, revision
+//    @default(0), deletedAt DateTime? (+ syncOrigin?, idempotencyKey? per ADR-072)
+//  - SQLite-compatible types only (String, Int, Float, Boolean, DateTime)
+//    NOTE: Prisma's SQLite connector does not support the Json scalar type, so
+//    all JSON is stored as String (required) or String? (nullable) with a
+//    "// JSON string" comment, matching the existing schema convention.
+//  - Enum-like fields use String with comments listing valid values (no enums)
+//  - Foreign keys stored as plain String (no Prisma relations to existing models,
+//    matching the AuditEvent pattern) to keep the change purely additive
+//  - No @db.Text, no native arrays, no enums
+// ═══════════════════════════════════════════════════════════════════════════════
+
+
+// ─── Domain-Neutral Foundation (ADR-097 / ADR-098) ───────────────────────────
+
+model Domain {
+  id             String   @id @default(cuid())
+  tenantId       String
+  name           String
+  version        String
+  status         String   @default("active") // 'active' | 'inactive' | 'deprecated'
+  configuration  String   // JSON string: domain configuration
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  revision       Int      @default(0)
+  deletedAt      DateTime?
+  syncOrigin     String?
+  idempotencyKey String?
+
+  @@unique([tenantId, name])
+  @@index([tenantId])
+  @@index([tenantId, updatedAt])
+}
+
+model Module {
+  id             String   @id @default(cuid())
+  tenantId       String
+  domainId       String
+  name           String
+  version        String
+  dependencies   String?  // JSON string: array of { moduleId, versionRange }
+  capabilities   String?  // JSON string: array of capability identifiers
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  revision       Int      @default(0)
+  deletedAt      DateTime?
+  syncOrigin     String?
+  idempotencyKey String?
+
+  @@unique([tenantId, domainId, name])
+  @@index([tenantId])
+  @@index([domainId])
+  @@index([tenantId, updatedAt])
+}
+
+model EntityType {
+  id             String   @id @default(cuid())
+  tenantId       String
+  domainId       String
+  moduleId       String?
+  name           String
+  schemaJson     String   // JSON string: JSON Schema 2020-12 document
+  schemaVersion  Int      @default(1)
+  storageClass   String   // 'typed' | 'dynamic'
+  lifecycle      String?  // JSON string: lifecycle state-machine definition
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  revision       Int      @default(0)
+  deletedAt      DateTime?
+  syncOrigin     String?
+  idempotencyKey String?
+
+  @@unique([tenantId, domainId, name])
+  @@index([tenantId])
+  @@index([domainId])
+  @@index([tenantId, storageClass])
+  @@index([tenantId, updatedAt])
+}
+
+model DynamicRecord {
+  id              String   @id @default(cuid())
+  tenantId        String
+  domainId        String
+  entityTypeId    String
+  recordId        String
+  dataJson        String   // JSON string: validated against EntityType.schemaJson
+  schemaVersion   Int
+  lifecycleState  String?  // current state in EntityType lifecycle machine
+  updatedAt       DateTime @updatedAt
+  revision        Int      @default(0)
+  deletedAt       DateTime?
+  syncOrigin      String?
+  idempotencyKey  String?
+
+  @@unique([tenantId, entityTypeId, recordId])
+  @@index([tenantId])
+  @@index([tenantId, domainId, entityTypeId, updatedAt])
+  @@index([tenantId, entityTypeId, deletedAt])
+}
+
+model EntityFieldIndex {
+  id               String   @id @default(cuid())
+  tenantId         String
+  dynamicRecordId  String
+  domainId         String
+  entityTypeId     String
+  fieldName        String
+  fieldValue       String
+  fieldType        String   // 'string' | 'number' | 'boolean' | 'datetime'
+  updatedAt        DateTime @updatedAt
+  revision         Int      @default(0)
+  deletedAt        DateTime?
+  syncOrigin       String?
+  idempotencyKey   String?
+
+  @@unique([entityTypeId, dynamicRecordId, fieldName])
+  @@index([tenantId])
+  @@index([tenantId, entityTypeId, fieldName, fieldValue])
+  @@index([tenantId, updatedAt])
+}
+
+
+// ─── AI Runtime Foundation (ADR-015 to ADR-054) ──────────────────────────────
+
+model AIModel {
+  id                   String   @id @default(cuid())
+  tenantId             String
+  name                 String
+  version              String
+  provider             String   // 'ollama' | 'llama.cpp' | 'vllm' | 'cloud'
+  runtime              String   // 'local' | 'cloud'
+  modelType            String   // 'llm' | 'embedding' | 'reranker' | 'vision' | 'audio'
+  contextSize          Int
+  quantization         String?  // 'q4_0' | 'q4_K_M' | 'q5_K_M' | 'q8_0' | 'f16'
+  hardwareRequirements String?  // JSON string: { minRamGb, minVramGb, gpuRequired }
+  capabilities         String?  // JSON string: array of capability identifiers
+  status               String   @default("registered") // 'discovered' | 'registered' | 'activated' | 'deactivated' | 'rolled_back' | 'removed'
+  installedLocation    String?
+  sha256               String?
+  licenseType          String?  // 'MIT' | 'Apache-2.0' | 'Llama-3.x' | 'Gemma' | 'commercial'
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+  revision             Int      @default(0)
+  deletedAt            DateTime?
+  syncOrigin           String?
+  idempotencyKey       String?
+
+  @@unique([tenantId, name, version])
+  @@index([tenantId])
+  @@index([tenantId, status])
+  @@index([sha256])
+  @@index([tenantId, updatedAt])
+}
+
+model KnowledgeDocument {
+  id               String   @id @default(cuid())
+  tenantId         String
+  domainId         String
+  title            String
+  sourceType       String   // 'upload' | 'watch' | 'batch' | 'lan' | 'usb' | 'email'
+  documentType     String   // 'sop' | 'policy' | 'procedure' | 'manual' | 'faq' | 'rate_sheet' | 'service_info' | 'room_info' | 'contact' | 'training' | 'compliance' | 'announcement' | 'other'
+  department       String   // 'front_desk' | 'housekeeping' | 'maintenance' | 'fnb' | 'finance' | 'security' | 'sales_marketing' | 'revenue_mgmt' | 'it' | 'hr' | 'management' | 'all'
+  contentHash      String
+  rawFileHash      String?
+  status           String   @default("pending") // 'pending' | 'ingested' | 'verified' | 'stale' | 'failed'
+  version          Int      @default(1)
+  lastVerifiedAt   DateTime?
+  freshnessTtlDays Int      @default(90)
+  metadata         String?  // JSON string
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  revision         Int      @default(0)
+  deletedAt        DateTime?
+  syncOrigin       String?
+  idempotencyKey   String?
+
+  @@unique([tenantId, contentHash])
+  @@index([tenantId])
+  @@index([tenantId, domainId, documentType, department])
+  @@index([tenantId, lastVerifiedAt])
+  @@index([contentHash])
+  @@index([tenantId, updatedAt])
+}
+
+model KnowledgeChunk {
+  id               String   @id @default(cuid())
+  tenantId         String
+  documentId       String
+  parentId         String?
+  content          String
+  chunkHash        String
+  chunkType        String   // 'text' | 'header' | 'table' | 'code' | 'parent' | 'child'
+  position         Int
+  tokenCount       Int
+  embeddingModel   String?
+  embeddingVersion String?
+  embeddingDim     Int?
+  createdAt        DateTime @default(now())
+
+  @@index([tenantId])
+  @@index([tenantId, documentId])
+  @@index([chunkHash])
+  @@index([parentId])
+}
+
+model KnowledgeCitation {
+  id             String   @id @default(cuid())
+  tenantId       String
+  queryId        String
+  chunkId        String
+  documentId     String
+  docVersion     Int
+  relevanceScore Float
+  createdAt      DateTime @default(now())
+
+  @@index([tenantId])
+  @@index([queryId])
+  @@index([chunkId])
+  @@index([documentId])
+}
+
+model KnowledgeQuery {
+  id                   String   @id @default(cuid())
+  tenantId             String
+  domainId             String
+  userId               String?
+  query                String
+  response             String?
+  citations            String?  // JSON string: array of KnowledgeCitation ids
+  confidenceScore      Float?
+  confidenceTier       String?  // 'high' | 'medium' | 'low' | 'none'
+  citationIrregularity String?  // 'none' | 'missing' | 'stale' | 'conflicting' | 'unverifiable'
+  modelUsed            String?
+  latencyMs            Int?
+  createdAt            DateTime @default(now())
+
+  @@index([tenantId])
+  @@index([tenantId, domainId])
+  @@index([tenantId, createdAt])
+}
+
+model MemoryRecord {
+  id              String   @id @default(cuid())
+  tenantId        String
+  domainId        String
+  userId          String?
+  agentId         String?
+  sessionId       String?
+  category        String   // 'working' | 'conversational' | 'episodic' | 'semantic' | 'procedural' | 'user' | 'agent'
+  content         String
+  embedding       String?  // JSON string: float array (vector)
+  importance      Float    @default(0.5)
+  sensitivity     String   @default("internal") // 'public' | 'internal' | 'confidential' | 'restricted'
+  retentionPolicy String?  // 'session' | '7d' | '30d' | '90d' | '1y' | 'indefinite'
+  provenance      String?  // JSON string: { sourceKind, sourceIdentity, sourceEventIds }
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  revision        Int      @default(0)
+  deletedAt       DateTime?
+  syncOrigin      String?
+  idempotencyKey  String?
+
+  @@index([tenantId])
+  @@index([tenantId, category])
+  @@index([tenantId, userId, agentId])
+  @@index([tenantId, sessionId])
+  @@index([tenantId, updatedAt])
+}
+
+model MemoryEvent {
+  id             String   @id @default(cuid())
+  tenantId       String
+  memoryRecordId String
+  eventType      String   // 'created' | 'updated' | 'accessed' | 'consolidated' | 'superseded' | 'expired' | 'deleted'
+  actorId        String?
+  actorType      String?  // 'user' | 'agent' | 'system'
+  details        String?  // JSON string
+  timestamp      DateTime @default(now())
+
+  @@index([tenantId])
+  @@index([memoryRecordId])
+  @@index([tenantId, timestamp])
+}
+
+model MemoryAccessLog {
+  id             String   @id @default(cuid())
+  tenantId       String
+  memoryRecordId String
+  accessorId     String?
+  accessorType   String?  // 'user' | 'agent' | 'system'
+  operation      String   // 'read' | 'write' | 'delete' | 'export'
+  context        String?  // JSON string
+  timestamp      DateTime @default(now())
+
+  @@index([tenantId])
+  @@index([memoryRecordId])
+  @@index([tenantId, timestamp])
+}
+
+model AgentContract {
+  id                 String   @id @default(cuid())
+  tenantId           String
+  domainId           String
+  name               String
+  purpose            String
+  identity           String   // JSON string: { name, version, description }
+  capabilities       String?  // JSON string: array of capability identifiers
+  allowedTools       String?  // JSON string: array of Tool ids
+  maxRiskClass       String   @default("LOW") // 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL'
+  memoryPolicy       String?  // JSON string: { workingMemoryBudget, conversationalMemoryBudget }
+  knowledgeScope     String?  // JSON string: { ragEnabled, knowledgeBaseIds }
+  decisionBoundaries String?  // JSON string
+  policies           String?  // JSON string
+  escalationRules    String?  // JSON string
+  auditConfig        String?  // JSON string: { auditLevel, sampleRate }
+  manualFallback     Boolean  @default(false)
+  maxSteps           Int      @default(20)
+  maxDurationMs      Int      @default(300000)
+  status             String   @default("draft") // 'draft' | 'published' | 'active' | 'paused' | 'deprecated'
+  version            String   @default("0.1.0")
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  revision           Int      @default(0)
+  deletedAt          DateTime?
+  syncOrigin         String?
+  idempotencyKey     String?
+
+  @@unique([tenantId, name, version])
+  @@index([tenantId])
+  @@index([tenantId, status])
+  @@index([tenantId, domainId])
+  @@index([tenantId, updatedAt])
+}
+
+model AgentSession {
+  id              String   @id @default(cuid())
+  tenantId        String
+  agentContractId String
+  userId          String?
+  status          String   @default("active") // 'active' | 'paused' | 'ended' | 'failed' | 'timeout'
+  context         String?  // JSON string
+  budget          String?  // JSON string: { tokensUsed, tokensLimit, costUsd }
+  startedAt       DateTime @default(now())
+  endedAt         DateTime?
+  updatedAt       DateTime @updatedAt
+  revision        Int      @default(0)
+  deletedAt       DateTime?
+  syncOrigin      String?
+  idempotencyKey  String?
+
+  @@index([tenantId])
+  @@index([tenantId, agentContractId])
+  @@index([tenantId, status])
+  @@index([tenantId, updatedAt])
+}
+
+model AgentStep {
+  id         String   @id @default(cuid())
+  tenantId   String
+  sessionId  String
+  stepNumber Int
+  stepType   String   // 'reasoning' | 'tool_call' | 'tool_result' | 'memory_op' | 'knowledge_op' | 'handoff' | 'escalation'
+  input      String?  // JSON string
+  output     String?  // JSON string
+  status     String   @default("pending") // 'pending' | 'running' | 'succeeded' | 'failed' | 'skipped'
+  durationMs Int?
+  startedAt  DateTime @default(now())
+  endedAt    DateTime?
+
+  @@index([tenantId])
+  @@index([sessionId, stepNumber])
+  @@index([tenantId, status])
+}
+
+model Tool {
+  id                String   @id @default(cuid())
+  tenantId          String
+  name              String
+  description       String
+  inputSchema       String   // JSON string: JSON Schema (zod-compatible)
+  outputSchema      String   // JSON string: JSON Schema (zod-compatible)
+  riskClass         String   @default("LOW") // 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL'
+  sideEffects       String   @default("read") // 'none' | 'read' | 'write' | 'irreversible'
+  offlineCompatible Boolean  @default(true)
+  auditRequired     Boolean  @default(true)
+  status            String   @default("active") // 'active' | 'disabled' | 'deprecated'
+  generatorType     String?  // 'builtin' | 'dynamic' | 'ai_generated' | 'mcp'
+  domainId          String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  revision          Int      @default(0)
+  deletedAt         DateTime?
+  syncOrigin        String?
+  idempotencyKey    String?
+
+  @@unique([tenantId, name])
+  @@index([tenantId])
+  @@index([tenantId, status])
+  @@index([tenantId, riskClass])
+  @@index([tenantId, updatedAt])
+}
+
+model ToolPermission {
+  id              String   @id @default(cuid())
+  tenantId        String
+  toolId          String
+  agentContractId String
+  grantType       String   // 'allow' | 'deny' | 'conditional'
+  conditions      String?  // JSON string
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  revision        Int      @default(0)
+  deletedAt       DateTime?
+  syncOrigin      String?
+  idempotencyKey  String?
+
+  @@unique([tenantId, toolId, agentContractId])
+  @@index([tenantId])
+  @@index([toolId])
+  @@index([agentContractId])
+  @@index([tenantId, updatedAt])
+}
+
+
+// ─── AI Audit (ADR-052 / ADR-084) ────────────────────────────────────────────
+
+model AIAuditEvent {
+  id                String   @id @default(cuid())
+  tenantId          String
+  agentId           String?
+  sessionId         String?
+  eventType         String   // 'agent_start' | 'agent_end' | 'tool_call' | 'tool_result' | 'llm_call' | 'memory_op' | 'knowledge_op' | 'handoff' | 'escalation' | 'policy_violation' | 'budget_exceeded'
+  actorId           String?
+  actorType         String?  // 'user' | 'agent' | 'system' | 'tool'
+  action            String
+  resource          String?
+  result            String?  // 'success' | 'failure' | 'denied' | 'partial'
+  severity          String   @default("info") // 'debug' | 'info' | 'warn' | 'error' | 'critical'
+  details           String?  // JSON string
+  traceId           String?
+  correlationId     String?
+  previousEventHash String?
+  rowHash           String?
+  timestamp         DateTime @default(now())
+
+  @@index([tenantId])
+  @@index([tenantId, timestamp])
+  @@index([tenantId, eventType])
+  @@index([traceId])
+  @@index([correlationId])
+  @@index([sessionId])
+}
+
+model AuditMerkleRoot {
+  id        String   @id @default(cuid())
+  tenantId  String
+  date      DateTime
+  rootHash  String
+  signature String?
+  createdAt DateTime @default(now())
+
+  @@unique([tenantId, date])
+  @@index([tenantId])
+  @@index([tenantId, date])
+}
+
+
+// ─── Offline Sync (ADR-072 / ADR-073) ────────────────────────────────────────
+
+model SyncOutbox {
+  id        String   @id @default(cuid())
+  tenantId  String
+  tableName String
+  recordId  String
+  operation String   // 'insert' | 'update' | 'delete'
+  eventJson String   // JSON string: row snapshot or delta
+  revision  Int      @default(0)
+  status    String   @default("pending") // 'pending' | 'delivered' | 'failed' | 'dead_letter'
+  attempts  Int      @default(0)
+  lastError String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([tenantId])
+  @@index([tenantId, status])
+  @@index([tenantId, tableName, recordId])
+  @@index([status, createdAt])
+}
+
+model SyncCheckpoint {
+  id          String   @id @default(cuid())
+  tenantId    String
+  sessionType String   // 'push' | 'pull' | 'lan_sync'
+  cursor      String?
+  lsn         String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([tenantId, sessionType])
+  @@index([tenantId])
+}
+
+model SyncConflict {
+  id             String   @id @default(cuid())
+  tenantId       String
+  tableName      String
+  recordId       String
+  localRevision  Int
+  remoteRevision Int
+  conflictType   String   // 'lww' | 'semantic' | 'structural' | 'manual'
+  localData      String?  // JSON string
+  remoteData     String?  // JSON string
+  resolution     String?  // 'local_wins' | 'remote_wins' | 'merged' | 'manual' | 'pending'
+  resolvedBy     String?
+  resolvedAt     DateTime?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([tenantId])
+  @@index([tenantId, tableName, recordId])
+  @@index([tenantId, conflictType, resolution])
+}
+
+
+// ─── Feature Flags (ADR-102) ─────────────────────────────────────────────────
+
+model FeatureFlag {
+  id             String   @id @default(cuid())
+  tenantId       String
+  domainId       String?
+  key            String
+  category       String   // 'ai' | 'sync' | 'domain' | 'ui' | 'ops'
+  enabled        Boolean  @default(false)
+  rolloutPct     Int      @default(0)
+  targetingJson  String?  // JSON string
+  variantJson    String?  // JSON string
+  description    String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  revision       Int      @default(0)
+  deletedAt      DateTime?
+  syncOrigin     String?
+  idempotencyKey String?
+
+  @@unique([tenantId, key])
+  @@index([tenantId])
+  @@index([tenantId, domainId, category])
+  @@index([tenantId, updatedAt])
+}
+
+
+// ─── Human Approval (ADR-087) ────────────────────────────────────────────────
+
+model HumanApprovalRequest {
+  id              String   @id @default(cuid())
+  tenantId        String
+  agentId         String?
+  sessionId       String?
+  toolId          String?
+  riskClass       String   // 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL'
+  payload         String?  // JSON string
+  status          String   @default("pending") // 'pending' | 'approved' | 'denied' | 'expired' | 'cancelled'
+  approverId      String?
+  approvedAt      DateTime?
+  alterations     String?  // JSON string: approver modifications to payload
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  revision        Int      @default(0)
+  deletedAt       DateTime?
+  syncOrigin      String?
+  idempotencyKey  String?
+
+  @@index([tenantId])
+  @@index([tenantId, status])
+  @@index([sessionId])
+  @@index([approverId])
+  @@index([tenantId, updatedAt])
+}
+
+
+// ─── Workflow (ADR-100) ──────────────────────────────────────────────────────
+
+model WorkflowDefinition {
+  id              String   @id @default(cuid())
+  tenantId        String
+  domainId        String?
+  name            String
+  machineJson     String   // JSON string: state machine definition
+  version         String   @default("0.1.0")
+  status          String   @default("draft") // 'draft' | 'published' | 'active' | 'deprecated'
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  revision        Int      @default(0)
+  deletedAt       DateTime?
+  syncOrigin      String?
+  idempotencyKey  String?
+
+  @@unique([tenantId, name, version])
+  @@index([tenantId])
+  @@index([tenantId, domainId, status])
+  @@index([tenantId, updatedAt])
+}
+
+model WorkflowInstance {
+  id              String   @id @default(cuid())
+  tenantId        String
+  definitionId    String
+  entityType      String?
+  recordId        String?
+  currentState    String
+  context         String?  // JSON string
+  status          String   @default("running") // 'running' | 'paused' | 'completed' | 'failed' | 'cancelled'
+  startedAt       DateTime @default(now())
+  endedAt         DateTime?
+  updatedAt       DateTime @updatedAt
+  revision        Int      @default(0)
+  deletedAt       DateTime?
+  syncOrigin      String?
+  idempotencyKey  String?
+
+  @@index([tenantId])
+  @@index([tenantId, definitionId])
+  @@index([tenantId, status])
+  @@index([recordId])
+  @@index([tenantId, updatedAt])
+}
+
+model RuleDefinition {
+  id              String   @id @default(cuid())
+  tenantId        String
+  domainId        String?
+  name            String
+  ruleType        String   // 'decision_table' | 'formula' | 'constraint' | 'validation'
+  decisionTable   String?  // JSON string
+  formula         String?
+  priority        Int      @default(100)
+  enabled         Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  revision        Int      @default(0)
+  deletedAt       DateTime?
+  syncOrigin      String?
+  idempotencyKey  String?
+
+  @@unique([tenantId, name])
+  @@index([tenantId])
+  @@index([tenantId, domainId, enabled])
+  @@index([tenantId, updatedAt])
+}
