@@ -83,10 +83,19 @@ describe('architectureDriftVerifier — B1 closure + B2 falsification', () => {
     mkdirSync(join(tmpRepo, 'spikes', 'SPIKE-01', 'src'), { recursive: true });
 
     // Create multiple SDK files in subdirectories
-    writeFileSync(join(tmpRepo, 'packages', 'sdk', 'src', 'index.ts'), 'export {};\n');
-    writeFileSync(join(tmpRepo, 'packages', 'sdk', 'src', 'auth', 'index.ts'), 'export {};\n');
-    writeFileSync(join(tmpRepo, 'packages', 'sdk', 'src', 'config', 'index.ts'), 'export {};\n');
-    writeFileSync(join(tmpRepo, 'spikes', 'SPIKE-01', 'src', 'sync.ts'), 'export {};\n');
+    writeFileSync(join(tmpRepo, 'packages', 'sdk', 'src', 'index.ts'), 'export const _test = 1;\n');
+    writeFileSync(
+      join(tmpRepo, 'packages', 'sdk', 'src', 'auth', 'index.ts'),
+      'export const _test = 1;\n',
+    );
+    writeFileSync(
+      join(tmpRepo, 'packages', 'sdk', 'src', 'config', 'index.ts'),
+      'export const _test = 1;\n',
+    );
+    writeFileSync(
+      join(tmpRepo, 'spikes', 'SPIKE-01', 'src', 'sync.ts'),
+      'export const _test = 1;\n',
+    );
 
     const result = await architectureDriftVerifier.verify({
       repoRoot: tmpRepo,

@@ -56,3 +56,7 @@ Capabilities captured, architecture extensible, no scope creep. SDK interfaces p
 ### Rationale
 
 Phase B identified that ADR-011's "Future Vision" classification for ~25 capabilities conflicts with the Senior Engineer's directive that offline AI is "part of the foundation of this project." The distinction between "implementation deferred" and "architectural contract NOW" is central to the AI-BOS upgrade.
+
+## Context
+
+TRB-007 defines a vision-level architecture reference for the SmartAgentics platform. Phase 1 scope must not expand to implement all 12 vision capabilities. This ADR formally classifies TRB-007 as a reference document, not an implementation directive. Phase D Revision (Amendment 1) reclassified ~25 capabilities from Future Vision to Architecture Contract NOW.

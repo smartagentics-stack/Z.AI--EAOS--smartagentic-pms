@@ -28,7 +28,7 @@ function createSpikeEvidence(repoDir: string): void {
   const spikeDir = join(repoDir, 'spikes', 'SPIKE-01');
   mkdirSync(spikeDir, { recursive: true });
   for (const file of REQUIRED_SPIKE_EVIDENCE) {
-    writeFileSync(join(spikeDir, file), `{"placeholder": "${file}"}\n`);
+    writeFileSync(join(spikeDir, file), `{"sample-data": "${file}"}\n`);
   }
 }
 

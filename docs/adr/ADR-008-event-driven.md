@@ -31,3 +31,7 @@ Loose coupling, audit trail, enables offline sync. Negative: eventual consistenc
 ### Rationale
 
 ADR-008 was previously a stub. Phase C Stream 7 research established that the transactional outbox pattern is the canonical solution for reliable event delivery in a local-first SQLite architecture.
+
+## Context
+
+Phase 1 requires event-driven architecture for domain events, audit trails, and workflow triggers. Events are defined as SDK contracts first, with the bus implementation following. This approach was validated in the EAOS investigation and aligns with the transactional outbox pattern (ADR-073).

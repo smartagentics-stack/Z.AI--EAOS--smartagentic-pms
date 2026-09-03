@@ -35,3 +35,7 @@ Zero-config, offline-first, EAOS-proven (6ms backup, 3ms restore). Single-writer
 ### Rationale
 
 Phase C Stream 7 research verified that SQLite-over-SMB causes database corruption (CRITICAL foundational conflict FC-7.2). This amendment formally documents the constraint and points to the approved hub-and-spoke alternative (ADR-075).
+
+## Context
+
+Phase 1 is offline-first. SQLite provides zero-config, file-based local database with WAL mode for concurrent access. Proven in EAOS with 6ms backup and 3ms restore. PostgreSQL is reserved for future cloud sync (ADR-001).
