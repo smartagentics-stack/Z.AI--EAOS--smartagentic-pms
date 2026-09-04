@@ -34,8 +34,11 @@ import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { execSync } from 'node:child_process';
 
-// Skip if pnpm not available or no network (CI may not have network for audit)
+// Skip if pnpm not available or on CI (pnpm audit requires network access
+// which may be restricted or slow on CI runners, causing timeouts)
+const isCI = !!process.env.CI || !!process.env.GITHUB_ACTIONS;
 const pnpmAvailable = (() => {
+  if (isCI) return false;
   try {
     execSync('pnpm --version', { encoding: 'utf-8', stdio: 'pipe' });
     return true;
