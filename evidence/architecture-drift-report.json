@@ -3,7 +3,7 @@
   "status": "PASS",
   "message": "No architecture drift detected (3 rules checked)",
   "evidence": [
-    "ADR-009-no-nextjs-in-sdk: checked 12 files, 0 violation(s)",
+    "ADR-009-no-nextjs-in-sdk: checked 37 files, 0 violation(s)",
     "ADR-012-no-flat-sqlite-columns: checked 8 files, 0 violation(s)",
     "ADR-006-no-postgres-in-spike: checked 8 files, 0 violation(s)"
   ],

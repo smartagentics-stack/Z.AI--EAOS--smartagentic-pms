@@ -32,6 +32,7 @@ export * from './ai/supervisor.js';
 export * from './ai/planner.js';
 export * from './ai/auditor.js';
 export * from './ai/tools.js';
+export * from './ai/configuration.js';
 export * from './ai/knowledge.js';
 export * from './ai/rag.js';
 

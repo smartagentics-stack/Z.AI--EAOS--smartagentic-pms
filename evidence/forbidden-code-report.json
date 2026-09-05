@@ -1,18 +1,13 @@
 {
   "name": "forbidden-code",
   "status": "WARN",
-  "message": "7 warning(s) (TODOs, console.log, placeholders, Rule 40 bare claims)",
+  "message": "2 warning(s) (TODOs, console.log, empty-stubs, Rule 40 bare claims)",
   "details": {
     "warnings": [
-      "packages/ai/src/index.ts:1 — Placeholder/empty export found [placeholder]",
-      "packages/engineering-assurance/src/verifiers/forbidden-code-verifier.ts:5 — TODO/FIXME found [todo]",
-      "packages/engineering-assurance/src/verifiers/forbidden-code-verifier.ts:41 — TODO/FIXME found [todo]",
-      "packages/engineering-assurance/src/verifiers/forbidden-code-verifier.ts:86 — TODO/FIXME found [todo]",
-      "packages/shared/src/index.ts:1 — Placeholder/empty export found [placeholder]",
-      "apps/web/tests/placeholder.test.ts:2 — Placeholder/empty export found [placeholder]",
-      "apps/worker/src/index.ts:1 — Placeholder/empty export found [placeholder]"
+      "packages/ai/src/__tests__/in-memory-memory-store.test.ts:54 — Placeholder/empty export found [placeholder]",
+      "packages/ai/src/__tests__/in-memory-memory-store.test.ts:294 — Placeholder/empty export found [placeholder]"
     ]
   },
-  "evidence": ["Files scanned: 55", "Commits scanned: 20", "Warnings: 7", "Violations: 0"],
-  "durationMs": 15
+  "evidence": ["Files scanned: 95", "Commits scanned: 20", "Warnings: 2", "Violations: 0"],
+  "durationMs": 37
 }

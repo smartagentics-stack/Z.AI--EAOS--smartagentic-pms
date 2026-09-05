@@ -50,6 +50,8 @@ export class StaticToolRegistry implements ToolRegistry {
       ...tool,
       id: tool.id ?? crypto.randomUUID(),
       status: 'ACTIVE',
+      generatorType: 'static', // ADR-103 §4: hand-authored TypeScript tool (existing behavior)
+      domainId: null, // ADR-103 §4: platform-level tool, not domain-scoped
       createdAt: now,
       updatedAt: now,
     };
