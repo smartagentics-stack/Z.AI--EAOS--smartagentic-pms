@@ -1,11 +1,11 @@
 {
-  "timestamp": "2026-08-26T18:26:24.334Z",
-  "commit": "031fc5be51f6c3e61a01db9cb1a9e5d57beaa760",
-  "branch": "main",
+  "timestamp": "2026-09-05T09:49:59.874Z",
+  "commit": "938d1cf4d21f2bb6f51d66f2e46b656fe7d4b12e",
+  "branch": "f1-s0-schema-alignment",
   "overallStatus": "WARN",
-  "passCount": 8,
+  "passCount": 9,
   "failCount": 0,
-  "warnCount": 2,
+  "warnCount": 1,
   "verifiers": [
     {
       "name": "governance-compliance",
@@ -14,8 +14,8 @@
     },
     {
       "name": "adr-compliance",
-      "status": "WARN",
-      "message": "10 ADR(s) missing Context section"
+      "status": "PASS",
+      "message": "103 ADRs verified, all compliant"
     },
     {
       "name": "evidence-completeness",
@@ -35,7 +35,7 @@
     {
       "name": "forbidden-code",
       "status": "WARN",
-      "message": "7 warning(s) (TODOs, console.log, placeholders, Rule 40 bare claims)"
+      "message": "2 warning(s) (TODOs, console.log, empty-stubs, Rule 40 bare claims)"
     },
     {
       "name": "dependency-audit",
@@ -45,7 +45,7 @@
     {
       "name": "traceability-compliance",
       "status": "PASS",
-      "message": "6 commit(s) verified — all include Engineering Traceability Block"
+      "message": "7 commit(s) verified — all include Engineering Traceability Block"
     },
     {
       "name": "prompt-structure",

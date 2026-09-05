@@ -3,5 +3,5 @@
   "status": "PASS",
   "message": "No high/critical vulnerabilities in production dependencies",
   "evidence": ["Total vulnerabilities: 0", "High/Critical: 0"],
-  "durationMs": 844
+  "durationMs": 833
 }

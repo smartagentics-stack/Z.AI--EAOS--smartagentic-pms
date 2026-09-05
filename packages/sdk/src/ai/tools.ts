@@ -17,6 +17,24 @@ export type ToolStatus = 'DRAFT' | 'ACTIVE' | 'DEPRECATED' | 'RETIRED';
 /** Permission grant per B4 #19 (one row per (toolId, agentId|roleId) pair). */
 export type ToolPermissionGrant = 'ALLOW' | 'DENY' | 'ALLOW_WITH_APPROVAL';
 
+/**
+ * Tool generator type per ADR-103 §4 (FC-F1-02 resolution).
+ * - 'static' = handlerModule/handlerFunction point to TypeScript (existing behavior)
+ * - 'auto-crud' = GenericEntityTool handler parameterized by (entityTypeId, operation)
+ * - 'auto-search' = GenericEntityTool handler parameterized by (entityTypeId, 'search')
+ * Runtime validation enforces these canonical values because SQLite does not
+ * enforce Prisma enum correctness at the database level (directive §9).
+ */
+export type ToolGeneratorType = 'static' | 'auto-crud' | 'auto-search';
+
+/** Canonical generator type values for runtime validation (directive §9). */
+export const TOOL_GENERATOR_TYPES = ['static', 'auto-crud', 'auto-search'] as const;
+
+/** Runtime type guard for ToolGeneratorType — enforces canonical values (directive §9). */
+export function isToolGeneratorType(value: unknown): value is ToolGeneratorType {
+  return typeof value === 'string' && (TOOL_GENERATOR_TYPES as readonly string[]).includes(value);
+}
+
 /** JSON-Schema-shaped input/output descriptor (zod-compatible). */
 export type ToolSchema = Readonly<Record<string, unknown>>;
 
@@ -40,10 +58,12 @@ export interface ToolDefinition {
   readonly version: string;
 }
 
-/** Persisted Tool entity per ADR-054 §4. */
+/** Persisted Tool entity per ADR-054 §4 + ADR-103 §4 (FC-F1-02 / ADD-10 resolution). */
 export interface Tool extends ToolDefinition {
   readonly id: string;
   readonly status: ToolStatus;
+  readonly generatorType: ToolGeneratorType | null; // ADR-103 §4: 'static' | 'auto-crud' | 'auto-search' | null
+  readonly domainId: string | null; // ADR-103 §4: null = platform tool; non-null = domain-scoped
   readonly createdAt: string;
   readonly updatedAt: string;
 }

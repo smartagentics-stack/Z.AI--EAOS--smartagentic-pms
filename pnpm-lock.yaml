@@ -130,6 +130,9 @@ importers:
       '@smartagentics/dev-config':
         specifier: workspace:*
         version: link:../dev-config
+      '@smartagentics/sdk':
+        specifier: workspace:*
+        version: link:../sdk
       prisma:
         specifier: ^5.18.0
         version: 5.22.0
